@@ -1,0 +1,118 @@
+@charset "utf-8";
+/* local_sp css*/
+
+
+
+/* 640px以下 for Smart Phone
+------------------------------------------------------------------*/
+@media only screen and (max-width: 640px){
+/* slideImage top page
+--------------------------------------------------*/
+#ind #slideImage {
+	text-align:center;
+	width:100%;
+	height:200px;
+	margin:0 auto !important;
+	background-size:auto 70% !important;
+	top:0;
+}
+
+#ind #slideImage .boxPhoto {
+	width:100%;
+	height:200px;
+	overflow:hidden;
+	top:0;
+}
+
+#ind #slideImage .boxPhoto {
+	background-size:auto 100% !important;
+}
+
+#ind #slideImage .big_gradationLeft {
+	display:none;
+}
+#ind #slideImage .big_gradationRight {
+	display:none;
+}
+
+#ind #slideImage #copy {
+	position:absolute;
+	top:60px;
+}
+#ind #slideImage #copy h2 {
+	color:#fff;
+	font-family:"Lucida Grande", "segoe UI", "ヒラギノ丸ゴ ProN W4","Hiragino Maru Gothic ProN",Meiryo, Arial, sans-serif;
+	font-size:27px;
+	text-shadow: 0px 3px 3px #333; 
+	margin-bottom:0px;
+	line-height:120%;
+}
+#ind #slideImage #copy h3 {
+	color:#fff;
+	font-family:"Lucida Grande", "segoe UI", "ヒラギノ丸ゴ ProN W4","Hiragino Maru Gothic ProN",Meiryo, Arial, sans-serif;
+	font-size:12px;
+	text-shadow: 0px 3px 3px #333;
+	line-height:120%;
+}
+#ind .searchBox {
+    background-color: rgba(0, 0, 0, 0.8);
+	padding:6px;
+    width:266px;
+	border-radius: 5px;
+    -webkit-border-radius: 5px;  
+    -moz-border-radius: 5px;
+}
+#ind .searchBox .focus{
+	width:260px;
+	padding:0 10px;
+	font-size:11px;
+    border:none;
+    margin-right:0;
+} 
+#ind .searchBox .btnSearch {
+	display:none;
+}
+
+#ind .searchBox #datepicker { display:none; }
+
+#ind #slideImage img.photo{
+	display:block;
+	position:relative;
+	width:auto;
+	height:200px;
+	margin:0 auto;	
+}
+#ind #slideImage .boxInner{
+	display:none;
+}
+#ind #slideImage .minWeather{
+	display:none;
+}
+
+    input[type="checkbox"] {
+        -webkit-transform: scale(1.3);
+        transform: scale(1.3);
+        margin-right:0.5em;
+    }
+    input[type="radio"] {
+        -webkit-transform: scale(1.3);
+        transform: scale(1.3);
+        margin-right:0.5em;
+    }
+    #contentsInner .nextBtn {
+        margin-right:10px;
+    }
+    #contentsInner .beforeBtn { margin-right:0px; }
+
+    #contentsInner #history { { width:100%; }
+    
+    #contentsInner div.history_box {
+        width:278px;
+        margin:20px auto;
+        float:none;
+    }
+    
+    #backnumber {
+        display:none;
+    }
+}

@@ -1,0 +1,464 @@
+/* slideImage : index page
+--------------------------------------------------*/
+#ind #slideImage {
+    text-align:center;
+    width:100% !important;
+    height:738px;
+    margin:0 auto !important;
+    -moz-box-shadow: 0 0 8px #777;
+    -webkit-box-shadow: 0 0 8px #777;
+    box-shadow: 0 0 8px #777;
+    behavior: url(js/PIE.htc);
+    border: solid #fff 0px;
+    background-color: #000 !important;
+    margin:0 auto;
+    position:relative;
+    top:0;
+    left:0;    
+}
+
+#ind #slideImage #copy {
+    position:absolute;
+    top:54px;
+    text-align:center;
+    width:100%;
+    z-index:100;
+}
+#ind #slideImage #copy h2 {
+    color:#fff;
+    font-family:"Lucida Grande", "segoe UI", "ヒラギノ丸ゴ ProN W4","Hiragino Maru Gothic ProN",Meiryo, Arial, sans-serif;
+    font-size:54px;
+    text-shadow: 0px 3px 3px #333; 
+    margin-bottom:10px;
+    line-height:120%;
+}
+
+#ind #slideImage #copy h3 {
+    color:#fff;
+    font-family:"Lucida Grande", "segoe UI", "ヒラギノ丸ゴ ProN W4","Hiragino Maru Gothic ProN",Meiryo, Arial, sans-serif;
+    font-size:18px;
+    text-shadow: 0px 3px 3px #333;
+    line-height:120%;
+}
+
+.win #ind #slideImage #copy h2{ font-family: "HG丸ｺﾞｼｯｸM-PRO","HGMaruGothicMPRO" sans-serif ;}
+.win #ind #slideImage #copy h3{ font-family: "HG丸ｺﾞｼｯｸM-PRO","HGMaruGothicMPRO" sans-serif ;}
+
+#ind #slideImage .searchBox {
+    background:url(../images/bg_nav.png) 0 0 repeat;
+    margin:15px auto;
+    padding:5px 8px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;  
+    -moz-border-radius: 5px;
+    width:660px;
+}
+
+
+#ind #slideImage .searchBox .focus{
+    color:#a0a09f;
+    width:390px;
+    height:39px;
+    padding:0 10px;
+    font-size:16px;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;  
+    -moz-border-radius: 2px;
+    border:none;
+    margin-right:10px;
+}
+.win.ie8 #ind #slideImage .searchBox .focus{ line-height:240%;}
+
+
+#ind #slideImage .searchBox #datepicker {
+    color:#a0a09f;
+    width:140px;
+    height:39px;
+    padding:0 10px;
+    font-size:16px;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;  
+    -moz-border-radius: 2px;
+    border:none;
+    margin-right:10px;
+    background:url(../images/icon_calendar.png) 124px 12px no-repeat #fff;
+}
+
+.win.ie8 #ind #slideImage .searchBox #datepicker{ line-height:240%;}
+
+#ind #slideImage .searchBox .btnSearch {
+    width:68px;
+    height:39px;
+}
+#ind #slideImage    {
+    height:738px;
+    overflow:hidden;
+    margin:0 auto;
+}
+#ind #slideImage img.photo{
+    display:block;
+    /*position:relative;
+    top:0;
+    left:0;*/
+    /*height:460px;*/
+}
+
+#ind #slideImage .boxPhoto {
+    width:2000px;
+    height:738px;
+    background-repeat:no-repeat;
+    background-position:center center;
+}
+
+#ind #slideImage .boxInner{
+    position:relative;
+    top:-460px;
+    left:0;    
+    width:1000px;
+    height:100%;
+    margin:0 auto;
+}
+
+#ind #slideImage .minWeather{
+    position:absolute;
+    top:780px;
+    right:0;    
+    background:#000;
+    width:auto;
+    padding-top:15px;
+    padding-left:30px;
+    padding-bottom:15px;
+     border-radius: 10px;
+    -webkit-border-radius: 10px;  
+    -moz-border-radius: 10px;
+    /*opacity: 0.5; */
+    background:url(../images/bg_minweather.png) 0 0 repeat;
+    color:#fff;
+    font-weight:bold;
+    font-size:24px;
+}
+
+#contentsInner div.box .spot img{
+    position:relative;
+    display:block;
+    width:300px;
+    z-index:100;
+    height: 160px;
+    overflow: hidden;
+}
+
+#future_searchBox {
+    display:block;
+    border:1px solid #e2e2e2;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;  
+    -moz-border-radius: 2px;
+    padding:5px 15px;
+    -moz-box-shadow: 0 0 3px #e2e2e2;
+    -webkit-box-shadow: 0 0 3px #e2e2e2;
+    box-shadow: 0 0 3px #e2e2e2;
+}
+
+
+#future_searchBox .focus{
+    color:#a0a09f;
+    width:390px;
+    height:39px;
+    padding:0 10px;
+    font-size:16px;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;  
+    -moz-border-radius: 2px;
+    border:none;
+    margin-right:10px;
+}
+.win.ie8 #future_searchBox .focus{ line-height:240%;}
+
+
+#future_searchBox #datepicker {
+    color:#a0a09f;
+    width:140px;
+    height:39px;
+    padding:0 10px;
+    font-size:16px;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;  
+    -moz-border-radius: 2px;
+    border:none;
+    margin-right:10px;
+    background:url(../images/icon_calendar.png) 124px 12px no-repeat #fff;
+}
+
+.win.ie8 #future_searchBox #datepicker{ line-height:240%;}
+
+#recommend h2{
+    margin-bottom:0px;
+}
+
+#contentsInner .nextBtn{
+    width:45%;
+    float:right;
+    /*margin-bottom:30px;*/
+    margin-right:30px;
+}
+#contentsInner .beforeBtn{
+    width:45%;
+    float:left;
+    /*margin-bottom:30px;*/
+}
+#contentsInner .nextBtn a,
+#contentsInner .beforeBtn a{
+    display:block;
+    background:#e3e2e2;
+    text-align:center;
+    font-weight:bold;
+    font-size:14px;
+    color:#8a8989;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;  
+    -moz-border-radius: 3px;
+    padding:10px;
+    -moz-box-shadow: 0 3px 0px #cbcbcb;
+    -webkit-box-shadow: 0 3px 0px #cbcbcb;
+    box-shadow: 0 3px 0px #cbcbcb;
+    behavior: url(js/PIE.htc);
+    margin-top:30px;
+}
+#contentsInner .nextBtn a:hover,
+#contentsInner .beforeBtn a:hover{
+    background:#d4d4d4;
+}
+
+#contentsInner #history {
+    width:930px;
+}
+
+#contentsInner div.history_box {
+    position:relative;
+    width:300px;
+    height:300px;
+    margin-right:18px;
+    float:left;
+}
+
+
+
+.chart {
+    position: relative;
+    float: left; 
+    margin-right: 18px;
+}
+.chart .count {
+    position: absolute;
+    border-radius: 50%;
+    top: 24px;
+    left: 24px;
+    height: 230px;
+    width: 230px;
+}
+
+.chart em, 
+.chart span {
+    font-family: Arial;
+    font-weight: bold;
+    width: 100%;
+    text-align: center;
+}
+.chart em {
+    display: block;
+    font-size: 50px;
+    font-style: normal;
+    color: #fff;
+    line-height: 150px;
+}
+.chart .caption {
+    position: absolute;
+    top: 50px;
+    left: 40px;
+    color: #fff;
+}
+#chart_daytimes .shine {
+    background: url(/images/weather/shine_image.jpg) -20px -20px no-repeat;
+}
+
+#chart_daytimes .rain {
+    background: url(/images/weather/rain_image.jpg) -20px -60px no-repeat;
+}
+
+#chart_daytimes .cloud {
+    background: url(/images/weather/cloud_image.jpg) -20px -20px no-repeat;
+}
+
+#chart_daytimes .snow {
+    background: url(/images/weather/snow_image.jpg) -20px -20px no-repeat;
+}
+
+#chart_daytimes .thunder {
+    background: url(/images/weather/thunder_image.jpg) -20px -60px no-repeat;
+}
+
+#chart_daytimes .mist {
+    background: url(/images/weather/mist_image.jpg) -20px -20px no-repeat;
+}
+
+#chart_daytimes .count em {
+    color: #fff;
+    color: rgba(255, 255, 255, 0.8);
+}
+#chart_daytimes .count table {
+    width:150px;
+    height:150px;
+    color:#545454;
+    border-collapse:collapse;
+    border: 1px solid #CCCCCC;
+    /*background: #D8EBFF;*/
+    /*background:url(../images/bg_box.gif) 0 0 repeat;*/
+    /*background-size:20px 20px;*/
+    /*background: rgba(242, 242, 242, 0.76);*/
+    background: rgba(216, 235, 255, 0.7);
+    padding:0;
+    margin:50px auto 0 auto;
+/*
+    position: absolute;
+    top: 55px;
+    left: 55px;
+*/
+}
+#chart_daytimes .count td{
+    border-width: 0;
+    padding:2px;
+    margin:0;
+}
+
+#chart_precipitation_total {
+    position: relative;
+    width: 278px;
+}
+#chart_precipitation_total .count {
+    position: absolute;
+    top: 0;
+    left:0 ;
+    width: 100%;
+    text-align: right;
+}
+#chart_precipitation_total em, 
+#chart_precipitation_total span {
+    font-family: Arial;
+    width: 100%;
+    text-align: center;
+}
+/* "240,021" */
+#chart_precipitation_total em {
+    font-size: 20px;
+    font-weight: bold;
+    font-style: normal;
+    color: #66ccff;
+}
+/* "USERS" */
+#chart_precipitation_total .caption {
+    color: #ccc;
+    font-size: 12px;
+}
+
+#chart_feel_temperatures .count {
+    /*background: url(http://startapp.jp/img/refs/jsfiddle_medium_6628140291.jpg) -20px -20px no-repeat;*/
+    /*background: url(/images/weather/freeze.jpg) -20px -20px no-repeat;*/
+}
+#chart_feel_temperatures .count em {
+    color: #fff;
+    color: rgba(255, 255, 255, 0.8);
+}
+#chart_feel_temperatures .count table {
+    width:150px;
+    height:150px;
+    color:#545454;
+    border-collapse:collapse;
+    border: 1px solid #CCCCCC;
+    /*background: #D8EBFF;*/
+    /*background:url(../images/bg_box.gif) 0 0 repeat;*/
+    /*background-size:20px 20px;*/
+    /*background: rgba(242, 242, 242, 0.76);*/
+    background: rgba(216, 235, 255, 0.7);
+    padding:0;
+    margin:50px auto 0 auto;
+/*
+    position: absolute;
+    top: 55px;
+    left: 55px;
+*/
+}
+#chart_feel_temperatures .count td{
+    border-width: 0;
+    padding:2px;
+    margin:0;
+}
+
+#backnumber {
+    width:930px;
+    /* border-bottom:1px solid #dad9d9; */
+    margin-top:40px;
+}
+#backnumber table{
+    width:100%;
+    border-collapse:collapse;
+    /* border-top:1px dotted #c4c3c0; */
+    font-size:12px;
+}
+
+#backnumber th{
+    width:100px;
+    border-bottom:1px dotted #c4c3c0;
+    border-right:1px solid #dfdedb;
+    border-left:1px solid #dfdedb;
+    background:#f5f4f1;
+    font-weight:bold;
+    padding: 5px;
+    text-align:center;
+    font-size:90%;
+}
+#backnumber th.top{
+    border-top:1px solid #dfdedb;
+}
+
+#backnumber td.date{
+    border-left:1px solid #dfdedb;
+}
+
+#backnumber td{
+    border-bottom:1px dotted #c4c3c0;
+    border-right:1px solid #dfdedb;
+    padding: 5px;
+    text-align:center;
+    font-size:90%;
+}
+
+
+#backnumber .title th, #backnumber .title td {
+    background:#fef2c3;
+    font-weight:bold;
+    color:#333;
+    border-right:1px solid #fff;
+    /* border-right:1px solid #f3ca35; */
+}
+
+#backnumber td.day07{ border-right:none; }
+
+#backnumber .title td.day04 { background:#c4e1f0; }
+#backnumber .title td.day05 { background:#ffd4b5; }
+#backnumber td.day04{ background:#eef6fa; }
+#backnumber td.day05{ background:#feede1; }
+
+#backnumber .icon { width:50%;}
+
+#contentsInner div.box .stock {
+    font-size:16px;
+    font-weight:bold;
+    color:#64625d;
+    margin-bottom:4px;
+}
+#contentsInner div.box .stock em{
+    color:#64625d;
+    font-style:normal;
+}
+#contentsInner div.box .stock em.blue { color:#26aadb;}
+#contentsInner div.box .stock em.red { color:#fc4747;}

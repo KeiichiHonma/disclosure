@@ -1,0 +1,24 @@
+﻿/*--------------------------------------------------
+
+  master css 
+
+	-- INDEX ----
+
+	// global css
+
+		1. init
+		2. globalClass
+
+	// local css
+
+		3. html, body
+		4. layout
+		5. siteCommonStyle
+		6. eachPageStyle
+
+
+--------------------------------------------------*/
+
+@import "global.css";
+@import "local.css";
+@import "local_sp.css";

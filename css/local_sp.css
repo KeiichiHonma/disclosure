@@ -1,0 +1,499 @@
+@charset "utf-8";
+/* local_sp css*/
+
+
+
+/* 640px以下 for Smart Phone
+------------------------------------------------------------------*/
+@media only screen and (max-width: 640px){
+.undisp{
+    display:none!important;
+}
+/* header
+--------------------------------------------------*/
+#header {
+	position:relative;
+}
+#headerInner{
+	width:100%;
+}
+#header h1{
+	left:9px;
+}
+#header h2{
+	display:none;
+}
+#header .navPc {
+	display:none;
+}
+#breadcrumbInner {
+	width:95%;
+	margin-left:5px;
+    border-left:none;
+}
+#breadcrumbInner span.news p{
+	display:block;
+    width:250px;
+	height:40px;
+	color:#fff;
+	font-weight:normal;
+	padding:0px 5px 0;
+}
+#header .navSp {
+	display:block;
+}
+#header .navSp span{
+	display:block;
+	width:30px;
+	height:28px;
+	text-indent:-9999px;
+	position:absolute;
+	top:4px;
+	right:10px;
+}
+#header .navSp span a{
+	display:block;
+	width:34px;
+	height:34px;
+	background:url(../images/menu_sp.png) 0 0 no-repeat;
+	background-size:34px 34px;
+}
+#header .navSp .ttl{
+	background:#505050;
+	padding-left:10px;
+	height:30px;
+	line-height: 30px;
+}
+
+#header .navSp .ttl:hover{
+	border-top: 1px solid #4d4d4d;
+}
+
+#breadcrumb .searchBox {
+	display:none;
+}
+
+#desc {
+	display:none;
+}
+.scrolltop {
+	position:relative !important;
+}
+
+
+/* mainImage top page
+--------------------------------------------------*/
+#ind .topNavPc {
+	display:none;
+}
+#ind .topNavSp {
+	display:block;
+}
+#ind .topNavSp ul.menuBox dd{
+	padding:5px;
+}
+ul.menuBox dd.first{
+	clear:left;
+}
+#ind #mainImage {
+	text-align:center;
+	width:100%;
+	height:200px;
+	margin:0 auto !important;
+	background-size:auto 70% !important;
+	top:0;
+}
+
+#ind #mainImage .boxPhoto {
+	width:100%;
+	height:200px;
+	background-size:auto 100% !important;
+}
+
+#ind #mainImage .gradationLeft {
+	display:none;
+}
+#ind #mainImage .gradationRight {
+	display:none;
+}
+
+#ind #mainImage #copy {
+	position:absolute;
+	top:60px;
+}
+#ind #mainImage #copy h2 {
+	color:#fff;
+	font-family:"Lucida Grande", "segoe UI", "ヒラギノ丸ゴ ProN W4","Hiragino Maru Gothic ProN",Meiryo, Arial, sans-serif;
+	font-size:26px;
+	text-shadow: 0px 3px 3px #333; 
+	margin-bottom:0px;
+	line-height:120%;
+}
+#ind #mainImage #copy h3 {
+	display:none;
+}
+#ind #mainImage .searchBox {
+	padding:6px;
+    width:282px;
+}
+#ind #mainImage .searchBox .focus{
+	width:260px;
+	padding:0 10px;
+	font-size:11px;
+    border:none;
+    margin-right:0;
+} 
+#ind #mainImage .searchBox .btnSearch {
+	position:absolute;visibility:hidden;
+}
+
+#ind #mainImage .searchBox #datepicker { display:none; }
+
+#ind #mainImage img.photo{
+	display:block;
+	position:relative;
+	width:auto;
+	height:200px;
+	margin:0 auto;	
+}
+#ind #mainImage .boxInner{
+	display:none;
+}
+#ind #mainImage .minWeather{
+	display:none;
+}
+
+#ind .bx-wrapper .bx-prev {display:none;}
+#ind .bx-wrapper .bx-next {display:none;}
+
+
+
+/* mainImage: subpage
+--------------------------------------------------*/
+#mainImage.sub {
+	width:100%;
+	height:180px;
+    background-size:auto 100% !important;
+}
+
+#mainImage.sub #innerBox {
+	width:100%;
+	overflow:hidden;
+}
+#mainImage.sub h2 {
+	font-size:26px;
+	padding:0 10px;
+	margin-top:65px;
+	margin-bottom:10px;
+}
+
+#mainImage.sub h2 em{
+	display:block;
+	font-size:20px;
+	padding-left:0;
+	margin-bottom:-10px;
+}
+
+
+#mainImage.sub h3 {
+	font-size:14px;
+	padding:0 10px;
+}
+#mainImage.sub img.photo{
+	display:block;
+	position:absolute;
+	top:0px;
+	right:0;
+	width:auto;
+	height:180px;
+	margin:0 auto;
+}
+
+#mainImage #gmap{
+    width: 100%;
+    height:200px;
+    border:none;
+}
+
+
+
+/* footer
+--------------------------------------------------*/
+#footerInner {
+	width:auto;
+	margin:0 auto;
+}
+#footer .boxLeft { float:none;}
+#footer .boxRight { float:none;}
+#footer .boxRight .copy {
+	margin-top:8px;
+}
+
+/* content
+--------------------------------------------------*/
+#contents h2{
+	font-size:16px;
+	margin-bottom:10px;
+}
+#contentsInner {
+	width:278px;
+	margin:0 auto;
+	padding:20px 12px;
+}
+#contentsInner .line { margin-bottom:0px;}
+
+#contentsInner div.box {
+	width:278px;
+	margin:20px auto;
+	float:none;
+}
+#contentsInner .guide div.box .photo img{
+	width:278px;
+	height:125px;
+}
+
+#contentsInner .guide div.box .photo .shadow{
+	width:278px;
+	height:125px;
+}
+
+#contentsInner .guide div.box .icon { top:100px; }
+#contentsInner .guide div.box .text { top:130px; }
+
+
+
+#contentsInner .leisure div.box .photo img{
+	width:278px;
+	height:148px;
+}
+
+#contentsInner .leisure div.box .photo .shadow{
+	width:278px;
+	height:148px;
+	margin-top:-139px;
+}
+#contentsInner .leisure div.box .text { top:165px; }
+
+#contentsInner #outing div.box  {
+	height:125px;
+}
+#contentsInner #recommend {
+	margin-top:5px;
+}
+#contentsInner #recommend div.box { 
+    height:103px;
+	float:left;
+	margin:10px;
+}
+#contentsInner #recommend div.box .info { top:39px;left:8px; }
+#contentsInner #recommend div.box .weather{
+	width:35px;
+    margin: 0 auto;
+    /*border: 1px solid #4d4d4d;*/
+}
+#contentsInner #recommend div.box .weather img{
+	width:35px;
+}
+
+
+
+/* top
+--------------------------------------------------*/
+#contents .guide h2{
+	line-height:120%;
+    font-size: 20px;
+}
+#contents .guide h2 em{
+	padding-left:0;
+	display:block;
+}
+
+#contentsInner .allGuideBtn { margin-right:0px; }
+
+#contentsInner .howtoBox h3{ margin-right:0; }
+
+#contentsInner .howtoBox .step {
+	float:none;
+	width:100%;
+	background:none;
+	padding-right:0;
+	margin-right:0;
+}
+#contentsInner .howtoBox .step h4{
+	text-align:center;
+}
+
+#contentsInner .howtoBox .step p{
+	text-align:center;
+	margin-bottom:20px;
+}
+
+
+/* area page
+--------------------------------------------------*/
+#btnPc { display:none;}
+
+#btnSp {
+	display:block;
+	padding-bottom:20px;
+	margin-bottom:30px;
+	border-bottom:1px solid #dad9d9;
+}
+
+#btnSp select {
+	display:block;
+	width:100%;
+	padding:10px 10px;
+	margin-bottom:10px;
+	font-weight:bold;
+	font-size:16px;
+}
+
+#btnSp #sidr-left {
+    width:100%;
+}
+#btnSp .navSp {
+    display:block;
+}
+#btnSp .navSp span{
+
+    display:block;
+}
+#btnSp .navSp span a{
+    font-size:16px;
+}
+
+#btnSp .navSp li{
+	font-size:14px;
+	border-bottom: 1px solid #eaeaea;
+	padding:5px 5px;
+}
+
+#btnSp .navSp .ttl{
+    color:#333333;
+    background:#f9f9f9;
+    padding-left:10px;
+    height:30px;
+    line-height: 30px;
+    font-weight:bold;
+}
+
+#btnSp .navSp .date input{
+    width:85%;
+    background:#ffffff;
+    margin:5px;
+    color:#333333;
+}
+
+#btnSp .navSp li.radio,
+#btnSp .navSp li.checkbox{
+    height:40px;
+    line-height: 40px;
+}
+
+#btnSp .navSp .searchBtn{
+	background:#ffbd1f;
+	padding-left:10px;
+	line-height: 40px;
+}
+#btnSp .navSp .searchBtn input{
+    height: 40px;
+    width:95%;
+    padding:10px;
+}
+#btnSp .navSp .close{
+    background:#505050;
+    padding-left:10px;
+	height:50px;
+	line-height: 50px;
+}
+/* city page
+--------------------------------------------------*/
+#weather { width:100%; }
+#weather table{
+	width:100%;
+	line-height:120%;
+}
+#weather th{ width:20px;}
+#weather th , #weather td{ padding: 4px 8px; }
+/*
+#weather td.day01, #weather td.day02, #weather td.day03, #weather td.day06, #weather td.day07{ display:none; }
+#weather td.day05 { border-right:none;}
+*/
+
+
+
+
+/* leisure
+------------------------------------------------------------------*/
+.leisure #contents h2 { margin-top:0px;}
+#boxLeisure {
+    width:98%;
+    margin: 0 auto 30px;
+}
+#boxLeisure .title {
+	width:auto;
+}
+#boxLeisure .title .photo {
+	width:100%;
+	float:none;
+	margin-right:0;
+	margin-bottom:10px;
+}
+
+#boxLeisure img:not([width]) { zoom: 0.75; }
+#boxLeisure .btnBooking img:not([width]) { zoom: 0.83; }
+#boxLeisure .title .text {
+	width:auto;
+	float:none;
+}
+
+
+#boxLeisure .plan li{
+	display:block;
+	width:auto;
+	float:left;
+	margin-right:20px;
+}
+#boxLeisure .plan li img {
+	width:100%;
+	float:none;
+	margin-right:0;
+	margin-bottom:10px;
+}
+#boxLeisure .btnBooking {margin:0;}
+#boxLeisure .plan {
+	padding:25px;
+	padding-bottom:15px;
+}
+
+#boxLeisure .plan li{
+	margin-right:0;
+	margin-bottom:10px;
+}
+#boxLeisureDetail table{ width:100%; }
+#boxLeisureDetail th{
+	width:85px;
+	padding:10px 8px;
+}
+#boxLeisureDetail td{
+	padding:10px 8px;
+}
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,104 @@
+/* ラジオボタン
+============================== */
+dl.radio-group {
+
+}
+dl.radio-group input {
+    /*
+    opacity: 0;
+     filter: alpha(opacity=0);
+    */
+}
+dl.radio-group div {
+    position: relative;
+}
+dl.radio-group input {
+    position: absolute;
+    left: 0px;
+    outline:none;
+}
+dl.radio-group label {
+    display:block;
+    border:1px solid #e2e2e2;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;  
+    -moz-border-radius: 2px;
+    padding:5px 15px;
+    -moz-box-shadow: 0 0 3px #e2e2e2;
+    -webkit-box-shadow: 0 0 3px #e2e2e2;
+    box-shadow: 0 0 3px #e2e2e2;
+    cursor:pointer;
+}
+
+dl.radio-group label:hover{
+    border:1px solid #c3c2c2;
+    color: #888888;
+}
+
+dl.radio-group label.checked  {
+    border:1px solid #ffb969;
+    -moz-box-shadow: 0 0 3px #ffc37f;
+    -webkit-box-shadow: 0 0 3px #ffc37f;
+    box-shadow: 0 0 3px #ffc37f; 
+}
+
+/* チェックボックス
+============================== */
+dl.check-group {
+
+}
+dl.check-group input {
+    display: none;
+}
+dl.check-group label {
+    display:block;
+    border:1px solid #e2e2e2;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;  
+    -moz-border-radius: 2px;
+    padding:5px 15px;
+    -moz-box-shadow: 0 0 3px #e2e2e2;
+    -webkit-box-shadow: 0 0 3px #e2e2e2;
+    box-shadow: 0 0 3px #e2e2e2;
+    cursor:pointer;
+}
+dl.check-group label:hover{
+    border:1px solid #c3c2c2;
+    color: #888888;
+}
+dl.check-group label.checked {
+    border:1px solid #ffb969;
+    -moz-box-shadow: 0 0 3px #ffc37f;
+    -webkit-box-shadow: 0 0 3px #ffc37f;
+    box-shadow: 0 0 3px #ffc37f; 
+}
+
+dl.check-group label::-moz-selection,
+dl.check-group label::selection {
+    background: transparent;
+}
+/*
+.futures_search label input {
+    display:none;
+}
+.futures_search label {
+    /* 非選択時のスタイル */
+    display:block;
+    border:1px solid #e2e2e2;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;  
+    -moz-border-radius: 2px;
+    padding:5px 15px;
+    -moz-box-shadow: 0 0 3px #e2e2e2;
+    -webkit-box-shadow: 0 0 3px #e2e2e2;
+    box-shadow: 0 0 3px #e2e2e2;
+    cursor:pointer;
+}
+.futures_search label.selected {
+    /* 選択時のスタイル */
+    border:1px solid #ffb969;
+    -moz-box-shadow: 0 0 3px #ffc37f;
+    -webkit-box-shadow: 0 0 3px #ffc37f;
+    box-shadow: 0 0 3px #ffc37f; 
+}
+*/

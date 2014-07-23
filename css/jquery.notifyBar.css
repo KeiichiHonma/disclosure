@@ -1,0 +1,83 @@
+/*
+*  Notify Bar - jQuery plugin
+*
+*  Copyright (c) 2009-2013 Dmitri Smirnov
+*
+*  Licensed under the MIT license:
+*  http://www.opensource.org/licenses/mit-license.php
+*  
+*  Version: 1.4
+*
+*  Project home:
+*  http://www.whoop.ee/posts/2013-04-05-the-resurrection-of-jquery-notify-bar/
+*
+*  Modifier home:
+*  http://www.printf.jp/
+*/
+
+/* Default bars' style */
+.jquery-notify-bar {
+  position:fixed;
+  top: 0%;
+  background-color:white;
+  text-align:center;
+  padding:20px 20px;
+  border:1px solid #aaa;
+  -webkit-box-shadow: inset 0 -1px 0 0 #fff;
+     -moz-box-shadow: inset 0 -1px 0 0 #fff;
+          box-shadow: inset 0 -1px 0 0 #fff;
+  background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
+  background-image:    -moz-linear-gradient(rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
+  background-image:      -o-linear-gradient(rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
+  background-image:         linear-gradient(rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
+  opacity: 1.0;
+  box-shadow: 9px 9px 17px rgba(0, 0, 0, 0.7);
+}
+.jquery-notify-bar.bottom {}
+.jquery-notify-bar.top {}
+
+/* Style for normal */
+.jquery-notify-bar.normal {
+  color:#000;
+  background-color:#efefef;
+}
+
+/* Style for errors */
+.jquery-notify-bar.error {
+  color:#f00;
+  background-color:#fdd;
+}
+.jquery-notify-bar.error .notify-bar-text-wrapper {
+  background: transparent url("cross.png") no-repeat center left;
+  padding-left:20px;
+}
+
+/* Style for warning */
+.jquery-notify-bar.warning {
+  color:#000;
+  background-color:#fffaaa;
+}
+.jquery-notify-bar.warning .notify-bar-text-wrapper {
+  background: transparent url("error.png") no-repeat center left;
+  padding-left:20px;
+}
+
+/* Style for success (notice) */
+.jquery-notify-bar.success {
+  color:#3d3d3d;
+  font-size: 14px;
+  font-weight: bold;
+  background-color:#fff;
+}
+
+.jquery-notify-bar.success .notify-bar-text-wrapper {
+  background: transparent url("/images/ico_enter_off.png") no-repeat center left;
+  padding-left:20px;
+}
+
+
+/* Style for close button */
+.notify-bar-close {
+  cursor: pointer;
+  float: right;
+}
