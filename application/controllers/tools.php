@@ -6,7 +6,7 @@ class Tools extends CI_Controller {
     var $NS = "_namespace";
     var $VAL = "_value";
     var $log_echo = FALSE;
-    var $is_parse = TRUE;
+    var $is_parse = FALSE;
     var $xbrls_informations;
     var $tmp_xbrl_files;
     var $xbrl_files;
@@ -25,6 +25,7 @@ class Tools extends CI_Controller {
         $this->load->model('Security_model');
         $this->load->model('Presenter_model');
         $this->load->model('Xbrl_model');
+        $this->load->library('upload_folder');
         $this->categories = $this->Category_model->getAllcategories();
         
         $this->archiver = new ZipArchive();
@@ -33,39 +34,49 @@ class Tools extends CI_Controller {
 
     public function analyze()
     {
+        $today = date('Ymd',time());
         //zip
-        $path = '/usr/local/apache2/htdocs/disclosure/tmp/';
-        $move_path = '/usr/local/apache2/htdocs/disclosure/xbrls/'.date('Ymd',time());
+        $zip_path = '/usr/local/apache2/htdocs/disclosure/uploads/zip/';
+        $tmp_path = '/usr/local/apache2/htdocs/disclosure/uploads/tmp/'.$today;
+        
+        $move_path = '/usr/local/apache2/htdocs/disclosure/xbrls/'.$today;
         $rename_paths = array();
-        @mkdir($move_path);
-        @chown($move_path, 'apache');
-        @chmod($move_path,0770);
 
-        $list = scandir($path);
+        
+        if(is_dir($tmp_path)) $this->_remove_directory($tmp_path);
+        @mkdir($tmp_path);
+        @chown($tmp_path, 'apache');
+        @chmod($tmp_path,0770);
+
+        $list = scandir($zip_path);
+        $is_analyze = FALSE;
         foreach($list as $file){
-            $file_path = $path . $file;
+            $zip_file_path = $zip_path . $file;
             if($file == '.' || $file == '..'){
                 continue;
-            } else if (is_file($file_path)){
-                $pathinfo = pathinfo($file_path);
-                //if(!is_dir($path . $pathinfo['filename']) && $pathinfo['extension'] == 'zip'){
+            } else if (is_file($zip_file_path)){
+                $pathinfo = pathinfo($zip_file_path);
                 if($pathinfo['extension'] == 'zip'){
-                    
+                    $is_analyze = TRUE;
+                    $tempFolder = $this->_createTemporaryFolder($today);
+                    $tmp_dir_path = $tmp_path .'/' . $tempFolder;
+
                     // ZIPファイルをオープン
-                    $res = $this->archiver->open($file_path);
+                    $res = $this->archiver->open($zip_file_path);
                      
                     // zipファイルのオープンに成功した場合
                     if ($res === true) {
                         //@mkdir($path . $pathinfo['filename']);
                         // 圧縮ファイル内の全てのファイルを指定した解凍先に展開する
                         //$this->archiver->extractTo($path . $pathinfo['filename']);
-                        $this->archiver->extractTo($path);
+                        $this->archiver->extractTo($tmp_dir_path. '/');
                      
                         // ZIPファイルをクローズ
                         $this->archiver->close();
                         
                         //renameを記録
-                        $rename_paths[] = array('zip_path'=>$file_path,'tmp_path'=>$path . $pathinfo['filename'] , 'move_path'=>$move_path . '/' . $pathinfo['filename']);
+                        //$rename_paths[] = array('zip_path'=>$zip_file_path,'tmp_path'=>$tmp_dir_path . $pathinfo['filename'] . $pathinfo['filename'] , 'move_path'=>$move_path . '/' . $pathinfo['filename']);
+                        $rename_paths[] = array('zip_path'=>$zip_file_path,'tmp_path'=>$tmp_dir_path , 'move_path'=>$move_path . '/' . $tempFolder);
                     }else{
 var_dump('unzip error');
 die();
@@ -73,12 +84,18 @@ die();
                 }
             }
         }
-
+        if(!$is_analyze){
+            $this->_remove_directory($tmp_path);
+            die();
+        }
+        @mkdir($move_path);
+        @chown($move_path, 'apache');
+        @chmod($move_path,0770);
         $insert_data = array();
         $csv_datas = array();
         require_once('application/libraries/simple_html_dom.php');
-        $this->_list_files($path,$move_path);
-        
+        $this->_list_files($tmp_dir_path. '/',$move_path);
+
         if(!empty($this->xbrls_informations)){
             //挿入順をコントロール
             foreach ($this->xbrls_informations as $unzip_dir_name => $xbrls_information){
@@ -107,10 +124,19 @@ die();
         
         if(!empty($insert_data['presenter']))$this->db->insert_batch('presenters', $insert_data['presenter']);
 
+        //move 
+        foreach ($rename_paths as $rename_path){
+            if(is_dir($rename_path['move_path'])) $this->_remove_directory($rename_path['move_path']);
+            rename($rename_path['tmp_path'],$rename_path['move_path']);
+            @unlink($rename_path['zip_path']);
+        }
+        $this->_remove_directory($tmp_path);
+
         //実際にファイル解析
         $csv_line = 0;
         $xbrl_count = 0;
         $created = date("Y-m-d H:i:s", time());
+
         foreach ($this->tmp_xbrl_files as $unzip_dir_name =>  $xbrls){
             foreach ($xbrls as $xbrl_dir_id =>  $file){
                 $is_document_info = FALSE;
@@ -132,10 +158,37 @@ die();
                 $insert_data['xbrl'][$xbrl_dir_id]['manage_number'] = $xbrl_dir_id;
                 $insert_data['xbrl'][$xbrl_dir_id]['xbrl_path'] = $file;
                 //format
+                /*
+                array(11) {
+                  [0]=>
+                  string(0) ""
+                  [1]=>
+                  string(3) "usr"
+                  [2]=>
+                  string(5) "local"
+                  [3]=>
+                  string(7) "apache2"
+                  [4]=>
+                  string(6) "htdocs"
+                  [5]=>
+                  string(10) "disclosure"
+                  [6]=>
+                  string(5) "xbrls"
+                  [7]=>
+                  string(8) "20140723"
+                  [8]=>
+                  string(32) "Xbrl_Search_20140718_102237_test"
+                  [9]=>
+                  string(8) "S1001O6T"
+                  [10]=>
+                  string(49) "jpfr-ssr-G08995-000-2014-04-21-01-2014-07-18.xbrl"
+                }
+                */
                 $format_path_ex = explode('/', $file);
+
                 $count = count($format_path_ex);
-                $format_path_ex[$count-1] = $date.$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'];
-                $insert_data['xbrl'][$xbrl_dir_id]['format_path'] = implode('/',$format_path_ex);
+                $format_path_ex[$count-1] = $date.$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'];//日付+edinetcode
+                $insert_data['xbrl'][$xbrl_dir_id]['format_path'] = implode('/',array_slice($format_path_ex,6,$count));//xbrlsから
                 $insert_data['xbrl'][$xbrl_dir_id]['date'] = $date;
                 $insert_data['xbrl'][$xbrl_dir_id]['document_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name'];
                 $insert_data['xbrl'][$xbrl_dir_id]['presenter_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'];
@@ -217,28 +270,22 @@ die();
             }
         }
         if(!empty($insert_data['xbrl'])) $this->db->insert_batch('xbrls', $insert_data['xbrl']);
-        //move 
-        foreach ($rename_paths as $rename_path){
-            @rename($rename_path['tmp_path'],$rename_path['move_path']);
-            //@unlink($rename_path['zip_path']);
-        }
-        $this->put_csv($csv_paths,$csv_datas);
-die();
-        //$this->_make_file('/usr/local/apache2/htdocs/hareco/xbrl0501.csv',$csv);
+
+        if($this->is_parse) $this->put_csv($csv_paths,$csv_datas);
     }
     
-    function _list_files($path,$move_path){
+    function _list_files($tmp_dir_path,$move_path){
         $files = array();
-        $list = scandir($path);
+        $list = scandir($tmp_dir_path);
         foreach($list as $file){
             if($file == '.' || $file == '..'){
                 continue;
-            } else if (is_file($path . $file)){
-                $pathinfo = pathinfo($path . $file);
+            } else if (is_file($tmp_dir_path . $file)){
+                $pathinfo = pathinfo($tmp_dir_path . $file);
                 if($pathinfo['extension'] == 'xbrl'){
-                    $dirs = explode('/',$path);
+                    $dirs = explode('/',$tmp_dir_path);
                     /*
-                    array(10) {
+                    array(14) {
                       [0]=>
                       string(0) ""
                       [1]=>
@@ -252,12 +299,48 @@ die();
                       [5]=>
                       string(10) "disclosure"
                       [6]=>
-                      string(5) "xbrls"
+                      string(7) "uploads"
                       [7]=>
-                      string(27) "Xbrl_Search_20140709_124651"
+                      string(3) "tmp"
                       [8]=>
-                      string(8) "S1001W9I"
+                      string(8) "20140723"
                       [9]=>
+                      string(18) "20140723155311982f"
+                      [10]=>
+                      string(8) "S10024IQ"
+                      [11]=>
+                      string(4) "XBRL"
+                      [12]=>
+                      string(9) "PublicDoc"
+                      [13]=>
+                      string(0) ""
+                    }
+                    array(13) {
+                      [0]=>
+                      string(0) ""
+                      [1]=>
+                      string(3) "usr"
+                      [2]=>
+                      string(5) "local"
+                      [3]=>
+                      string(7) "apache2"
+                      [4]=>
+                      string(6) "htdocs"
+                      [5]=>
+                      string(10) "disclosure"
+                      [6]=>
+                      string(7) "uploads"
+                      [7]=>
+                      string(3) "tmp"
+                      [8]=>
+                      string(18) "20140723135925ac30"
+                      [9]=>
+                      string(8) "S1002JGG"
+                      [10]=>
+                      string(4) "XBRL"
+                      [11]=>
+                      string(9) "PublicDoc"
+                      [12]=>
                       string(0) ""
                     }
                     */
@@ -269,7 +352,7 @@ die();
                     $xbrl_add_path = '';
                     foreach ($dirs as $key => $value){
                         if(!empty($value)){
-                            if($key >= 7){
+                            if($key >= 9){
                                 $xbrl_add_path .= '/'.$value;
                             }else{
                                 $base_path .= '/'.$value;
@@ -278,17 +361,14 @@ die();
 
                     }
                     $xbrl_path = $move_path.$xbrl_add_path;
-                    //$files[$dirs[7]][$dirs[8]][$file] = $xbrl_path . '/' . $file;
-                    //$files[$dirs[8]][$file] = $xbrl_path . '/' . $file;
-                    //$this->tmp_xbrl_files[$dirs[7]][$dirs[8]][$file] = $xbrl_path . '/' . $file;
-                    $this->tmp_xbrl_files[$dirs[7]][$dirs[8]] = $xbrl_path . '/' . $file;
+                    $this->tmp_xbrl_files[$dirs[9]][$dirs[10]] = $xbrl_path . '/' . $file;
                 }elseif($pathinfo['filename'] == 'XbrlSearchDlInfo' && $pathinfo['extension'] == 'csv'){
-                    $dirs = explode('/',$path);
+                    $dirs = explode('/',$tmp_dir_path);
                     //XbrlSearchDlInfo.csv
-                    $this->xbrls_informations[$dirs[7]] = $this->_read_form_item_csv($path . $file);
+                    $this->xbrls_informations[$dirs[9]] = $this->_read_form_item_csv($tmp_dir_path . $file);
                 }
-            } else if( is_dir($path . $file) ) {
-                $files = array_merge($files, $this->_list_files($path . $file . '/',$move_path));
+            } else if( is_dir($tmp_dir_path . $file) ) {
+                $files = array_merge($files, $this->_list_files($tmp_dir_path . $file . '/',$move_path));
             }
         }
         return $files;
@@ -433,6 +513,35 @@ die();
         fputs($file_dat, $data);
         flock($file_dat, LOCK_UN);
         chmod($file,0666);
+    }
+
+    function _createTemporaryFolder($date = '') {
+        $folderName = date('YmdHis') . substr(md5(uniqid(mt_rand())), 0, 4);
+        $test = $this->CI->upload_folder->getTemporaryFolder($folderName,$date);
+        if ($this->CI->upload_folder->createFolder($this->CI->upload_folder->getTemporaryFolder($folderName,$date))) {
+            return $folderName;
+        } else {
+            $this->CI->logger->emerg(sprintf('failed to create temporary folder:%s', $folderName));
+            return false;
+        }
+    }
+
+    function _remove_directory($dir) {
+      if ($handle = opendir("$dir")) {
+       while (false !== ($item = readdir($handle))) {
+         if ($item != "." && $item != "..") {
+           if (is_dir("$dir/$item")) {
+             $this->_remove_directory("$dir/$item");
+           } else {
+             unlink("$dir/$item");
+             //echo " removing $dir/$item<br>\n";
+           }
+         }
+       }
+       closedir($handle);
+       rmdir($dir);
+       //echo "removing $dir<br>\n";
+      }
     }
 
  public function _parseXml($file="") {

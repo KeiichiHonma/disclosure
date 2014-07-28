@@ -55,8 +55,10 @@ contents
                     <tr>
                     
                         <td><?php echo strftime($this->lang->line('setting_date_format'), strtotime($xbrl->date)); ?></td>
-                        <td><?php echo $xbrl->document_name; ?></td>
-                        <td nowrap><?php echo $xbrl->presenter_name; ?></td>
+                        <td>
+                        <?php echo anchor(sprintf('document/show/'.$xbrl->id), $xbrl->document_name); ?>
+                        </td>
+                        <td><?php echo $xbrl->presenter_name; ?></td>
                         <td><?php echo $xbrl->manage_number; ?></td>
                     </tr>
                     <?php endforeach; ?>

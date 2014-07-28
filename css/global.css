@@ -1,4 +1,4 @@
-﻿@charset "utf-8";
+@charset "utf-8";
 /* global css*/
 
 /* 1. init
@@ -219,7 +219,7 @@ body, td, th {
 }
 /* A */
 a {
-	color: #555555;
+	/*color: #555555;*/
 	text-decoration: none;
 }
 a:hover {

@@ -22,11 +22,12 @@ class Upload_folder
 		return $this->CI->config->item('upload_folder_top') . '/';
 	}
 
-	function getTemporaryFolder($child_dir = '') {
+	function getTemporaryFolder($child_dir = '',$date_dir = '') {
 		$folderPath = 	array(
 							$this->CI->config->item('upload_folder_top'),
 							$this->CI->config->item('upload_temporary_folder'),
 						);
+        if (! empty($date_dir)) $folderPath[] = $date_dir;
 		if (! empty($child_dir)) $folderPath[] = $child_dir;
 
 		return implode('/', $folderPath) . '/';
