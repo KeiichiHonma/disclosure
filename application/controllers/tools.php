@@ -6,10 +6,10 @@ class Tools extends CI_Controller {
     var $NS = "_namespace";
     var $VAL = "_value";
     var $log_echo = FALSE;
-    var $is_parse = FALSE;
+    var $is_parse = TRUE;
     var $xbrls_informations;
-    var $tmp_xbrl_files;
     var $xbrl_files;
+    var $alphabet = array('A','B','C','D','E','F','G','H','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
     
     function __construct(){
         parent::__construct();
@@ -20,12 +20,13 @@ class Tools extends CI_Controller {
         $this->load->library('tank_auth');
         //connect database
         $this->load->database();
-        $this->load->model('Item_model');
         $this->load->model('Category_model');
         $this->load->model('Security_model');
         $this->load->model('Presenter_model');
         $this->load->model('Xbrl_model');
         $this->load->library('upload_folder');
+        $this->load->library('Xbrl_lib');
+        $this->load->library('PHPExcel');
         $this->categories = $this->Category_model->getAllcategories();
         
         $this->archiver = new ZipArchive();
@@ -93,17 +94,17 @@ die();
         @chmod($move_path,0770);
         $insert_data = array();
         $csv_datas = array();
-        require_once('application/libraries/simple_html_dom.php');
         $this->_list_files($tmp_dir_path. '/',$move_path);
 
         if(!empty($this->xbrls_informations)){
             //挿入順をコントロール
+/*
             foreach ($this->xbrls_informations as $unzip_dir_name => $xbrls_information){
                 foreach ($xbrls_information as $xbrl_dir_id => $value){
                     $this->xbrl_files[$unzip_dir_name][$xbrl_dir_id] = $this->tmp_xbrl_files[$unzip_dir_name][$xbrl_dir_id];
                 }
             }
-
+*/
             //先に企業名をDBに挿入 presenter_id が必要なため
             foreach ($this->xbrls_informations as $unzip_dir_name => $xbrls_information){
                 foreach ($xbrls_information as $xbrl_dir_id => $value){
@@ -128,150 +129,133 @@ die();
         foreach ($rename_paths as $rename_path){
             if(is_dir($rename_path['move_path'])) $this->_remove_directory($rename_path['move_path']);
             rename($rename_path['tmp_path'],$rename_path['move_path']);
-            @unlink($rename_path['zip_path']);
+            //@unlink($rename_path['zip_path']);
         }
         $this->_remove_directory($tmp_path);
 
         //実際にファイル解析
-        $csv_line = 0;
         $xbrl_count = 0;
         $created = date("Y-m-d H:i:s", time());
 
-        foreach ($this->tmp_xbrl_files as $unzip_dir_name =>  $xbrls){
-            foreach ($xbrls as $xbrl_dir_id =>  $file){
-                $is_document_info = FALSE;
-                $parse = $this->_parseXml($file);
+        foreach ($this->xbrl_files as $unzip_dir_name =>  $xbrls){
+            foreach ($xbrls as $xbrl_dir_id =>  $xbrl_paths){
+                $xbrl_paths_count = count($xbrl_paths);
+                foreach ($xbrl_paths as $xbrl_number => $xbrl_path){//xbrlが複数ある場合があります
+                    //文書提出日時
+                    $pathinfo = pathinfo($xbrl_path);
+                    $exp = explode('-',$pathinfo['filename']);
+                    $count = count($exp);
+                    $day = $exp[$count-1];
+                    $month = $exp[$count-2];
+                    $year = substr($exp[$count-3],-4);
+                    $date = $year.'-'.$month.'-'.$day;
+                    //format
+                    /*
+                    array(11) {
+                      [0]=>
+                      string(0) ""
+                      [1]=>
+                      string(3) "usr"
+                      [2]=>
+                      string(5) "local"
+                      [3]=>
+                      string(7) "apache2"
+                      [4]=>
+                      string(6) "htdocs"
+                      [5]=>
+                      string(10) "disclosure"
+                      [6]=>
+                      string(5) "xbrls"
+                      [7]=>
+                      string(8) "20140723"
+                      [8]=>
+                      string(32) "Xbrl_Search_20140718_102237_test"
+                      [9]=>
+                      string(8) "S1001O6T"
+                      [10]=>
+                      string(49) "jpfr-ssr-G08995-000-2014-04-21-01-2014-07-18.xbrl"
+                    }
+                    */
+                    $format_path_ex = explode('/', $xbrl_path);
+                    $count = count($format_path_ex);
+                    //ファイル命名
+                    $format_path_ex[$count-1] = $date.'_'.$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'];//日付+edinetcode
+                    $format_path = implode('/',array_slice($format_path_ex,6,$count));//xbrlsから
+                    //最初の1ファイル分だけDBデータ生成
+                    if($xbrl_number == 0){
+                        $insert_data['xbrl'][$xbrl_dir_id]['edinet_code'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'];
+                        $insert_data['xbrl'][$xbrl_dir_id]['presenter_id'] = 0;
+                        $insert_data['xbrl'][$xbrl_dir_id]['category_id'] = 0;
+                        $insert_data['xbrl'][$xbrl_dir_id]['manage_number'] = $xbrl_dir_id;
+                        $insert_data['xbrl'][$xbrl_dir_id]['xbrl_path'] = $xbrl_path;
+                        $insert_data['xbrl'][$xbrl_dir_id]['xbrl_count'] = $xbrl_paths_count;//xbrlファイルの数
+                        
+                        $insert_data['xbrl'][$xbrl_dir_id]['format_path'] = $format_path;//xbrlsから
+                        $insert_data['xbrl'][$xbrl_dir_id]['date'] = $date;
+                        $insert_data['xbrl'][$xbrl_dir_id]['document_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name'];
+                        $insert_data['xbrl'][$xbrl_dir_id]['presenter_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'];
+                        $insert_data['xbrl'][$xbrl_dir_id]['created'] = $created;
 
-                $csv_line = 0;
-                //文書提出日時
-                $pathinfo = pathinfo($file);
-                $exp = explode('-',$pathinfo['filename']);
-                $count = count($exp);
-                $day = $exp[$count-1];
-                $month = $exp[$count-2];
-                $year = substr($exp[$count-3],-4);
-                $date = $year.'-'.$month.'-'.$day;
-
-                $insert_data['xbrl'][$xbrl_dir_id]['edinet_code'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'];
-                $insert_data['xbrl'][$xbrl_dir_id]['presenter_id'] = 0;
-                $insert_data['xbrl'][$xbrl_dir_id]['category_id'] = 0;
-                $insert_data['xbrl'][$xbrl_dir_id]['manage_number'] = $xbrl_dir_id;
-                $insert_data['xbrl'][$xbrl_dir_id]['xbrl_path'] = $file;
-                //format
-                /*
-                array(11) {
-                  [0]=>
-                  string(0) ""
-                  [1]=>
-                  string(3) "usr"
-                  [2]=>
-                  string(5) "local"
-                  [3]=>
-                  string(7) "apache2"
-                  [4]=>
-                  string(6) "htdocs"
-                  [5]=>
-                  string(10) "disclosure"
-                  [6]=>
-                  string(5) "xbrls"
-                  [7]=>
-                  string(8) "20140723"
-                  [8]=>
-                  string(32) "Xbrl_Search_20140718_102237_test"
-                  [9]=>
-                  string(8) "S1001O6T"
-                  [10]=>
-                  string(49) "jpfr-ssr-G08995-000-2014-04-21-01-2014-07-18.xbrl"
-                }
-                */
-                $format_path_ex = explode('/', $file);
-
-                $count = count($format_path_ex);
-                $format_path_ex[$count-1] = $date.$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'];//日付+edinetcode
-                $insert_data['xbrl'][$xbrl_dir_id]['format_path'] = implode('/',array_slice($format_path_ex,6,$count));//xbrlsから
-                $insert_data['xbrl'][$xbrl_dir_id]['date'] = $date;
-                $insert_data['xbrl'][$xbrl_dir_id]['document_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name'];
-                $insert_data['xbrl'][$xbrl_dir_id]['presenter_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'];
-                $insert_data['xbrl'][$xbrl_dir_id]['created'] = $created;
-
-                //文書のカテゴリチェック
-                if(isset($this->categories[$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name']])){
-                    $insert_data['xbrl'][$xbrl_dir_id]['category_id'] = $this->categories[$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name']]->id;
-                }
-                //企業チェック
-                $presenter = $this->Presenter_model->getPresenterByName($this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name']);
-                if(!empty($presenter)){
-                    $insert_data['xbrl'][$xbrl_dir_id]['presenter_id'] = $presenter->id;
-                }
-                //code生成
-                $code = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'].'_'.$date.'_'.$xbrl_dir_id.'_'.$insert_data['xbrl'][$xbrl_dir_id]['presenter_id'];
-                $insert_data['xbrl'][$xbrl_dir_id]['code'] = $code;
-                //codeチェック
-                $check_xbrl = $this->Xbrl_model->getXbrlByCode($code);
-
-                if($this->is_parse){
-                    foreach ($parse as $xbrl){
-                        foreach ($xbrl as $namespace => $children){
-                            if($namespace == '_namespace'){
-                            
-                            }elseif($namespace == 'xbrli'){
-                                /*
-                                提出日の取得なのだが、階層が深いため断念、ファイル名から取得にする
-                                                            //ex $index context unit 
-                                                            foreach ($children['context'] as $xbrli_contexts){
-                                                                foreach ($xbrli_contexts as $number => $child){
-                                                                    foreach ($child as $type => $item_value){
-
-                                                                    }
-                                                                }
-                                                            }
-                                */
-                            }elseif($namespace == 'link'){
-                                
-                            }else{
-                                $csv_paths[$xbrl_count] = $insert_data['xbrl'][$xbrl_dir_id]['format_path'].'.csv';
-                                $xls_paths[$xbrl_count] = $insert_data['xbrl'][$xbrl_dir_id]['format_path'].'.xlsx';
-                                //ex $index PurchaseOfInvestmentsInAssociatedCompaniesInvCF
-                                foreach ($children as $index => $items){
-                                    //ex $number 項目の数分存在 前期 前前期
-                                    foreach ($items as $number => $child){
-                                        $element = $this->Item_model->getItemByElementName($index);
-                                        if(!empty($element)){
-                                            $csv_datas[$xbrl_count][$csv_line][] = $namespace;
-                                            $csv_datas[$xbrl_count][$csv_line][] = $element[0]->style_tree != '' ? $element[0]->style_tree : $element[0]->detail_tree;
-                                            //ex $type _attributes or _value
-                                            foreach ($child as $type => $item_value){
-                                                if(is_array($item_value)){
-                                                    //ex $item_index contextRef unitRef decimals
-                                                    foreach ($item_value as $item_index => $value){
-                                                        $csv_datas[$xbrl_count][$csv_line][] = $value;
-                                                    }
-                                                }else{
-                                                    //ex _value 実際の値はここ
-                                                    $csv_datas[$xbrl_count][$csv_line][] = $item_value;
-                                                }
-                                            }
-                                        }else{
-                                            //$csv_datas[$xbrl_count][$csv_line][] = $index;
-                                            //項目がない場合、無効なもの
-                                            if($this->log_echo)log_message('error','none index '.$namespace.':'.$index.':'.$file);
-                                        }
-                                        $csv_line++;
+                        //文書のカテゴリチェック
+                        if(isset($this->categories[$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name']])){
+                            $insert_data['xbrl'][$xbrl_dir_id]['category_id'] = $this->categories[$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name']]->id;
+                        }
+                        //企業チェック
+                        $presenter = $this->Presenter_model->getPresenterByName($this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name']);
+                        if(!empty($presenter)){
+                            $insert_data['xbrl'][$xbrl_dir_id]['presenter_id'] = $presenter->id;
+                        }
+                        //code生成
+                        $code = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'].'_'.$date.'_'.$xbrl_dir_id.'_'.$insert_data['xbrl'][$xbrl_dir_id]['presenter_id'];
+                        $insert_data['xbrl'][$xbrl_dir_id]['code'] = $code;
+                        //codeチェック
+                        $check_xbrl = $this->Xbrl_model->getXbrlByCode($code);
+                        //既に存在していたら除去
+                        if(!empty($check_xbrl)) unset($insert_data['xbrl'][$xbrl_dir_id]);
+                        //excelは複数ファイルではなくセルで分けるため
+                        $excel_path = $format_path.'.xlsx';
+                    }
+                    if($this->is_parse){
+                        $xbrl_datas = $this->xbrl_lib->_parseXml($xbrl_path);
+                        $csv_datas[$xbrl_count] = $this->xbrl_lib->_makeCsv($xbrl_datas,$xbrl_path);
+                        $csv_paths[$xbrl_count] = $format_path.'_'.$xbrl_number.'.csv';
+                        $excel_sheet_name[$xbrl_count] = $format_path_ex[$count-1].'_'.$xbrl_number;
+    /*
+                        $xbrl_datas = $this->Xbrl_lib->_parseXml($xbrl_path);
+                        $arr = array();
+                        foreach ($xbrl_datas as $key => $xbrl_data){
+                            preg_match('/^xbrl/', $xbrl_data['tag'], $matches);
+                            if(empty($matches)){
+                                preg_match('/^link/', $xbrl_data['tag'], $matches);
+                                if(empty($matches)){
+                                    list($namespace,$index) = explode(':',$xbrl_data['tag']);
+                                    $element = $this->Item_model->getItemByElementName($index);
+                                    if(!empty($element)){
+                                        $csv_datas[$xbrl_count][$key][] = $xbrl_data['tag'];
+                                        $csv_datas[$xbrl_count][$key][] = $element[0]->style_tree != '' ? $element[0]->style_tree : $element[0]->detail_tree;
+                                        $csv_datas[$xbrl_count][$key][] = isset($xbrl_data['attributes']['contextRef']) ? $xbrl_data['attributes']['contextRef'] : '';
+                                        $csv_datas[$xbrl_count][$key][] = isset($xbrl_data['attributes']['unitRef']) ? $xbrl_data['attributes']['unitRef'] : '';
+                                        $csv_datas[$xbrl_count][$key][] = isset($xbrl_data['attributes']['decimals']) ? $xbrl_data['attributes']['decimals'] : '';
+                                        $value = isset($xbrl_data['value']) ? trim($xbrl_data['value']) : '';
+                                        $csv_datas[$xbrl_count][] = $value;
+                                    }else{
+                                        if($this->log_echo)log_message('error','none index '.$xbrl_data['tag'].':'.$xbrl_path);
                                     }
                                 }
-                                
                             }
                         }
+    */
                         $xbrl_count++;
                     }
                 }
-                //処理完了後に除去
-                if(!empty($check_xbrl)) unset($insert_data['xbrl'][$xbrl_dir_id]);
             }
         }
         if(!empty($insert_data['xbrl'])) $this->db->insert_batch('xbrls', $insert_data['xbrl']);
 
-        if($this->is_parse) $this->put_csv($csv_paths,$csv_datas);
+        if($this->is_parse){
+            $this->put_csv($csv_paths,$csv_datas);
+            $this->put_excel($excel_path,$csv_datas,$excel_sheet_name);
+        }
     }
     
     function _list_files($tmp_dir_path,$move_path){
@@ -315,34 +299,6 @@ die();
                       [13]=>
                       string(0) ""
                     }
-                    array(13) {
-                      [0]=>
-                      string(0) ""
-                      [1]=>
-                      string(3) "usr"
-                      [2]=>
-                      string(5) "local"
-                      [3]=>
-                      string(7) "apache2"
-                      [4]=>
-                      string(6) "htdocs"
-                      [5]=>
-                      string(10) "disclosure"
-                      [6]=>
-                      string(7) "uploads"
-                      [7]=>
-                      string(3) "tmp"
-                      [8]=>
-                      string(18) "20140723135925ac30"
-                      [9]=>
-                      string(8) "S1002JGG"
-                      [10]=>
-                      string(4) "XBRL"
-                      [11]=>
-                      string(9) "PublicDoc"
-                      [12]=>
-                      string(0) ""
-                    }
                     */
                     
                     
@@ -361,7 +317,7 @@ die();
 
                     }
                     $xbrl_path = $move_path.$xbrl_add_path;
-                    $this->tmp_xbrl_files[$dirs[9]][$dirs[10]] = $xbrl_path . '/' . $file;
+                    $this->xbrl_files[$dirs[9]][$dirs[10]][] = $xbrl_path . '/' . $file;//xbrlが複数ある場合があります
                 }elseif($pathinfo['filename'] == 'XbrlSearchDlInfo' && $pathinfo['extension'] == 'csv'){
                     $dirs = explode('/',$tmp_dir_path);
                     //XbrlSearchDlInfo.csv
@@ -372,28 +328,6 @@ die();
             }
         }
         return $files;
-    }
-
-    function _fputcsv($fp, $data, $toEncoding='Shift-JIS', $srcEncoding='UTF-8') {
-        //require_once 'mb_str_replace.php';
-        $csv = '';
-        foreach ($data as $col) {
-            if (is_numeric($col)) {
-                $csv .= $col;
-            } else {
-                if(is_array($col)){
-var_dump($col);
-die();
-                }
-                $col = mb_convert_encoding($col, $toEncoding, $srcEncoding);
-                //$col = mb_str_replace('"', '""', $col, $toEncoding);
-                $col = str_replace('"', '""', $col);
-                $csv .= '"' . $col . '"';
-            }
-            $csv .= ',';
-        }
-        fwrite($fp, $csv);
-        fwrite($fp, "\r\n");
     }
 
     // ----------------------------------------------------------------
@@ -412,6 +346,79 @@ die();
         }
 
         return $byte;
+    }
+
+    function _fputcsv($fp, $data, $toEncoding='Shift-JIS', $srcEncoding='UTF-8') {
+        //require_once 'mb_str_replace.php';
+        $csv = '';
+        foreach ($data as $col) {
+            if (is_numeric($col)) {
+                $csv .= $col;
+            } else {
+                if(is_array($col)){
+                    var_dump($col);
+                    die();
+                }
+                $col = mb_convert_encoding($col, $toEncoding, $srcEncoding);
+                //$col = mb_str_replace('"', '""', $col, $toEncoding);
+                $col = str_replace('"', '""', $col);
+                $csv .= '"' . $col . '"';
+            }
+            $csv .= ',';
+        }
+        fwrite($fp, $csv);
+        fwrite($fp, "\r\n");
+    }
+
+    // ----------------------------------------------------------------
+    // EXCEL出力 
+    // ----------------------------------------------------------------
+    function put_excel($excel_path,$csv_datas,$excel_sheet_name) {
+        // 新規作成の場合
+        $objPHPExcel = new PHPExcel();
+        $objPHPExcel->getDefaultStyle()->getFont()->setName( 'ＭＳ Ｐゴシック' )->setSize( 11 );
+        
+        //xbrlのファイル分ループ
+        foreach ($csv_datas as $key => $csv_data){
+            
+            if($key > 0) $objPHPExcel->createSheet();
+            // 0番目のシートをアクティブにする（シートは左から順に、0、1，2・・・）
+            $objPHPExcel->setActiveSheetIndex($key);
+            // アクティブにしたシートの情報を取得
+            $objSheet = $objPHPExcel->getActiveSheet();
+            // シート名を変更する
+            $objSheet->setTitle($excel_sheet_name[$key]);
+            $excel_tate = 0;
+            $line = 0;
+            foreach ($csv_data as $values){
+                $excel_tate = $line + 1;
+                foreach ($values as $value_number => $col) {
+                    $excel_yoko = $this->alphabet[$value_number];
+                    $excel_column_name = $excel_yoko.$excel_tate;
+                    
+                    if (is_numeric($col)) {
+                        $data[$key][$excel_column_name] = $col;
+                        $objSheet->setCellValue($excel_column_name, $col);
+                    } else {
+                        if(is_array($col)){
+                            var_dump($col);
+                            die();
+                        }
+                        //$col = mb_convert_encoding($col, $toEncoding, $srcEncoding);
+                        $data[$key][$excel_column_name] = $col;
+                        $objSheet->setCellValue($excel_column_name, $col);
+                    }
+                }
+                $line++;
+            }
+        }
+        $objPHPExcel->setActiveSheetIndex(0);//sheet選択
+        // IOFactory.phpを利用する場合
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        return $objWriter->save($excel_path);
+        // Excel2007.phpを利用する場合
+        //$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+        //$objWriter->save("sample2.xlsx");
     }
 
     // ----------------------------------------------------------------

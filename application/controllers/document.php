@@ -47,6 +47,39 @@ var $values = array();
      */
     function show($document_id)
     {
+$this->load->library('PHPExcel');
+// 新規作成の場合
+$objPHPExcel = new PHPExcel();
+
+$objPHPExcel->getDefaultStyle()->getFont()->setName( 'ＭＳ ゴシック' )->setSize( 11 );
+
+// 0番目のシートをアクティブにする（シートは左から順に、0、1，2・・・）
+$objPHPExcel->setActiveSheetIndex(0);
+// アクティブにしたシートの情報を取得
+$objSheet = $objPHPExcel->getActiveSheet();
+
+// シート名を変更する
+$objSheet->setTitle("シート1");
+
+// セル「A1」に「タイトル」という文字を挿入
+$objSheet->setCellValue("A1", "タイトル");
+// セル「B2」に今日の日付を挿入
+$objSheet->setCellValue("B2", date("Y/m/d"));
+// セル「C3」に計算結果を挿入
+$objSheet->setCellValue("C3", 5000*5);
+// セル「D4」に変数同士の計算結果を挿入
+//$objSheet->setCellValue("D4", $price * $num);
+
+// IOFactory.phpを利用する場合
+$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+$objWriter->save("/usr/local/apache2/htdocs/disclosure/tmp/sample2.xlsx");
+// Excel2007.phpを利用する場合
+//$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+//$objWriter->save("sample2.xlsx");
+
+die();
+
+
         $data['bodyId'] = 'ind';
         $order = "created";
         $orderExpression = "created DESC";//作成新しい
@@ -75,88 +108,10 @@ die();
 var_dump($this->tags);
 die();
 */
-$content=file_get_contents($data['xbrl']->xbrl_path);
-$xml_parser=xml_parser_create();
-xml_parser_set_option($xml_parser,XML_OPTION_CASE_FOLDING,FALSE);
-xml_parse_into_struct($xml_parser,$content,$xbrl_datas);
-xml_parser_free($xml_parser);
-$arr = array();
-foreach ($xbrl_datas as $key => $xbrl_data){
-    preg_match('/^xbrl/', $xbrl_data['tag'], $matches);
-    if(empty($matches)){
-        preg_match('/^link/', $xbrl_data['tag'], $matches);
-        if(empty($matches)){
-            $arr[] = $xbrl_data;
-            list($namespace,$index) = explode(':',$xbrl_data['tag']);
-            $element = $this->Item_model->getItemByElementName($index);
-            if(!empty($element)){
-                $data['csv_datas'][$key][] = $xbrl_data['tag'];
-                $data['csv_datas'][$key][] = $element[0]->style_tree != '' ? $element[0]->style_tree : $element[0]->detail_tree;
-                $data['csv_datas'][$key][] = isset($xbrl_data['attributes']['contextRef']) ? $xbrl_data['attributes']['contextRef'] : '';
-                $data['csv_datas'][$key][] = isset($xbrl_data['attributes']['unitRef']) ? $xbrl_data['attributes']['unitRef'] : '';
-                $data['csv_datas'][$key][] = isset($xbrl_data['attributes']['decimals']) ? $xbrl_data['attributes']['decimals'] : '';
-                $value = isset($xbrl_data['value']) ? trim($xbrl_data['value']) : '';
-                $data['csv_datas'][$key][] = $value;
-            }else{
-    var_dump($xbrl_data['tag']);
-    die();
-            }
-        }
-    }
-}
-var_dump($data['csv_datas']);
-die();
-
-
-
-        $parse = $this->xbrl_lib->_parseXml($data['xbrl']->xbrl_path);
-var_dump($parse);
-die();
-        if($parse){
-            $csv_line = 0;
-            foreach ($parse as $xbrl){
-                foreach ($xbrl as $namespace => $children){
-                    if($namespace == '_namespace'){
-                    
-                    }elseif($namespace == 'xbrli'){
-
-                    }elseif($namespace == 'link'){
-
-                    }else{
-                        //ex $index PurchaseOfInvestmentsInAssociatedCompaniesInvCF
-                        foreach ($children as $index => $items){
-                            $element = $this->Item_model->getItemByElementName($index);
-                            //ex $number 項目の数分存在 前期 前前期
-                            foreach ($items as $number => $child){
-                                if(!empty($element)){
-                                    $data['csv_datas'][$csv_line][] = $namespace;
-                                    $data['csv_datas'][$csv_line][] = $element[0]->style_tree != '' ? $element[0]->style_tree : $element[0]->detail_tree;
-                                    //ex $type _attributes or _value
-                                    foreach ($child as $type => $item_value){
-                                        if(is_array($item_value)){
-                                            //ex $item_index contextRef unitRef decimals
-                                            foreach ($item_value as $item_index => $value){
-                                                $data['csv_datas'][$csv_line][] = $value;
-                                            }
-                                        }else{
-                                            //ex _value 実際の値はここ
-                                            $data['csv_datas'][$csv_line][] = $item_value;
-                                        }
-                                    }
-                                }else{
-                                    //項目がない場合、無効なもの
-var_dump($index);
-die();
-                                }
-                                $csv_line++;
-                            }
-                        }
-                        
-                    }
-                }
-            }
-        }
-var_dump($data['csv_datas']);
+$xbrl_datas = $this->xbrl_lib->_parseXml($data['xbrl']->xbrl_path);
+$data['csv_datas'] = $this->xbrl_lib->_makeCsv($xbrl_datas);
+$csv_paths[0] = '/usr/local/apache2/htdocs/disclosure/tmp/test.csv';
+$this->put_csv($csv_paths,$data['csv_datas']);
 die();
         //set header title
         $data['header_title'] = $this->lang->line('common_header_title');
@@ -165,7 +120,58 @@ die();
         
         $this->load->view('document/show', array_merge($this->data,$data));
     }
+    // ----------------------------------------------------------------
+    // CSV出力 
+    // ----------------------------------------------------------------
+    function put_csv($csv_paths,$csv_datas) {
+        foreach ($csv_datas as $key => $csv_data){
+            // ファイル書き込み
+            $fp = fopen($csv_paths[$key], 'w+');
+            foreach ($csv_data as $line => $value){
+                $byte = $this->_fputcsv($fp, $value);
+            }
+            fclose($fp);
+            //@chown($csv_paths[$key], 'apache');
+            //@chmod($csv_paths[$key],0770);
+        }
 
+        return $byte;
+    }
+    function _fputcsv($fp, $data, $toEncoding='SJIS-WIN', $srcEncoding='UTF-8') {
+        //require_once 'mb_str_replace.php';
+        $csv = '';
+        $toPutComma = FALSE;
+        foreach ($data as $col) {
+            if ( $toPutComma ) {
+                $csv .= ',';
+            } else {
+                $toPutComma = TRUE;
+            }
+            if (is_numeric($col)) {
+                $csv .= $col;
+            } else {
+                if(is_array($col)){
+                    var_dump($col);
+                    die();
+                }
+                $col = mb_convert_encoding($col, $toEncoding, $srcEncoding);
+                //カンマ対応
+                //$col = str_replace(',', '","', $col);
+                //改行対応
+                //$col = str_replace("\n", chr(10), $col);
+                //$col = mb_str_replace('"', '""', $col, $toEncoding);
+                $col = str_replace('"', '""', $col);
+                if(empty($col)){
+                    $csv .= '';
+                }else{
+                    $csv .= '"' . $col . '"';
+                }
+                
+            }
+        }
+        fwrite($fp, $csv);
+        fwrite($fp, "\r\n");
+    }
     /**
      * Send email message of given type (activate, forgot_password, etc.)
      *

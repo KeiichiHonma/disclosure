@@ -59,7 +59,16 @@ contents
                         <?php echo anchor(sprintf('document/show/'.$xbrl->id), $xbrl->document_name); ?>
                         </td>
                         <td><?php echo $xbrl->presenter_name; ?></td>
-                        <td><?php echo $xbrl->manage_number; ?></td>
+                        <td>
+                        <?php if($xbrl->xbrl_count > 1): ?>
+                            <?php for ($i=0;$i<$xbrl->xbrl_count;$i++): ?>
+                            <?php echo anchor($xbrl->format_path.'_'.$i.'.csv','<img src="/images/icon/csv_50.png" alt="csv" />'); ?>
+                            <?php endfor; ?>
+                        <?php else: ?>
+                            <?php echo anchor($xbrl->format_path.'.csv','<img src="/images/icon/csv_50.png" alt="csv" />'); ?>
+                        <?php endif; ?>
+                        
+                        </td>
                     </tr>
                     <?php endforeach; ?>
                 </table>
