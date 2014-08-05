@@ -1,4 +1,21 @@
 <?php $this->load->view('layout/header/header'); ?>
+    <script>
+    $(function() {
+        $( "#datepicker" ).datepicker({
+            inline: true
+        });
+
+        // Hover states on the static widgets
+        $( "#dialog-link, #icons li" ).hover(
+            function() {
+                $( this ).addClass( "ui-state-hover" );
+            },
+            function() {
+                $( this ).removeClass( "ui-state-hover" );
+            }
+        );
+    });
+    </script>
 <?php $this->load->view('layout/common/navi'); ?>
 
 <!--
@@ -8,42 +25,33 @@ contents
 -->
 <div id="contents">
     <div id ="contentsInner">
-
-        <div class="howtoBox cf">
-            <h3 class="center_dot"><span>ハレコの使い方</span></h3>
-            
-            <div class="step step01">
-                <h4>1.お出かけ場所を決める</h4>
-                <p>行きたい場所や温泉、家の近くの公園等でかける場所を選びます。</p>
-            </div>
-            <div class="step step02">
-                <h4>2.晴れの提案を受ける</h4>
-                <p>ハレコは各エリアの未来に晴れる日程を提案します。</p>
-            </div>
-            <div class="step step03">
-                <h4>3.晴れる予定を選択</h4>
-                <p>晴れる日を選んだらおでかけの予定を立ててください。</p>
-            </div>
-            <div class="step step04">
-                <h4>4.晴れてよかった！</h4>
-                <p>晴れの日程でおでかけすることができましたね！</p>
-            </div>
-        </div>
-
         <div id="weather">
-            <div id="tabs" class="cf">
+            
+
+            <div id="tabs" class="cf mb20">
                 <ul id="tabs_ul">
-                    <li><a href="#tabs-1" id="tab1" class="change_tab">北海道</a></li>
-                    <li><a href="#tabs-2" id="tab2" class="change_tab">東北</a></li>
-                    <li><a href="#tabs-3" id="tab3" class="change_tab tabulous_active">関東・信越</a></li>
-                    <li><a href="#tabs-4" id="tab4" class="change_tab">東海・北陸・近畿</a></li>
-                    <li><a href="#tabs-5" id="tab5" class="change_tab">中国・四国</a></li>
-                    <li><a href="#tabs-6" id="tab6" class="change_tab">九州</a></li>
-                    <li><a href="#tabs-7" id="tab7" class="change_tab">沖縄</a></li>
-                    <li class="undisp"><a href="#tabs-8" id="tab8" class="next_tab">次週を見る ></a></li>
+                    <?php
+                    $today = time();
+                    $time = time() - 604800;//1week
+                    ?>
+                    <li class="undisp"><a href="#tabs-8" id="tab8" class="next_tab">< 前週を見る</a></li>
+                    <?php for ($i=1;$i<8;$i++): ?>
+                    <li><a href="#tabs-<?php echo $i; ?>" id="tab<?php echo $i; ?>" class="change_tab<?php if($i == 7) echo ' tabulous_active'; ?>"><?php echo date("n月j日",$time); ?></a></li>
+                    <?php $time = $time + 86400; ?>
+                    <?php endfor ?>
+                    
                 </ul>
             </div><!--End tabs-->
+
+            <h3 class="center_dot"><span>最新の開示情報</span></h3>
+            <div class="pager mb10">
+                <?php $this->load->view('common/pager'); ?>
+                <div class="allDlBtn"><a href="javascript:void(0)">CSV一括<br />ダウンロード</a></div>
+                <div class="allDlBtn"><a href="javascript:void(0)">EXCEL一括<br />ダウンロード</a></div>
+            </div>
+
             <div id="weathers">
+            
                 <table class="weather_index">
                     <tr class="title">
                         <th class="cell01">提出日</th>
@@ -58,112 +66,27 @@ contents
                         <td>
                         <?php echo anchor(sprintf('document/show/'.$xbrl->id), $xbrl->document_name); ?>
                         </td>
-                        <td><?php echo $xbrl->presenter_name; ?></td>
+                        <td style="font-size:90%;text-align:left;"><?php echo anchor(sprintf('document/show/'.$xbrl->id), $xbrl->presenter_name); ?></td>
                         <td>
                         <?php if($xbrl->xbrl_count > 1): ?>
                             <?php for ($i=0;$i<$xbrl->xbrl_count;$i++): ?>
-                            <?php echo anchor($xbrl->format_path.'_'.$i.'.csv','<img src="/images/icon/csv_50.png" alt="csv" />'); ?>
+                            <?php echo anchor($xbrl->format_path.'_'.$i.'.csv','<img src="/images/icon/csv_30.png" alt="csv" />'); ?>
                             <?php endfor; ?>
                         <?php else: ?>
-                            <?php echo anchor($xbrl->format_path.'.csv','<img src="/images/icon/csv_50.png" alt="csv" />'); ?>
+                            <?php echo anchor($xbrl->format_path.'.csv','<img src="/images/icon/csv_30.png" alt="csv" />'); ?>
                         <?php endif; ?>
-                        
+                        <?php echo anchor($xbrl->format_path.'.xlsx','<img src="/images/icon/excel_30.png" alt="csv" />'); ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>
                 </table>
             </div>
-<script type="text/javascript">
-    $(document).ready(function($) {
-        var page = 1;
-        $( '.change_tab' ) . click(
-            function() {
-                $('#weathers').block({
-                    message: '<img src="/images/loadinfo.net.gif" alt="" />',
-                    overlayCSS:  {
-                        backgroundColor: '#fdfdfd', 
-                        opacity:         0.8,
-                        cursor:          'wait' 
-                    },
-                    css: {
-                       backgroundColor: '#fdfdfd',
-                       opacity:         0.8,
-                       color:'#fff',
-                       height:  '0px',
-                       width:   '0px',
-                       border:  'none'
-                   }
-                });
-                var links = $(this).parent().parent().find('a');
-                links.removeClass('tabulous_active');
-                $(this).addClass('tabulous_active');
-                
-                jQuery . post(
-                    '/json/weathers',
-                    { <?php echo $csrf_token; ?>:"<?php echo $csrf_hash; ?>",tab_id:$(this).attr('id') },
-                    function( data, textStatus ) {
-                        if( textStatus == 'success' ) {
-                            try {
-                                $('#weathers').unblock();
-                                var jsonobj = jQuery.parseJSON( data );
-                                $( '#weathers' ) . html( jsonobj.html );
-                                
-                            } catch (e) {
-
-                            }
-                        }
-                    }
-                    ,'html'
-                );
-            }
-        );
-        $( '.next_tab' ) . click(
-            function() {
-                $('#weathers').block({
-                    message: '<img src="/images/loadinfo.net.gif" alt="" />',
-                    overlayCSS:  {
-                        backgroundColor: '#fdfdfd', 
-                        opacity:         0.8,
-                        cursor:          'wait' 
-                    },
-                    css: {
-                       backgroundColor: '#fdfdfd',
-                       opacity:         0.8,
-                       color:'#fff',
-                       height:  '0px',
-                       width:   '0px',
-                       border:  'none'
-                   }
-                });
-                $('#tabs_ul li a[class="change_tab tabulous_active"]').each(function(idx, obj){
-                    target_id = $(obj).attr("id");
-                });
-                page = page + 1;
-                jQuery . post(
-                    '/json/weathers',
-                    { <?php echo $csrf_token; ?>:"<?php echo $csrf_hash; ?>",tab_id:target_id,page:page },
-                    function( data, textStatus ) {
-                        if( textStatus == 'success' ) {
-                            try {
-                                $('#weathers').unblock();
-                                var jsonobj = jQuery.parseJSON( data );
-                                $( '#weathers' ) . html( jsonobj.html );
-                                
-                            } catch (e) {
-
-                            }
-                            
-                        }
-                    }
-                    ,'html'
-                );
-            }
-
-        );
-
-    });
-</script>
         </div>
+        <div id="sidebar">
+            <img src="/images/ad_example1.gif" alt="csv" />
+            <div id="datepicker"></div>
+        </div>
+        <span class="cf" />
     </div>
 </div>
 <?php $this->load->view('layout/footer/footer'); ?>

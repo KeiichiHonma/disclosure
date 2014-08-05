@@ -9,8 +9,8 @@ $lang['common_header_title'] = '有価証券報告書等のオープンデータ
 $lang['common_header_keywords'] = 'オープンデータ,opendata,有価証券報告書,開示情報';
 $lang['common_header_description'] = 'オープンデータ活用サービス';
 
-
 $lang['holiday_title'] = '次の晴れる連休';
+$lang['search_box_default'] = '企業名検索';
 
 //パンくず
 $lang['topicpath_home'] = 'HOME';

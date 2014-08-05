@@ -21,17 +21,17 @@ class Home extends MY_Controller
      * search area action
      *
      */
-    function index()
+    function index($page = 1)
     {
         $data['bodyId'] = 'ind';
         $order = "created";
         $orderExpression = "created DESC";//作成新しい
-        $page = 1;
         $xbrlsResult =$this->Xbrl_model->getXbrlsOrder($orderExpression,$page);
         $data['xbrls'] = $xbrlsResult['data'];
         $data['page'] = $page;
         $data['order'] = $order;
-        //$data['pageFormat'] = "search/category/{$category_id}/{$order}/%d";
+        
+        $data['pageFormat'] = "{$order}/%d";
         $data['rowCount'] = intval($this->config->item('paging_row_count'));
         $data['columnCount'] = intval($this->config->item('paging_column_count'));
         $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
@@ -43,10 +43,9 @@ class Home extends MY_Controller
         $data['header_keywords'] = $this->lang->line('common_header_keywords');
         $data['header_description'] = $this->lang->line('common_header_description');
 
-        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/jquery.bxslider.css','/css/tabulous.css')));
-        //$this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/jquery.notifyBar.css')));
-        //$this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/scrolltop.js','js/jquery.notifyBar.js')));
-        
+        //$this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/jquery.bxslider.css','/css/add.css','css/start/jquery-ui-1.9.2.custom.css','css/datepicker.css')));
+        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/add.css','css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
+        $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/jquery-1.8.3.js','js/jquery-ui-1.9.2.custom.js')));
         $this->load->view('home/index', array_merge($this->data,$data));
     }
 

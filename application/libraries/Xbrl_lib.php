@@ -6,13 +6,16 @@ class Xbrl_lib
     var $NS = "_namespace";
     var $VAL = "_value";
     
+    //データとして出力しない
     var $ng_tag =array
     (
     'NonConsolidated',//<xbrli:scenario><jpfr-oe:NonConsolidated/></xbrli:scenario>
     'NonconsolidatedInterimFinancialStatementsXBRLDocumentInformation',//<jpfr-di:NonconsolidatedInterimFinancialStatementsXBRLDocumentInformation contextRef="DocumentInfo">true</jpfr-di:NonconsolidatedInterimFinancialStatementsXBRLDocumentInformation>
     'ContextIDBeginningOfPeriodFCNonconsolidatedInterimPL',//<jpfr-di:ContextIDBeginningOfPeriodFCNonconsolidatedInterimPL contextRef="DocumentInfo">Prior1YearNonConsolidatedInstant</jpfr-di:ContextIDBeginningOfPeriodFCNonconsolidatedInterimPL>
+    
     );
-
+    
+    //データとしては出力するがログにださない
     var $ng_log_tag =array
     (
         'IncomeLossBeforeIncomeTaxesAndMinorityInterestsSummaryOfBusinessResults',
@@ -30,7 +33,19 @@ class Xbrl_lib
         'NotesRegardingCivilLitigationInTheUnitedStatesAndElsewhereTextBlock',
         'NotesRegardingPensionCostOfSubsidiariesTextBlock',
         'DescriptionOfFactAndReasonWhyComponentsOfMajorAssetsAndLiabilitiesAreNotPresented',
-
+        'SupplementaryReferenceInformationAboutMotherFundFinancialStatementsTextBlock',
+        'ApplicationFeeOverviewOfFundNA',
+        'NotesChangesInScopeOfConsolidationOrEquityMethodNATextBlock',
+        'NotesChangesInAccountingPoliciesQuarterlyConsolidatedFinancialStatementsNATextBlock',
+        'NotesAccountingTreatmentsSpecificToQuarterlyFinancialStatementsQuarterlyConsolidatedFinancialStatementsNATextBlock',
+        'DescriptionAboutImportantInformationInfluencingJudgingCompanyFinancialConditionOperatingResultsAndCashFlowOverviewNATextBlock',
+        'NotesQuarterlyConsolidatedBalanceSheetNATextBlock',
+        'NotesRegardingLossOnBusinessWithdrawalTextBlock',
+        'NotesShareholdersEquityNATextBlock',
+        'NotesDerivativesQuarterlyConsolidatedFinancialStatementsNATextBlock',
+        'DescriptionOfFactThatDisclosureIsOmittedBasedOnArticle172OfRegulationOfQuarterlyConsolidatedFinancialStatementNotesFinancialInstrumentsQuarterlyConsolidatedFinancialStatementsTextBlock',
+        'DescriptionOfFactThatDisclosureIsOmittedBasedOnArticle172OfRegulationOfQuarterlyConsolidatedFinancialStatementNotesSecuritiesQuarterlyConsolidatedFinancialStatementsTextBlock',
+        'NotesDerivativesQuarterlyConsolidatedFinancialStatementsNATextBlock',
     );
 
     var $ng_string =array
@@ -54,7 +69,9 @@ class Xbrl_lib
         return $xbrl_datas;
     }
     
-    public function _makeCsv($xbrl_datas,$file) {
+    //public function _makeCsv($xbrl_datas,$file,$is_base = FALSE) {
+    public function _makeCsv($xbrl_datas,$file,&$insert_data) {
+    
         foreach ($xbrl_datas as $line => $xbrl_data){
             if(preg_match('/^xbrl/', $xbrl_data['tag']) === 0 && preg_match('/^link/', $xbrl_data['tag']) === 0){
                 $xbrl_data_value = isset($xbrl_data['value']) ? trim($xbrl_data['value']) : '';
@@ -83,16 +100,112 @@ class Xbrl_lib
                             $element = $this->ci->Item_model->getItemByElementName($index);
                             if(!empty($element) || $is_all_int === 1){
                                 
-                                if(empty($element) && $is_all_int === 1 && !in_array($index,$this->ng_log_tag)) log_message('error','all int none index '.$xbrl_data['tag'].':'.$file);
+                                //if(empty($element) && $is_all_int === 1 && !in_array($index,$this->ng_log_tag)) log_message('error','all int none index '.$xbrl_data['tag'].':'.$file);
                                 
                                 //context
                                 $contextRef = isset($xbrl_data['attributes']['contextRef']) ? $xbrl_data['attributes']['contextRef'] : '';
                                 if($contextRef != ''){
-                                    $context = $this->ci->Context_model->getContextByContextName($contextRef);
-                                    if(empty($context)) $context = $contextRef;
+                                    if(preg_match('/^FilingDateInstant/', $contextRef) || preg_match('/^DocumentInfo/', $contextRef)){
+                                        $context = '提出日時点';
+                                    }elseif(preg_match('/^Current/', $contextRef)){
+                                        if(preg_match('/^CurrentYear/', $contextRef) && preg_match('/Instant/', $contextRef)){
+                                            $context = '当期末';
+                                        }elseif(preg_match('/^CurrentYear/', $contextRef) && preg_match('/Duration/', $contextRef)){
+                                            $context = '当期';
+                                        }elseif(preg_match('/^CurrentYTD/', $contextRef) && preg_match('/Duration/', $contextRef)){
+                                            $context = '当四半期累計期間';
+                                        }elseif(preg_match('/^CurrentQuarter/', $contextRef) && preg_match('/Instant/', $contextRef)){
+                                            $context = '当四半期会計期間末';
+                                        }else{
+                                            $context_data = $this->ci->Context_model->getContextByContextTag($contextRef);
+                                            if(empty($context_data)){
+                                                $context = $contextRef;
+                                                log_message('error','none context tag '.$contextRef.':'.$file);
+                                            }else{
+                                                $context = $context_data->context_name;
+                                            }
+                                        }
+                                    }elseif(preg_match('/^Prior1/', $contextRef)){
+                                        if(preg_match('/^Prior1Year/', $contextRef) && preg_match('/Instant/', $contextRef)){
+                                            $context = '前期末';
+                                        }elseif(preg_match('/^Prior1Year/', $contextRef) && preg_match('/Duration/', $contextRef)){
+                                            $context = '前期';
+                                        }elseif(preg_match('/^Prior1YTD/', $contextRef) && preg_match('/Duration/', $contextRef)){
+                                            $context = '前年度同四半期累計期間';
+                                        }elseif(preg_match('/^Prior1Quarter/', $contextRef) && preg_match('/Instant/', $contextRef)){
+                                            $context = '前年度同四半期会計期間末';
+                                        }else{
+                                            $context_data = $this->ci->Context_model->getContextByContextTag($contextRef);
+                                            if(empty($context_data)){
+                                                $context = $contextRef;
+                                                log_message('error','none context tag '.$contextRef.':'.$file);
+                                            }else{
+                                                $context = $context_data->context_name;
+                                            }
+                                        }
+                                    }elseif(preg_match('/^Prior2/', $contextRef) === 1){
+                                        if(preg_match('/^Prior2YearInstant/', $contextRef)){
+                                            $context = '前々期末';
+                                        }elseif(preg_match('/^Prior2YearDuration/', $contextRef)){
+                                            $context = '前々期';
+                                        }else{
+                                            $context_data = $this->ci->Context_model->getContextByContextTag($contextRef);
+                                            if(empty($context_data)){
+                                                $context = $contextRef;
+                                                log_message('error','none context tag '.$contextRef.':'.$file);
+                                            }else{
+                                                $context = $context_data->context_name;
+                                            }
+                                        }
+                                    }elseif(preg_match('/^Prior3/', $contextRef) === 1){
+                                        if(preg_match('/^Prior3YearInstant/', $contextRef)){
+                                            $context = '三期前時点';
+                                        }elseif(preg_match('/^Prior3YearDuration/', $contextRef)){
+                                            $context = '三期前';
+                                        }else{
+                                            $context_data = $this->ci->Context_model->getContextByContextTag($contextRef);
+                                            if(empty($context_data)){
+                                                $context = $contextRef;
+                                                log_message('error','none context tag '.$contextRef.':'.$file);
+                                            }else{
+                                                $context = $context_data->context_name;
+                                            }
+                                        }
+                                    }elseif(preg_match('/^Prior4/', $contextRef) === 1){
+                                        if(preg_match('/^Prior4YearInstant/', $contextRef)){
+                                            $context = '四期前時点';
+                                        }elseif(preg_match('/^Prior4YearDuration/', $contextRef)){
+                                            $context = '四期前';
+                                        }else{
+                                            $context_data = $this->ci->Context_model->getContextByContextTag($contextRef);
+                                            if(empty($context_data)){
+                                                $context = $contextRef;
+                                                log_message('error','none context tag '.$contextRef.':'.$file);
+                                            }else{
+                                                $context = $context_data->context_name;
+                                            }
+                                        }
+                                    }else{
+                                        log_message('error','none context tag '.$contextRef.':'.$file);
+                                        $context = $contextRef;
+                                    }
                                 }else{
                                     $context = '';
                                 }
+
+/*
+                                if($contextRef != ''){
+                                    $context_data = $this->ci->Context_model->getContextByContextTag($contextRef);
+                                    if(empty($context_data)){
+                                        $context = $contextRef;
+                                        log_message('error','none context tag '.$contextRef.':'.$file);
+                                    }else{
+                                        $context = $context_data->context_name;
+                                    }
+                                }else{
+                                    $context = '';
+                                }
+*/
                                 //連結・個別
                                 if($namespace == 'jpcrp_cor'){
                                     $Consolidated_NonConsolidated_etc = 'その他';
@@ -118,17 +231,22 @@ class Xbrl_lib
                                 //$csv_datas[$line][] = isset($xbrl_data['attributes']['decimals']) ? $xbrl_data['attributes']['decimals'] : '';
                                 
                                 $text = htmlspecialchars($xbrl_data_value,ENT_NOQUOTES);
-                                if(mb_strlen($text) > 20000){
-                                    $ret = $this->_mb_str_split($text, 20000);//16,384
-                                    foreach ($ret as $split_text){
-                                        $csv_datas[$line][] = $split_text;
+                                $is_judge_length = isset($text[$this->ci->config->item('string_max_length')]);
+                                if($is_judge_length){
+                                    if(!$is_base){
+                                        $ret = $this->_mb_str_split($text, $this->ci->config->item('string_max_length') * 2);//16,384
+                                        foreach ($ret as $split_text){
+                                            $csv_datas[$line][] = $split_text;
+                                        }
                                     }
+                                }elseif(isset($text[1000])){//htmlを完全除去したい
+                                    //何もしない
                                 }else{
                                     $csv_datas[$line][] = $text;
                                 }
 
                             }else{
-                                if(!in_array($index,$this->ng_log_tag)) log_message('error','none index '.$xbrl_data['tag'].':'.$file);
+                                //if(!in_array($index,$this->ng_log_tag)) log_message('error','none index '.$xbrl_data['tag'].':'.$file);
                             }
                         }
                     }
@@ -262,6 +380,57 @@ Perse Xml Loop.
     if(isset($body)) return $body;
  }
 
+    // ----------------------------------------------------------------
+    // CSV入力
+    // ----------------------------------------------------------------
+    function _fgetcsv_reg (&$handle, $length = null, $d = ',', $e = '"') {
+        $d = preg_quote($d);
+        $e = preg_quote($e);
+        $_line = "";
+        $eof = false; // Added for PHP Warning.
+        while ( $eof != true ) {
+        $_line .= (empty($length) ? fgets($handle) : fgets($handle, $length));
+        $itemcnt = preg_match_all('/'.$e.'/', $_line, $dummy);
+        if ($itemcnt % 2 == 0) $eof = true;
+        }
+        $_csv_line = preg_replace('/(?:\\r\\n|[\\r\\n])?$/', $d, trim($_line));
+        $_csv_pattern = '/('.$e.'[^'.$e.']*(?:'.$e.$e.'[^'.$e.']*)*'.$e.'|[^'.$d.']*)'.$d.'/';
+
+        preg_match_all($_csv_pattern, $_csv_line, $_csv_matches);
+
+        $_csv_data = $_csv_matches[1];
+
+        for ( $_csv_i=0; $_csv_i<count($_csv_data); $_csv_i++ ) {
+        $_csv_data[$_csv_i] = preg_replace('/^'.$e.'(.*)'.$e.'$/s', '$1', $_csv_data[$_csv_i]);
+        $_csv_data[$_csv_i] = str_replace($e.$e, $e, $_csv_data[$_csv_i]);
+        }
+        return empty($_line) ? false : $_csv_data;
+    }
+
+    function _read_form_item_csv($csv_file,$is_base = FALSE,$skip = TRUE){
+        $fp=@fopen($csv_file,"r");
+        $line = 0;
+        $csv = array();
+        while ($CSVRow = @$this->_fgetcsv_reg($fp,1024)){//ファイルを一行ずつ読み込む
+            //XbrlSearchDlInfo.csvは上部2行が不要
+            if($skip && $line === 0){
+                $skip = TRUE;
+            }elseif($skip && $line === 1){
+                $skip = FALSE;
+            }else{
+                $csv[$line]['element'] = $is_base ? $CSVRow[0] : mb_convert_encoding($CSVRow[0],"UTF-8","SJIS-win");//jpdei_cor:NumberOfSubmissionDEI
+                $csv[$line]['element_name'] = $is_base ? $CSVRow[1] : mb_convert_encoding($CSVRow[1],"UTF-8","SJIS-win");//提出回数
+                $csv[$line]['context_period'] = $is_base ? $CSVRow[2] : mb_convert_encoding($CSVRow[2],"UTF-8","SJIS-win");//提出日時点
+                $csv[$line]['context_consolidated'] = $is_base ? $CSVRow[3] : mb_convert_encoding($CSVRow[3],"UTF-8","SJIS-win");//連結
+                $csv[$line]['context_term'] = $is_base ? $CSVRow[4] : mb_convert_encoding($CSVRow[4],"UTF-8","SJIS-win");//時点
+                $csv[$line]['unit'] = $is_base ? $CSVRow[5] : mb_convert_encoding($CSVRow[5],"UTF-8","SJIS-win");//JPY
+                $csv[$line]['value'] = $is_base ? $CSVRow[6] : mb_convert_encoding($CSVRow[6],"UTF-8","SJIS-win");//値
+            }
+            $line++;
+        }
+        fclose( $fp );
+        return $csv;
+    }
 
 }
 

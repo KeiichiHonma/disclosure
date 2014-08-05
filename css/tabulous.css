@@ -15,7 +15,7 @@ a:active,a:focus {
 
 #tabs li a,#tabs2 li a,#tabs3 li a,#tabs4 li a,#tabs5 li a {
     display: block;
-    padding: 10px 30px;
+    padding: 10px 15px;
     background: #0080c1;
     text-decoration: none;
     color: #ffffff;

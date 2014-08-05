@@ -716,12 +716,13 @@ table.menuBox td a:hover {
 --------------------------------------------------*/
 #contents {
 	background:url(../images/bg_content.png) 0 0 repeat;
+    /*background:#fff;*/
 }
 #contentsInner {
-	width:970px;
+	width:1000px;
 	background:#fff;
 	margin:0 auto;
-	padding:27px 0 60px 30px;
+	padding:27px 0 60px 0px;
 }
 #contents h2{
 	color:#444;
@@ -1005,7 +1006,7 @@ table.menuBox td a:hover {
 
 #contentsInner .howtoBox{
 	margin-top:0px;
-    margin-bottom:20px;
+    margin-bottom:0px;
 }
 
 #contentsInner h3.center_dot{
@@ -1013,8 +1014,7 @@ table.menuBox td a:hover {
 	background: url(../images/h3_howto.png) 0 8px repeat-x;
 	background-size:4px 1px;
 	text-align:center;
-	margin-right:30px;
-	margin-bottom:20px;
+	margin-bottom:10px;
 }
 #contentsInner h3.center_dot span{
 	margin: 0 auto;
@@ -1145,10 +1145,20 @@ table.menuBox td a:hover {
 
 /* city page
 --------------------------------------------------*/
+#sidebar
+{
+  width: 300px;
+  float: right;
+  margin-left:10px;
+  margin-right:10px;
+}
+
 #weather {
-	width:930px;
+	width:670px;
 	/* border-bottom:1px solid #dad9d9; */
 	margin-bottom:40px;
+    margin-left:10px;
+    float:left;
 }
 #weather table{
 	width:100%;
@@ -1173,6 +1183,14 @@ table.menuBox td a:hover {
 	border-right:1px solid #dfdedb;
 	padding: 10px;
 	text-align:center;
+}
+
+#weather td.jpy{
+    width:110px;
+	border-bottom:1px dotted #c4c3c0;
+	border-right:1px solid #dfdedb;
+	padding: 10px;
+	text-align:right;
 }
 
 #weather .title th, #weather .title td {

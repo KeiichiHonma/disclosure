@@ -9,9 +9,11 @@ class Tools extends CI_Controller {
     var $is_parse = TRUE;
     var $xbrls_informations;
     var $xbrl_files;
-    var $alphabet = array('A','B','C','D','E','F','G','H','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+    var $alphabet = array('A','B','C','D','E','F','G','H','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ');
     
     function __construct(){
+        set_time_limit(0);
+        ini_set('max_execution_time', 0);
         parent::__construct();
         $this->CI =& get_instance();
         if ( ! $this->input->is_cli_request() )     {
@@ -61,7 +63,6 @@ class Tools extends CI_Controller {
                     $is_analyze = TRUE;
                     $tempFolder = $this->_createTemporaryFolder($today);
                     $tmp_dir_path = $tmp_path .'/' . $tempFolder;
-
                     // ZIPファイルをオープン
                     $res = $this->archiver->open($zip_file_path);
                      
@@ -94,17 +95,10 @@ die();
         @chmod($move_path,0770);
         $insert_data = array();
         $csv_datas = array();
+        $base_datas = array();
         $this->_list_files($tmp_dir_path. '/',$move_path);
 
         if(!empty($this->xbrls_informations)){
-            //挿入順をコントロール
-/*
-            foreach ($this->xbrls_informations as $unzip_dir_name => $xbrls_information){
-                foreach ($xbrls_information as $xbrl_dir_id => $value){
-                    $this->xbrl_files[$unzip_dir_name][$xbrl_dir_id] = $this->tmp_xbrl_files[$unzip_dir_name][$xbrl_dir_id];
-                }
-            }
-*/
             //先に企業名をDBに挿入 presenter_id が必要なため
             foreach ($this->xbrls_informations as $unzip_dir_name => $xbrls_information){
                 foreach ($xbrls_information as $xbrl_dir_id => $value){
@@ -121,8 +115,6 @@ die();
                 }
             }
         }
-
-        
         if(!empty($insert_data['presenter']))$this->db->insert_batch('presenters', $insert_data['presenter']);
 
         //move 
@@ -140,6 +132,8 @@ die();
         foreach ($this->xbrl_files as $unzip_dir_name =>  $xbrls){
             foreach ($xbrls as $xbrl_dir_id =>  $xbrl_paths){
                 $xbrl_paths_count = count($xbrl_paths);
+                $xbrl_path_loop_number = 0;
+                $excel_map = array();
                 foreach ($xbrl_paths as $xbrl_number => $xbrl_path){//xbrlが複数ある場合があります
                     //文書提出日時
                     $pathinfo = pathinfo($xbrl_path);
@@ -210,51 +204,38 @@ die();
                         $insert_data['xbrl'][$xbrl_dir_id]['code'] = $code;
                         //codeチェック
                         $check_xbrl = $this->Xbrl_model->getXbrlByCode($code);
-                        //既に存在していたら除去
-                        if(!empty($check_xbrl)) unset($insert_data['xbrl'][$xbrl_dir_id]);
+                        //既に存在していたら除去して個別更新
+                        if(!empty($check_xbrl)){
+                            $this->CI->db->where('code', $code);
+                            $this->CI->db->update('xbrls', $insert_data['xbrl'][$xbrl_dir_id]);
+                            unset($insert_data['xbrl'][$xbrl_dir_id]);
+                        }
                         //excelは複数ファイルではなくセルで分けるため
                         $excel_path = $format_path.'.xlsx';
                     }
                     if($this->is_parse){
                         $xbrl_datas = $this->xbrl_lib->_parseXml($xbrl_path);
-                        $csv_datas[$xbrl_count] = $this->xbrl_lib->_makeCsv($xbrl_datas,$xbrl_path);
-                        $csv_paths[$xbrl_count] = $format_path.'_'.$xbrl_number.'.csv';
-                        $excel_sheet_name[$xbrl_count] = $format_path_ex[$count-1].'_'.$xbrl_number;
-    /*
-                        $xbrl_datas = $this->Xbrl_lib->_parseXml($xbrl_path);
-                        $arr = array();
-                        foreach ($xbrl_datas as $key => $xbrl_data){
-                            preg_match('/^xbrl/', $xbrl_data['tag'], $matches);
-                            if(empty($matches)){
-                                preg_match('/^link/', $xbrl_data['tag'], $matches);
-                                if(empty($matches)){
-                                    list($namespace,$index) = explode(':',$xbrl_data['tag']);
-                                    $element = $this->Item_model->getItemByElementName($index);
-                                    if(!empty($element)){
-                                        $csv_datas[$xbrl_count][$key][] = $xbrl_data['tag'];
-                                        $csv_datas[$xbrl_count][$key][] = $element[0]->style_tree != '' ? $element[0]->style_tree : $element[0]->detail_tree;
-                                        $csv_datas[$xbrl_count][$key][] = isset($xbrl_data['attributes']['contextRef']) ? $xbrl_data['attributes']['contextRef'] : '';
-                                        $csv_datas[$xbrl_count][$key][] = isset($xbrl_data['attributes']['unitRef']) ? $xbrl_data['attributes']['unitRef'] : '';
-                                        $csv_datas[$xbrl_count][$key][] = isset($xbrl_data['attributes']['decimals']) ? $xbrl_data['attributes']['decimals'] : '';
-                                        $value = isset($xbrl_data['value']) ? trim($xbrl_data['value']) : '';
-                                        $csv_datas[$xbrl_count][] = $value;
-                                    }else{
-                                        if($this->log_echo)log_message('error','none index '.$xbrl_data['tag'].':'.$xbrl_path);
-                                    }
-                                }
-                            }
-                        }
-    */
+                        $csv_datas[$xbrl_count] = $this->xbrl_lib->_makeCsv($xbrl_datas,$xbrl_path,$insert_data);
+                        //$base_datas[$xbrl_count] = $this->xbrl_lib->_makeCsv($xbrl_datas,$xbrl_path,TRUE);
+                        $csv_paths[$xbrl_count] = $xbrl_number > 1 ? $format_path.'_'.$xbrl_number.'.csv' : $format_path.'.csv';
+                        //$base_paths[$xbrl_count] = $xbrl_number > 1 ? $format_path.'_'.$xbrl_number.'.base' : $format_path.'.base';
+                        $excel_map[$xbrl_count]  = $xbrl_path_loop_number;
+                        $excel_sheet_name[$xbrl_dir_id][$xbrl_path_loop_number] = $format_path_ex[$count-1].'_'.$xbrl_path_loop_number;
                         $xbrl_count++;
                     }
+                    $xbrl_path_loop_number++;
                 }
+                //ここでexcel
+                echo $excel_path."\n";
+                $this->put_excel($excel_path,$csv_datas,$excel_sheet_name[$xbrl_dir_id],$excel_map);
             }
         }
         if(!empty($insert_data['xbrl'])) $this->db->insert_batch('xbrls', $insert_data['xbrl']);
 
         if($this->is_parse){
             $this->put_csv($csv_paths,$csv_datas);
-            $this->put_excel($excel_path,$csv_datas,$excel_sheet_name);
+            $this->put_csv($base_paths,$base_datas,TRUE);
+            //$this->put_excel($excel_path,$csv_datas,$excel_sheet_name);
         }
     }
     
@@ -321,110 +302,16 @@ die();
                 }elseif($pathinfo['filename'] == 'XbrlSearchDlInfo' && $pathinfo['extension'] == 'csv'){
                     $dirs = explode('/',$tmp_dir_path);
                     //XbrlSearchDlInfo.csv
-                    $this->xbrls_informations[$dirs[9]] = $this->_read_form_item_csv($tmp_dir_path . $file);
+                    $this->xbrls_informations[$dirs[9]] = $this->_read_form_edinetinfo_csv($tmp_dir_path . $file);
                 }
-            } else if( is_dir($tmp_dir_path . $file) ) {
+            } else if( is_dir($tmp_dir_path . $file) && $file != 'AuditDoc') {
                 $files = array_merge($files, $this->_list_files($tmp_dir_path . $file . '/',$move_path));
             }
         }
         return $files;
     }
 
-    // ----------------------------------------------------------------
-    // CSV出力 
-    // ----------------------------------------------------------------
-    function put_csv($csv_paths,$csv_datas) {
-        foreach ($csv_datas as $key => $csv_data){
-            // ファイル書き込み
-            $fp = fopen($csv_paths[$key], 'w+');
-            foreach ($csv_data as $line => $value){
-                $byte = $this->_fputcsv($fp, $value);
-            }
-            fclose($fp);
-            //@chown($csv_paths[$key], 'apache');
-            //@chmod($csv_paths[$key],0770);
-        }
-
-        return $byte;
-    }
-
-    function _fputcsv($fp, $data, $toEncoding='Shift-JIS', $srcEncoding='UTF-8') {
-        //require_once 'mb_str_replace.php';
-        $csv = '';
-        foreach ($data as $col) {
-            if (is_numeric($col)) {
-                $csv .= $col;
-            } else {
-                if(is_array($col)){
-                    var_dump($col);
-                    die();
-                }
-                $col = mb_convert_encoding($col, $toEncoding, $srcEncoding);
-                //$col = mb_str_replace('"', '""', $col, $toEncoding);
-                $col = str_replace('"', '""', $col);
-                $csv .= '"' . $col . '"';
-            }
-            $csv .= ',';
-        }
-        fwrite($fp, $csv);
-        fwrite($fp, "\r\n");
-    }
-
-    // ----------------------------------------------------------------
-    // EXCEL出力 
-    // ----------------------------------------------------------------
-    function put_excel($excel_path,$csv_datas,$excel_sheet_name) {
-        // 新規作成の場合
-        $objPHPExcel = new PHPExcel();
-        $objPHPExcel->getDefaultStyle()->getFont()->setName( 'ＭＳ Ｐゴシック' )->setSize( 11 );
-        
-        //xbrlのファイル分ループ
-        foreach ($csv_datas as $key => $csv_data){
-            
-            if($key > 0) $objPHPExcel->createSheet();
-            // 0番目のシートをアクティブにする（シートは左から順に、0、1，2・・・）
-            $objPHPExcel->setActiveSheetIndex($key);
-            // アクティブにしたシートの情報を取得
-            $objSheet = $objPHPExcel->getActiveSheet();
-            // シート名を変更する
-            $objSheet->setTitle($excel_sheet_name[$key]);
-            $excel_tate = 0;
-            $line = 0;
-            foreach ($csv_data as $values){
-                $excel_tate = $line + 1;
-                foreach ($values as $value_number => $col) {
-                    $excel_yoko = $this->alphabet[$value_number];
-                    $excel_column_name = $excel_yoko.$excel_tate;
-                    
-                    if (is_numeric($col)) {
-                        $data[$key][$excel_column_name] = $col;
-                        $objSheet->setCellValue($excel_column_name, $col);
-                    } else {
-                        if(is_array($col)){
-                            var_dump($col);
-                            die();
-                        }
-                        //$col = mb_convert_encoding($col, $toEncoding, $srcEncoding);
-                        $data[$key][$excel_column_name] = $col;
-                        $objSheet->setCellValue($excel_column_name, $col);
-                    }
-                }
-                $line++;
-            }
-        }
-        $objPHPExcel->setActiveSheetIndex(0);//sheet選択
-        // IOFactory.phpを利用する場合
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        return $objWriter->save($excel_path);
-        // Excel2007.phpを利用する場合
-        //$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-        //$objWriter->save("sample2.xlsx");
-    }
-
-    // ----------------------------------------------------------------
-    // CSV入力
-    // ----------------------------------------------------------------
-    function _fgetcsv_reg (&$handle, $length = null, $d = ',', $e = '"') {
+    function _fgetcsv_edinetinfo_reg (&$handle, $length = null, $d = ',', $e = '"') {
         $d = preg_quote($d);
         $e = preg_quote($e);
         $_line = "";
@@ -448,11 +335,11 @@ die();
         return empty($_line) ? false : $_csv_data;
     }
 
-    function _read_form_item_csv($csv_file,$skip = TRUE){
+    function _read_form_edinetinfo_csv($csv_file,$skip = TRUE){
         $fp=@fopen($csv_file,"r");
         $line = 0;
         $csv = array();
-        while ($CSVRow = @$this->_fgetcsv_reg($fp,1024)){//ファイルを一行ずつ読み込む
+        while ($CSVRow = @$this->_fgetcsv_edinetinfo_reg($fp,1024)){//ファイルを一行ずつ読み込む
             //XbrlSearchDlInfo.csvは上部2行が不要
             if($skip && $line === 0){
                 $skip = TRUE;
@@ -471,6 +358,100 @@ die();
         }
         fclose( $fp );
         return $csv;
+    }
+
+    // ----------------------------------------------------------------
+    // CSV出力 
+    // ----------------------------------------------------------------
+    function put_csv($csv_paths,$csv_datas,$is_base = FALSE) {
+        foreach ($csv_datas as $key => $csv_data){
+            // ファイル書き込み
+            $fp = fopen($csv_paths[$key], 'w+');
+            foreach ($csv_data as $line => $value){
+                $byte = $this->_fputcsv($fp, $value,$is_base);
+            }
+            fclose($fp);
+            //@chown($csv_paths[$key], 'apache');
+            //@chmod($csv_paths[$key],0770);
+        }
+
+        return $byte;
+    }
+
+    function _fputcsv($fp, $data,$is_base , $toEncoding='SJIS-win', $srcEncoding='UTF-8') {
+        //require_once 'mb_str_replace.php';
+        $csv = '';
+        foreach ($data as $col) {
+            if (is_numeric($col)) {
+                $csv .= $col;
+            } else {
+                if(is_array($col)){
+                    var_dump($col);
+                    die();
+                }
+                if(!$is_base) $col = mb_convert_encoding($col, $toEncoding, $srcEncoding);
+                //$col = mb_str_replace('"', '""', $col, $toEncoding);
+                $col = str_replace('"', '""', $col);
+                $csv .= '"' . $col . '"';
+            }
+            $csv .= ',';
+        }
+        fwrite($fp, $csv);
+        fwrite($fp, "\r\n");
+    }
+
+    // ----------------------------------------------------------------
+    // EXCEL出力 
+    // ----------------------------------------------------------------
+    function put_excel($excel_path,$csv_datas,$excel_sheet_name,$excel_map) {
+        $objPHPExcel = null;
+        // 新規作成の場合
+        $objPHPExcel = new PHPExcel();
+        $objPHPExcel->getDefaultStyle()->getFont()->setName( 'ＭＳ Ｐゴシック' )->setSize( 11 );
+        
+        foreach ($excel_map as $xbrl_count => $xbrl_path_loop_number){
+            if($xbrl_path_loop_number > 0) $objPHPExcel->createSheet();
+            // 0番目のシートをアクティブにする（シートは左から順に、0、1，2・・・）
+            $objPHPExcel->setActiveSheetIndex($xbrl_path_loop_number);
+            // アクティブにしたシートの情報を取得
+            $objSheet = $objPHPExcel->getActiveSheet();
+            // シート名を変更する
+            $objSheet->setTitle($excel_sheet_name[$xbrl_path_loop_number]);
+            $excel_tate = 0;
+            $line = 0;
+            foreach ($csv_datas[$xbrl_count] as $values){
+                $excel_tate = $line + 1;
+                foreach ($values as $value_number => $col) {
+                    if(!isset($this->alphabet[$value_number])){
+                        log_message('error','none alphabet '.$value_number.':'.$excel_path);
+                    }
+                    $excel_yoko = $this->alphabet[$value_number];
+                    $excel_column_name = $excel_yoko.$excel_tate;
+                    
+                    if (is_numeric($col)) {
+                        $data[$xbrl_path_loop_number][$excel_column_name] = $col;
+                        $objSheet->setCellValue($excel_column_name, $col);
+                    } else {
+                        if(is_array($col)){
+                            var_dump($col);
+                            die();
+                        }
+                        //$col = mb_convert_encoding($col, $toEncoding, $srcEncoding);
+                        $col = str_replace('"', '""', $col);
+                        $data[$xbrl_path_loop_number][$excel_column_name] = $col;
+                        $objSheet->setCellValue($excel_column_name, $col);
+                    }
+                }
+                $line++;
+            }
+            $objPHPExcel->setActiveSheetIndex(0);//sheet選択
+            // IOFactory.phpを利用する場合
+            $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+            $objWriter->save($excel_path);
+        }
+        // Excel2007.phpを利用する場合
+        //$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+        //$objWriter->save("sample2.xlsx");
     }
 
     public function sitemap()

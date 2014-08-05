@@ -390,13 +390,15 @@ if(isset($_SERVER['REQUEST_URI']) && in_array('console',explode('/',$_SERVER['RE
 |
 */
 $config['stylesheets'][] = 'css/master.css';
-$config['stylesheets'][] = 'css/jquery.sidr.dark.css';
-$config['stylesheets'][] = 'css/jquery-ui-1.10.3.custom.css';
-$config['javascripts'][] = 'js/jquery-1.7.2.min.js';
-$config['javascripts'][] = 'js/css_browser_selector.js';
-$config['javascripts'][] = 'js/jquery.sidr.min.js';
-$config['javascripts'][] = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js';
-$config['javascripts'][] = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js';
+//$config['stylesheets'][] = 'css/jquery.sidr.dark.css';
+//$config['stylesheets'][] = 'css/jquery-ui-1.10.3.custom.css';
+$config['javascripts'][] = 'js/jquery-1.8.3.js';
+//$config['javascripts'][] = 'js/jquery-1.7.2.min.js';
+//$config['javascripts'][] = 'js/css_browser_selector.js';
+//$config['javascripts'][] = 'js/jquery.sidr.min.js';
+//$config['javascripts'][] = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js';
+//$config['javascripts'][] = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js';
+//$config['javascripts'][] = 'js/jquery.corner';
 /*
 |--------------------------------------------------------------------------
 | Upload folder setting
@@ -482,49 +484,6 @@ $config['allowed_upload_file_type'] = 'gif|jpg|jpeg|png';
 
 /*
 |--------------------------------------------------------------------------
-| upload coupon image setting
-|--------------------------------------------------------------------------
-|
-*/
-$config['upload_coupon_max_filesize'] = 20971520; // 20MB
-$config['upload_coupon_image_max_filesize'] = 1024 * 1024; // file size byte (1MB)
-$config['upload_coupon_image_allowed_types'] = array("image/gif", "image/jpg", "image/jpeg", "image/png");
-$config['upload_coupon_image_min_width'] = 470;
-$config['upload_coupon_image_min_height'] = 300;
-$config['upload_coupon_image_max_width'] = 3000;
-$config['upload_coupon_image_max_height'] = 4000;
-
-/*
-|--------------------------------------------------------------------------
-| upload image setting
-|--------------------------------------------------------------------------
-|
-*/
-$config['upload_thumb_image_max_filesize'] = 1024 * 1024; // file size byte (1MB)
-$config['upload_thumb_image_allowed_types'] = array("image/gif", "image/jpg", "image/jpeg", "image/png");
-$config['upload_thumb_image_min_width'] = 230;
-$config['upload_thumb_image_min_height'] = 200;
-$config['upload_thumb_image_max_width'] = 3000;
-$config['upload_thumb_image_max_height'] = 4000;
-$config['upload_thumb_image_resize_width'] = 230;
-$config['upload_thumb_image_resize_height'] = 200;
-
-/*
-|--------------------------------------------------------------------------
-| upload html editor image setting
-|--------------------------------------------------------------------------
-|
-*/
-$config['upload_editor_max_filesize'] = 2097152; // 2MB
-$config['upload_editor_image_max_filesize'] = 1024 * 1024; // file size byte (1MB)
-$config['upload_editor_image_allowed_types'] = array("image/gif", "image/jpg", "image/jpeg", "image/png");
-$config['upload_editor_image_min_width'] = 1;
-$config['upload_editor_image_min_height'] = 1;
-$config['upload_editor_image_max_width'] = 650;
-$config['upload_editor_image_max_height'] = 650;
-
-/*
-|--------------------------------------------------------------------------
 | tools setting
 |--------------------------------------------------------------------------
 |
@@ -539,5 +498,16 @@ $config['date_index'] = array('FilingDateCoverPage');
 $config['document_title_index'] = array('DocumentTitleCoverPage');
 $config['document_title_special_index'] = array('GenericNameOfEntityJaEntityInformation','EntityNameJaEntityInformation');
 $config['document_info_index'] = array('DocumentTitleCoverPage','GenericNameOfEntityJaEntityInformation','EntityNameJaEntityInformation');
+
+
+/*
+|--------------------------------------------------------------------------
+| string max length 
+|--------------------------------------------------------------------------
+|
+*/
+
+$config['string_max_length'] = 10000;
+
 /* End of file config.php */
 /* Location: ./application/config/config.php */

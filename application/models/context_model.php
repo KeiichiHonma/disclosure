@@ -28,15 +28,15 @@ class Context_model extends CI_Model
         return array();
     }
 
-    function getContextByContextName($context_name)
+    function getContextByContextTag($context_tag)
     {
         $query = $this->db->query("SELECT *
                                     FROM {$this->table_name}
-                                    WHERE {$this->table_name}.context_name = ?"
-        , array($context_name)
+                                    WHERE {$this->table_name}.context_tag = ?"
+        , array($context_tag)
         );
 
-        if ($query->num_rows() != 0) return $query->result();
+        if ($query->num_rows() == 1) return $query->row();
         return array();
     }
 

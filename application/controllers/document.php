@@ -47,72 +47,18 @@ var $values = array();
      */
     function show($document_id)
     {
-$this->load->library('PHPExcel');
-// 新規作成の場合
-$objPHPExcel = new PHPExcel();
-
-$objPHPExcel->getDefaultStyle()->getFont()->setName( 'ＭＳ ゴシック' )->setSize( 11 );
-
-// 0番目のシートをアクティブにする（シートは左から順に、0、1，2・・・）
-$objPHPExcel->setActiveSheetIndex(0);
-// アクティブにしたシートの情報を取得
-$objSheet = $objPHPExcel->getActiveSheet();
-
-// シート名を変更する
-$objSheet->setTitle("シート1");
-
-// セル「A1」に「タイトル」という文字を挿入
-$objSheet->setCellValue("A1", "タイトル");
-// セル「B2」に今日の日付を挿入
-$objSheet->setCellValue("B2", date("Y/m/d"));
-// セル「C3」に計算結果を挿入
-$objSheet->setCellValue("C3", 5000*5);
-// セル「D4」に変数同士の計算結果を挿入
-//$objSheet->setCellValue("D4", $price * $num);
-
-// IOFactory.phpを利用する場合
-$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-$objWriter->save("/usr/local/apache2/htdocs/disclosure/tmp/sample2.xlsx");
-// Excel2007.phpを利用する場合
-//$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-//$objWriter->save("sample2.xlsx");
-
-die();
-
-
         $data['bodyId'] = 'ind';
         $order = "created";
         $orderExpression = "created DESC";//作成新しい
         $page = 1;
         $data['xbrl'] = $this->Xbrl_model->getXbrlById($document_id);
+        
+        for ($i=0;$i<$data['xbrl']->xbrl_count;$i++){
+            $add_path = '';
+            if($i > 0) $add_path = '_'.$i;
+            $data['xbrls'][$i] = $this->xbrl_lib->_read_form_item_csv($data['xbrl']->format_path.$add_path.'.base',TRUE);
+        }
 
-
-
-
-/*
-$xml = xml_parser_create();
-xml_set_element_handler ($xml, array(&$this,"startElement"), array(&$this,"endElement"));
-xml_set_character_data_handler ($xml, array(&$this,"characterData"));
-$fp = fopen($data['xbrl']->xbrl_path, "r");
-
-
-while ($read = fread($fp, 4096)) {
-    if (!xml_parse ($xml, $read, feof($fp))) {
-        die(sprintf ("error: %s at line %d\n",
-        xml_error_string(xml_get_error_code($xml)),
-        xml_get_current_line_number($xml)));
-    }
-}
-var_dump($this->values);
-die();
-var_dump($this->tags);
-die();
-*/
-$xbrl_datas = $this->xbrl_lib->_parseXml($data['xbrl']->xbrl_path);
-$data['csv_datas'] = $this->xbrl_lib->_makeCsv($xbrl_datas);
-$csv_paths[0] = '/usr/local/apache2/htdocs/disclosure/tmp/test.csv';
-$this->put_csv($csv_paths,$data['csv_datas']);
-die();
         //set header title
         $data['header_title'] = $this->lang->line('common_header_title');
         $data['header_keywords'] = $this->lang->line('common_header_keywords');

@@ -7,7 +7,7 @@
     margin:0 auto !important;
     -moz-box-shadow: 0 0 8px #777;
     -webkit-box-shadow: 0 0 8px #777;
-    box-shadow: 0 0 8px #777;
+    box-shadow: 0 0 8px #777;e
     behavior: url(js/PIE.htc);
     border: solid #fff 0px;
     background-color: #000 !important;
@@ -226,6 +226,32 @@
 }
 #contentsInner .nextBtn a:hover,
 #contentsInner .beforeBtn a:hover{
+    background:#d4d4d4;
+}
+
+#contentsInner .allDlBtn{
+    width:15%;
+    float:right;
+    margin:10px 0 10px 10px;
+}
+
+#contentsInner .allDlBtn a{
+    display:block;
+    background:#e3e2e2;
+    text-align:center;
+    font-weight:bold;
+    font-size:12px;
+    color:#8a8989;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;  
+    -moz-border-radius: 3px;
+    padding:5px;
+    -moz-box-shadow: 0 3px 0px #cbcbcb;
+    -webkit-box-shadow: 0 3px 0px #cbcbcb;
+    box-shadow: 0 3px 0px #cbcbcb;
+    behavior: url(js/PIE.htc);
+}
+#contentsInner .allDlBtn a:hover{
     background:#d4d4d4;
 }
 
@@ -462,3 +488,58 @@
 }
 #contentsInner div.box .stock em.blue { color:#26aadb;}
 #contentsInner div.box .stock em.red { color:#fc4747;}
+
+.pager ul {
+width:100%;
+text-align:center;
+}
+.pager li {
+margin:0 1px;
+display:inline;
+}
+.pager li a:link,
+.pager li a:visited {
+    border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+background:url(../images/tbt_m_w.jpg) 0 0 no-repeat;
+border:1px solid #d4c89f;
+line-height:30px;
+height:30px;
+text-align:center;
+color:#9a3d03;
+font-size:100%;
+text-decoration:none;
+padding:0 20px;
+display:inline-block;
+font-weight:bold;
+}
+.pager li a:hover {
+    border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+background:url(../images/tbt_m_b.jpg) 0 0 no-repeat;
+border:1px solid #0D72BD;
+line-height:30px;
+height:30px;
+text-align:center;
+color:#fff;
+font-size:100%;
+text-decoration:none;
+padding:0 20px;
+display:inline-block;
+font-weight:bold;
+}
+.pager li a.active {
+background:url(../images/tbt_m_b.jpg) 0 0 no-repeat;
+border:1px solid #0D72BD;
+line-height:30px;
+height:30px;
+text-align:center;
+color:#fff;
+font-size:100%;
+text-decoration:none;
+padding:0 20px;
+display:inline-block;
+font-weight:bold;
+}

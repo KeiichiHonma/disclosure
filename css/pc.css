@@ -1,0 +1,25 @@
+@charset "utf-8";
+#wrapper {
+    min-width: 1075px;
+    overflow: hidden;
+    line-height: 150 % ;
+    font-size: 14px;
+    background: #ececec;
+}
+#main {
+    padding: 0 0 221px;
+    width: 100 %
+}
+#main.box_wrap {
+    display: block;
+    width: 1045px;
+    margin: 0 auto
+}
+contents{
+    width:715px;float:left;
+}
+#sidebar
+{
+  width: 330px;
+  float: right;
+}
