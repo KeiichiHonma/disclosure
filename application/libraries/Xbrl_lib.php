@@ -70,8 +70,9 @@ class Xbrl_lib
     }
     
     //public function _makeCsv($xbrl_datas,$file,$is_base = FALSE) {
-    public function _makeCsv($xbrl_datas,$file,&$insert_data) {
-    
+    public function _makeCsvSqlData($xbrl_datas,$file,&$insert_data) {
+var_dump($insert_data);
+die();
         foreach ($xbrl_datas as $line => $xbrl_data){
             if(preg_match('/^xbrl/', $xbrl_data['tag']) === 0 && preg_match('/^link/', $xbrl_data['tag']) === 0){
                 $xbrl_data_value = isset($xbrl_data['value']) ? trim($xbrl_data['value']) : '';
@@ -233,15 +234,30 @@ class Xbrl_lib
                                 $text = htmlspecialchars($xbrl_data_value,ENT_NOQUOTES);
                                 $is_judge_length = isset($text[$this->ci->config->item('string_max_length')]);
                                 if($is_judge_length){
+                                    $insert_data['mediumtext_data'] = $text;
+                                    //csv用
+                                    $ret = $this->_mb_str_split($text, $this->ci->config->item('string_max_length') * 2);//16,384
+                                    foreach ($ret as $split_text){
+                                        $csv_datas[$line][] = $split_text;
+                                    }
+/*
                                     if(!$is_base){
                                         $ret = $this->_mb_str_split($text, $this->ci->config->item('string_max_length') * 2);//16,384
                                         foreach ($ret as $split_text){
                                             $csv_datas[$line][] = $split_text;
                                         }
                                     }
+*/
                                 }elseif(isset($text[1000])){//htmlを完全除去したい
+                                    $insert_data['mediumtext_data'] = $text;
                                     //何もしない
                                 }else{
+                                    if(is_numeric($text)){
+                                        $insert_data['int_data'] = $text;
+                                    }else{
+                                        $insert_data['text_data'] = $text;
+                                    }
+                                    //csv
                                     $csv_datas[$line][] = $text;
                                 }
 

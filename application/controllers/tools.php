@@ -215,7 +215,7 @@ die();
                     }
                     if($this->is_parse){
                         $xbrl_datas = $this->xbrl_lib->_parseXml($xbrl_path);
-                        $csv_datas[$xbrl_count] = $this->xbrl_lib->_makeCsv($xbrl_datas,$xbrl_path,$insert_data);
+                        $csv_datas[$xbrl_count] = $this->xbrl_lib->_makeCsvSqlData($xbrl_datas,$xbrl_path,$insert_data['xbrl'][$xbrl_dir_id]);
                         //$base_datas[$xbrl_count] = $this->xbrl_lib->_makeCsv($xbrl_datas,$xbrl_path,TRUE);
                         $csv_paths[$xbrl_count] = $xbrl_number > 1 ? $format_path.'_'.$xbrl_number.'.csv' : $format_path.'.csv';
                         //$base_paths[$xbrl_count] = $xbrl_number > 1 ? $format_path.'_'.$xbrl_number.'.base' : $format_path.'.base';
@@ -230,7 +230,7 @@ die();
                 $this->put_excel($excel_path,$csv_datas,$excel_sheet_name[$xbrl_dir_id],$excel_map);
             }
         }
-        if(!empty($insert_data['xbrl'])) $this->db->insert_batch('xbrls', $insert_data['xbrl']);
+        //if(!empty($insert_data['xbrl'])) $this->db->insert_batch('xbrls', $insert_data['xbrl']);
 
         if($this->is_parse){
             $this->put_csv($csv_paths,$csv_datas);
