@@ -17,7 +17,7 @@ var $values = array();
         $this->load->model('Category_model');
         $this->load->model('Security_model');
         $this->load->model('Presenter_model');
-        $this->load->model('Xbrl_model');
+        $this->load->model('Document_model');
         $this->load->library('Xbrl_lib');
         $this->categories = $this->Category_model->getAllcategories();
         $this->data = array();
@@ -51,14 +51,16 @@ var $values = array();
         $order = "created";
         $orderExpression = "created DESC";//作成新しい
         $page = 1;
-        $data['xbrl'] = $this->Xbrl_model->getXbrlById($document_id);
-        
+        $data['document'] = $this->Document_model->getDocumentById($document_id);
+        $data['document_datas'] = $this->Document_model->getDocumentDataByDocumentId($document_id);
+
+/*
         for ($i=0;$i<$data['xbrl']->xbrl_count;$i++){
             $add_path = '';
             if($i > 0) $add_path = '_'.$i;
             $data['xbrls'][$i] = $this->xbrl_lib->_read_form_item_csv($data['xbrl']->format_path.$add_path.'.base',TRUE);
         }
-
+*/
         //set header title
         $data['header_title'] = $this->lang->line('common_header_title');
         $data['header_keywords'] = $this->lang->line('common_header_keywords');

@@ -25,7 +25,7 @@ class Tools extends CI_Controller {
         $this->load->model('Category_model');
         $this->load->model('Security_model');
         $this->load->model('Presenter_model');
-        $this->load->model('Xbrl_model');
+        $this->load->model('Document_model');
         $this->load->library('upload_folder');
         $this->load->library('Xbrl_lib');
         $this->load->library('PHPExcel');
@@ -99,6 +99,9 @@ die();
         $this->_list_files($tmp_dir_path. '/',$move_path);
 
         if(!empty($this->xbrls_informations)){
+            //start transaction manually
+            $this->db->trans_begin();
+
             //先に企業名をDBに挿入 presenter_id が必要なため
             foreach ($this->xbrls_informations as $unzip_dir_name => $xbrls_information){
                 foreach ($xbrls_information as $xbrl_dir_id => $value){
@@ -130,10 +133,14 @@ die();
         $created = date("Y-m-d H:i:s", time());
 
         foreach ($this->xbrl_files as $unzip_dir_name =>  $xbrls){
+            //start transaction manually
+            $this->db->trans_begin();
+
             foreach ($xbrls as $xbrl_dir_id =>  $xbrl_paths){
                 $xbrl_paths_count = count($xbrl_paths);
                 $xbrl_path_loop_number = 0;
                 $excel_map = array();
+                $xbrl_path_arr = array();
                 foreach ($xbrl_paths as $xbrl_number => $xbrl_path){//xbrlが複数ある場合があります
                     //文書提出日時
                     $pathinfo = pathinfo($xbrl_path);
@@ -177,64 +184,93 @@ die();
                     $format_path = implode('/',array_slice($format_path_ex,6,$count));//xbrlsから
                     //最初の1ファイル分だけDBデータ生成
                     if($xbrl_number == 0){
-                        $insert_data['xbrl'][$xbrl_dir_id]['edinet_code'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'];
-                        $insert_data['xbrl'][$xbrl_dir_id]['presenter_id'] = 0;
-                        $insert_data['xbrl'][$xbrl_dir_id]['category_id'] = 0;
-                        $insert_data['xbrl'][$xbrl_dir_id]['manage_number'] = $xbrl_dir_id;
-                        $insert_data['xbrl'][$xbrl_dir_id]['xbrl_path'] = $xbrl_path;
-                        $insert_data['xbrl'][$xbrl_dir_id]['xbrl_count'] = $xbrl_paths_count;//xbrlファイルの数
+                        $insert_data['document'][$xbrl_dir_id]['edinet_code'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'];
+                        $insert_data['document'][$xbrl_dir_id]['presenter_id'] = 0;
+                        $insert_data['document'][$xbrl_dir_id]['category_id'] = 0;
+                        $insert_data['document'][$xbrl_dir_id]['manage_number'] = $xbrl_dir_id;
+                        $insert_data['document'][$xbrl_dir_id]['xbrl_count'] = $xbrl_paths_count;//xbrlファイルの数
                         
-                        $insert_data['xbrl'][$xbrl_dir_id]['format_path'] = $format_path;//xbrlsから
-                        $insert_data['xbrl'][$xbrl_dir_id]['date'] = $date;
-                        $insert_data['xbrl'][$xbrl_dir_id]['document_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name'];
-                        $insert_data['xbrl'][$xbrl_dir_id]['presenter_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'];
-                        $insert_data['xbrl'][$xbrl_dir_id]['created'] = $created;
+                        $insert_data['document'][$xbrl_dir_id]['format_path'] = $format_path;//xbrlsから
+                        $insert_data['document'][$xbrl_dir_id]['date'] = $date;
+                        $insert_data['document'][$xbrl_dir_id]['document_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name'];
+                        $insert_data['document'][$xbrl_dir_id]['presenter_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'];
+                        $insert_data['document'][$xbrl_dir_id]['created'] = $created;
 
                         //文書のカテゴリチェック
                         if(isset($this->categories[$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name']])){
-                            $insert_data['xbrl'][$xbrl_dir_id]['category_id'] = $this->categories[$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name']]->id;
+                            $insert_data['document'][$xbrl_dir_id]['category_id'] = $this->categories[$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name']]->id;
                         }
                         //企業チェック
                         $presenter = $this->Presenter_model->getPresenterByName($this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name']);
                         if(!empty($presenter)){
-                            $insert_data['xbrl'][$xbrl_dir_id]['presenter_id'] = $presenter->id;
+                            $insert_data['document'][$xbrl_dir_id]['presenter_id'] = $presenter->id;
                         }
                         //code生成
-                        $code = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'].'_'.$date.'_'.$xbrl_dir_id.'_'.$insert_data['xbrl'][$xbrl_dir_id]['presenter_id'];
-                        $insert_data['xbrl'][$xbrl_dir_id]['code'] = $code;
+                        $code = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'].'_'.$date.'_'.$xbrl_dir_id.'_'.$insert_data['document'][$xbrl_dir_id]['presenter_id'];
+                        $insert_data['document'][$xbrl_dir_id]['code'] = $code;
                         //codeチェック
-                        $check_xbrl = $this->Xbrl_model->getXbrlByCode($code);
-                        //既に存在していたら除去して個別更新
-                        if(!empty($check_xbrl)){
-                            $this->CI->db->where('code', $code);
-                            $this->CI->db->update('xbrls', $insert_data['xbrl'][$xbrl_dir_id]);
-                            unset($insert_data['xbrl'][$xbrl_dir_id]);
-                        }
+                        $check_xbrl = $this->Document_model->getDocumentByCode($code);
+
                         //excelは複数ファイルではなくセルで分けるため
                         $excel_path = $format_path.'.xlsx';
                     }
+                    
+                    $xbrl_path_arr[] = $xbrl_path;//複数の可能性あり
+                    
                     if($this->is_parse){
                         $xbrl_datas = $this->xbrl_lib->_parseXml($xbrl_path);
-                        $csv_datas[$xbrl_count] = $this->xbrl_lib->_makeCsvSqlData($xbrl_datas,$xbrl_path,$insert_data['xbrl'][$xbrl_dir_id]);
-                        //$base_datas[$xbrl_count] = $this->xbrl_lib->_makeCsv($xbrl_datas,$xbrl_path,TRUE);
+                        $csv_datas[$xbrl_count] = $this->xbrl_lib->_makeCsvSqlData($xbrl_datas,$xbrl_path,$insert_data['document_data'][$xbrl_dir_id][$xbrl_number]);
                         $csv_paths[$xbrl_count] = $xbrl_number > 1 ? $format_path.'_'.$xbrl_number.'.csv' : $format_path.'.csv';
-                        //$base_paths[$xbrl_count] = $xbrl_number > 1 ? $format_path.'_'.$xbrl_number.'.base' : $format_path.'.base';
                         $excel_map[$xbrl_count]  = $xbrl_path_loop_number;
                         $excel_sheet_name[$xbrl_dir_id][$xbrl_path_loop_number] = $format_path_ex[$count-1].'_'.$xbrl_path_loop_number;
                         $xbrl_count++;
                     }
                     $xbrl_path_loop_number++;
                 }
+
+                //既に存在していたら除去して個別更新
+                if(!empty($check_xbrl)){
+                    $this->db->where('code', $code);
+                    $this->db->update('documents', $insert_data['document'][$xbrl_dir_id]);
+                    //個別のデータは一旦削除
+                    $this->db->where('document_id', $check_xbrl->id);
+                    $this->db->delete('document_datas');
+
+                    for ($i=0;$i<$xbrl_paths_count;$i++){
+                        foreach ($insert_data['document_data'][$xbrl_dir_id][$i] as $value){
+                            $value['document_id'] = $check_xbrl->id;
+                            $this->db->insert('document_datas', $value);
+                        }
+                    }
+                }else{
+                    //DB追加
+                    $insert_data['document'][$xbrl_dir_id]['xbrl_path'] = serialize($xbrl_path_arr);//複数の可能性あり
+                    $document_id = $this->db->insert('documents', $insert_data['document'][$xbrl_dir_id]);
+                    for ($i=0;$i<$xbrl_paths_count;$i++){
+                        foreach ($insert_data['document_data'][$xbrl_dir_id][$i] as $value){
+                            $value['document_id'] = $document_id;
+                            $this->db->insert('document_datas', $value);
+                        }
+                    }
+                }
+
+                
                 //ここでexcel
                 echo $excel_path."\n";
-                $this->put_excel($excel_path,$csv_datas,$excel_sheet_name[$xbrl_dir_id],$excel_map);
+                //$this->put_excel($excel_path,$csv_datas,$excel_sheet_name[$xbrl_dir_id],$excel_map);
+            }
+            //1documentごとにコミット
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                //return false;
+            } else {
+                $this->db->trans_commit();
+                //return $coupon_id;
             }
         }
-        //if(!empty($insert_data['xbrl'])) $this->db->insert_batch('xbrls', $insert_data['xbrl']);
-
         if($this->is_parse){
-            $this->put_csv($csv_paths,$csv_datas);
-            $this->put_csv($base_paths,$base_datas,TRUE);
+            //$this->put_csv($csv_paths,$csv_datas);
+            //$this->put_csv($base_paths,$base_datas,TRUE);
             //$this->put_excel($excel_path,$csv_datas,$excel_sheet_name);
         }
     }

@@ -70,9 +70,7 @@ class Xbrl_lib
     }
     
     //public function _makeCsv($xbrl_datas,$file,$is_base = FALSE) {
-    public function _makeCsvSqlData($xbrl_datas,$file,&$insert_data) {
-var_dump($insert_data);
-die();
+    public function _makeCsvSqlData($xbrl_datas,$file,&$insert_document_data) {
         foreach ($xbrl_datas as $line => $xbrl_data){
             if(preg_match('/^xbrl/', $xbrl_data['tag']) === 0 && preg_match('/^link/', $xbrl_data['tag']) === 0){
                 $xbrl_data_value = isset($xbrl_data['value']) ? trim($xbrl_data['value']) : '';
@@ -229,12 +227,19 @@ die();
                                 $csv_datas[$line][] = $Consolidated_NonConsolidated_etc;//連結・個別
                                 $csv_datas[$line][] = $duration_instant;//期間・時点
                                 $csv_datas[$line][] = isset($xbrl_data['attributes']['unitRef']) ? $xbrl_data['attributes']['unitRef'] : '';
-                                //$csv_datas[$line][] = isset($xbrl_data['attributes']['decimals']) ? $xbrl_data['attributes']['decimals'] : '';
                                 
+                                $insert_document_data[$line]['prefix'] = $namespace;
+                                $insert_document_data[$line]['element_name'] = $index;
+                                $insert_document_data[$line]['element_title'] = !empty($element) ? $element[0]->style_tree != '' ? $element[0]->style_tree : $element[0]->detail_tree : $index;
+                                $insert_document_data[$line]['context_period'] = $context;//コンテキストID
+                                $insert_document_data[$line]['context_consolidated'] = $Consolidated_NonConsolidated_etc;//連結・個別
+                                $insert_document_data[$line]['context_term'] = $duration_instant;//期間・時点
+                                $insert_document_data[$line]['unit'] = isset($xbrl_data['attributes']['unitRef']) ? $xbrl_data['attributes']['unitRef'] : '';
+
                                 $text = htmlspecialchars($xbrl_data_value,ENT_NOQUOTES);
                                 $is_judge_length = isset($text[$this->ci->config->item('string_max_length')]);
                                 if($is_judge_length){
-                                    $insert_data['mediumtext_data'] = $text;
+                                    $insert_document_data[$line]['mediumtext_data'] = $text;
                                     //csv用
                                     $ret = $this->_mb_str_split($text, $this->ci->config->item('string_max_length') * 2);//16,384
                                     foreach ($ret as $split_text){
@@ -249,13 +254,13 @@ die();
                                     }
 */
                                 }elseif(isset($text[1000])){//htmlを完全除去したい
-                                    $insert_data['mediumtext_data'] = $text;
+                                    $insert_document_data[$line]['mediumtext_data'] = $text;
                                     //何もしない
                                 }else{
                                     if(is_numeric($text)){
-                                        $insert_data['int_data'] = $text;
+                                        $insert_document_data[$line]['int_data'] = $text;
                                     }else{
-                                        $insert_data['text_data'] = $text;
+                                        $insert_document_data[$line]['text_data'] = $text;
                                     }
                                     //csv
                                     $csv_datas[$line][] = $text;
