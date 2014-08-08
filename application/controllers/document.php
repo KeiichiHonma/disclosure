@@ -128,20 +128,27 @@ var $values = array();
 
     function prepare($document_id,$download_string)
     {
-        if(empty($download_string) || !in_array($download_string,$this->config->item('allowed_download_file_type'))){
-            return;
-            die();
-        }
+        $index = array_search($download_string,$this->config->item('allowed_download_file_type'));
+        if(empty($download_string) || !$index) show_404();
         $document = $this->Document_model->getDocumentById($document_id);
-        if(empty($document)) die();
-        
+        if(empty($document))  show_404();
+
         $path = $document->format_path.'.'.$download_string;
-        if(!is_file($path)) die();
-        
+        if(!is_file($path))  show_404();
+        $data = array(
+            'presenter_id' => $document->presenter_id,
+            'document_id' => $document->id,
+            'type' => $index,
+            'ip' => $_SERVER['REMOTE_ADDR'],
+            'created' => date("Y-m-d H:i:s", time()),
+        );
+        $this->db->insert('downloads', $data);
+        $this->db->insert_id();
+
         $data = file_get_contents($path); // ファイルの内容を読み取る
         
         $this->load->helper('download');
-        force_download(end(explode('/',$document->format_path)).".csv", $data);
+        force_download(end(explode('/',$document->format_path)).".".$download_string, $data);
     }
 }
 

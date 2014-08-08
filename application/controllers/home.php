@@ -39,7 +39,11 @@ class Home extends MY_Controller
 
         //$this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/jquery.bxslider.css','/css/add.css','css/start/jquery-ui-1.9.2.custom.css','css/datepicker.css')));
         $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/add.css','css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
-        $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/jquery-ui-1.9.2.custom.js','js/scrolltop.js')));
+        $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/jquery-ui-1.9.2.custom.js','js/scrolltop.js',
+        ,'http://tk.ismcdn.jp/common/js/lib/jcarousellite/jcarousellite_1.0.1.pack.js'
+        ,'http://tk.ismcdn.jp/common/js/lib/fancybox/jquery.easing-1.3.pack.js'
+        
+        )));
         $this->load->view('home/index', array_merge($this->data,$data));
     }
 

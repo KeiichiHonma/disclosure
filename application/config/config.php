@@ -530,7 +530,7 @@ $config['string_max_length'] = 10000;
 |--------------------------------------------------------------------------
 |
 */
-$config['allowed_download_file_type'] = array('csv','excel');
+$config['allowed_download_file_type'] = array('csv','xlsx');
 
 /* End of file config.php */
 /* Location: ./application/config/config.php */

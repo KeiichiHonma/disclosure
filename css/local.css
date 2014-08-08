@@ -665,6 +665,9 @@ table.menuBox td a:hover {
     background-size:6px 9px;
     padding-left:10px;
     color:#515151;
+    font-weight:normal;
+}
+#footer li a:hover{
     font-weight:bold;
 }
 .win.ie8 #footer li a{

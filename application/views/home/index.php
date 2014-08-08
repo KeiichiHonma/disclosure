@@ -85,9 +85,8 @@ contents
                 <tr<?php if($count == $i) echo ' class="last"'; ?>>
                     <td class="cell02"><?php echo strftime($this->lang->line('setting_date_format'), strtotime($xbrl->date)); ?></td>
                     <td style="font-size:90%;text-align:left;"><?php echo anchor('document/show/'.$xbrl->id, $xbrl->document_name.' - '.$xbrl->presenter_name); ?></td><td>
-                    <?php echo anchor('document/download/'.$xbrl->id.'/csv','<img src="/images/icon/csv_30.png" alt="csv" />'); ?><?php echo $xbrl->xbrl_count; ?>
-                    <?php //echo anchor($xbrl->format_path.'.xlsx','<img src="/images/icon/excel_30.png" alt="csv" />'); ?>
-                    <?php echo anchor('document/download/'.$xbrl->id.'/xlsx','<img src="/images/icon/excel_30.png" alt="xlsx" />'); ?>
+                    <?php echo anchor('document/download/'.$xbrl->id.'/csv','<img src="/images/icon/csv_30.png" alt="csv" />'); ?>
+                    <?php echo anchor('document/download/'.$xbrl->id.'/xlsx','<img src="/images/icon/xlsx_30.png" alt="xlsx" />'); ?>
                     </td>
                 </tr>
                 <?php $i++; ?>

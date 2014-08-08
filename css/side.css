@@ -214,7 +214,7 @@
 
 #side_cat {
     background:#fff;
-    /*border-right:#ccc 1px solid;*/
+    border-left:#ccc 1px solid;
     margin:0 0 30px;
     -webkit-box-shadow:0 0 10px 0 rgba(0,0,0,.2);
     -moz-box-shadow:0 0 10px 0 rgba(0,0,0,.2);
@@ -335,7 +335,7 @@
     /*border-right:#ccc 1px solid;*/
     -webkit-box-shadow:0 0 10px 0 rgba(0,0,0,.2);
     -moz-box-shadow:0 0 10px 0 rgba(0,0,0,.2);
-    box-shadow:0 0 10px 0 rgba(0,0,0,.2)
+    box-shadow:0 0 10px 0 rgba(0,0,0,.2);
 }
 
 .side_list {

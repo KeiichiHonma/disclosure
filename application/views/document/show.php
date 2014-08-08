@@ -13,11 +13,11 @@ contents
             
             <table>
                 <tr>
-                    <td colspan="5"><?php $this->load->view('layout/common/document_sns'); ?></td>
+                    <td colspan="5"  class="value"><?php $this->load->view('layout/common/document_sns'); ?></td>
                 </tr>
                 <tr>
                     <th class="cell01">提出日</th>
-                    <td class="first"colspan="4"><?php echo strftime($this->lang->line('setting_date_format'), strtotime($document->date)); ?></td>
+                    <td class="first value" colspan="4"><?php echo strftime($this->lang->line('setting_date_format'), strtotime($document->date)); ?></td>
                 </tr>
                 <?php $count = count($document_datas);$i = 1; ?>
                 <?php foreach ($document_datas as $number => $document_data) : ?>
@@ -27,15 +27,15 @@ contents
                     <td nowrap><?php echo $document_data->context_consolidated; ?></td>
                     <td nowrap><?php echo $document_data->context_term; ?></td>
                     <?php if( $document_data->unit == 'JPY' && is_numeric($document_data->int_data) ): ?>
-                        <td class="jpy"><?php echo number_format($document_data->int_data).'円'; ?></td>
+                        <td class="jpy value"><?php echo number_format($document_data->int_data).'円'; ?></td>
                     <?php elseif( is_numeric($document_data->int_data) ): ?>
-                        <td><?php echo number_format($document_data->int_data); ?></td>
+                        <td class="value"><?php echo number_format($document_data->int_data); ?></td>
                     <?php elseif( $document_data->text_data != '' ): ?>
-                        <td><?php echo $document_data->text_data; ?></td>
+                        <td class="value"><?php echo $document_data->text_data; ?></td>
                     <?php elseif( $document_data->mediumtext_data != '' ): ?>
-                        <td><?php //echo $document_data->mediumtext_data; ?></td>
+                        <td class="value"><?php //echo $document_data->mediumtext_data; ?></td>
                     <?php else: ?>
-                        <td>&nbsp;</td>
+                        <td class="value">&nbsp;</td>
                     <?php endif; ?>
                 </tr>
                 <?php $i++; ?>
