@@ -390,9 +390,19 @@ if(isset($_SERVER['REQUEST_URI']) && in_array('console',explode('/',$_SERVER['RE
 |
 */
 $config['stylesheets'][] = 'css/master.css';
+$config['stylesheets'][] = 'css/main.css';
+$config['stylesheets'][] = 'css/side.css';
 //$config['stylesheets'][] = 'css/jquery.sidr.dark.css';
 //$config['stylesheets'][] = 'css/jquery-ui-1.10.3.custom.css';
+
 $config['javascripts'][] = 'js/jquery-1.8.3.js';
+
+//$config['javascripts'][] = 'js/jquery-1.7.2.min.js';
+//$config['javascripts'][] = 'js/css_browser_selector.js';
+$config['javascripts'][] = 'js/jquery.sidr.min.js';
+//$config['javascripts'][] = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js';
+//$config['javascripts'][] = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js';
+
 //$config['javascripts'][] = 'js/jquery-1.7.2.min.js';
 //$config['javascripts'][] = 'js/css_browser_selector.js';
 //$config['javascripts'][] = 'js/jquery.sidr.min.js';
@@ -457,8 +467,13 @@ $config['jma_weather_start_year'] = 1967;//1967から天気がある
 $config['page_link_number'] = 5;
 $config['paging_row_count'] = 1;
 $config['paging_column_count'] = 50;
-
 $config['paging_count_per_page'] = $config['paging_row_count'] * $config['paging_column_count'];
+
+$config['cdata_page_link_number'] = 5;
+$config['cdata_paging_row_count'] = 1;
+$config['cdata_paging_column_count'] = 10;
+$config['cdata_paging_count_per_page'] = $config['cdata_paging_row_count'] * $config['cdata_paging_column_count'];
+
 $config['paging_count_per_index_page'] = 1 * 20;
 $config['paging_count_per_manage_page'] = 10;
 /*
@@ -508,6 +523,14 @@ $config['document_info_index'] = array('DocumentTitleCoverPage','GenericNameOfEn
 */
 
 $config['string_max_length'] = 10000;
+
+/*
+|--------------------------------------------------------------------------
+| allowed download file type
+|--------------------------------------------------------------------------
+|
+*/
+$config['allowed_download_file_type'] = array('csv','excel');
 
 /* End of file config.php */
 /* Location: ./application/config/config.php */

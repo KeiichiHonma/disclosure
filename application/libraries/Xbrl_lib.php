@@ -184,6 +184,20 @@ class Xbrl_lib
                                                 $context = $context_data->context_name;
                                             }
                                         }
+                                    }elseif(preg_match('/^Interim/', $contextRef) === 1){
+                                        if(preg_match('/^InterimNonConsolidatedDuration/', $contextRef)){
+                                            $context = '当中間期';
+                                        }elseif(preg_match('/^InterimNonConsolidatedInstant/', $contextRef)){
+                                            $context = '当中間期末';
+                                        }else{
+                                            $context_data = $this->ci->Context_model->getContextByContextTag($contextRef);
+                                            if(empty($context_data)){
+                                                $context = $contextRef;
+                                                log_message('error','none context tag '.$contextRef.':'.$file);
+                                            }else{
+                                                $context = $context_data->context_name;
+                                            }
+                                        }
                                     }else{
                                         log_message('error','none context tag '.$contextRef.':'.$file);
                                         $context = $contextRef;
@@ -239,28 +253,28 @@ class Xbrl_lib
                                 $text = htmlspecialchars($xbrl_data_value,ENT_NOQUOTES);
                                 $is_judge_length = isset($text[$this->ci->config->item('string_max_length')]);
                                 if($is_judge_length){
+                                    $insert_document_data[$line]['int_data'] = 0;
+                                    $insert_document_data[$line]['text_data'] = '';
                                     $insert_document_data[$line]['mediumtext_data'] = $text;
                                     //csv用
                                     $ret = $this->_mb_str_split($text, $this->ci->config->item('string_max_length') * 2);//16,384
                                     foreach ($ret as $split_text){
                                         $csv_datas[$line][] = $split_text;
                                     }
-/*
-                                    if(!$is_base){
-                                        $ret = $this->_mb_str_split($text, $this->ci->config->item('string_max_length') * 2);//16,384
-                                        foreach ($ret as $split_text){
-                                            $csv_datas[$line][] = $split_text;
-                                        }
-                                    }
-*/
                                 }elseif(isset($text[1000])){//htmlを完全除去したい
+                                    $insert_document_data[$line]['int_data'] = 0;
+                                    $insert_document_data[$line]['text_data'] = '';
                                     $insert_document_data[$line]['mediumtext_data'] = $text;
                                     //何もしない
                                 }else{
                                     if(is_numeric($text)){
                                         $insert_document_data[$line]['int_data'] = $text;
+                                        $insert_document_data[$line]['text_data'] = '';
+                                        $insert_document_data[$line]['mediumtext_data'] = '';
                                     }else{
+                                        $insert_document_data[$line]['int_data'] = $text;
                                         $insert_document_data[$line]['text_data'] = $text;
+                                        $insert_document_data[$line]['mediumtext_data'] = '';
                                     }
                                     //csv
                                     $csv_datas[$line][] = $text;

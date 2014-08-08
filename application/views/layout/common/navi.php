@@ -26,34 +26,15 @@ header
                 </ul>
             </div>
         </div>
-    <?php if(isset($isHome)) : ?>
-        <div id="cloud">
-            <h3>予測正答率</h3>
-            <span><?php echo $odds->percentage; ?>%</span>
-        </div>
-        <div id="desc"><span>ハレコへようこそ！</span><br />ハレコは過去50年分の天気データを元にして、独自の天気予測エンジンで各地の天気を1年先まで予測しています。</div>
-    <?php endif; ?>
     </div>
     <!-- パンクズ -->
     <div id="breadcrumb" class="scrolltop">
         <div id="breadcrumbInner" class="cf">
-            <?php if(isset($isIndex)) : ?><div class="undisp"><?php endif; ?>
-            <?php if(isset($topicpaths)) : ?>
-            <?php
-                $count = count($topicpaths);
-                $validate_number = $count >= 2 ? $count - 2 : 1;
-                $i = 1;
-            ?>
-            <?php foreach ($topicpaths as $key => $topicpath) : ?>
-                <?php if(strcasecmp($key,'news') == 0): ?>
-                <span class="news"><p><?php echo $topicpath[1]; ?></p></span>
-                <?php else: ?>
-                <span<?php if($i <= $validate_number) echo ' class="undisp"'; ?>><?php echo is_null($topicpath[0]) ? $topicpath[1] :  '<a href="'.$topicpath[0].'">'.$topicpath[1].'</a>'; ?></span>
-                <?php endif; ?>
-                <?php $i++; ?>
-            <?php endforeach; ?>
-            <?php if(isset($isIndex)) : ?></div><?php endif; ?>
-            <?php endif; ?>
+            <span><a href="/">開示情報</a></span>
+            <span><a href="/">今週の人気</a></span>
+            <span><a href="/income/">企業年収</a></span>
+            <span><a href="/income/">転職速報</a></span>
+            
     <?php if(!isset($isIndex)) : ?>
             <div class="searchBox">
                 <div class="searchBoxInner">

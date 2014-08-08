@@ -27,7 +27,13 @@ class Upload_folder
 							$this->CI->config->item('upload_folder_top'),
 							$this->CI->config->item('upload_temporary_folder'),
 						);
-        if (! empty($date_dir)) $folderPath[] = $date_dir;
+        if (! empty($date_dir)){
+            list($year,$month,$day) = explode('/',$date_dir);
+            //$folderPath[] = $date_dir;
+            $folderPath[] = $year;
+            $folderPath[] = $month;
+            $folderPath[] = $day;
+        }
 		if (! empty($child_dir)) $folderPath[] = $child_dir;
 
 		return implode('/', $folderPath) . '/';

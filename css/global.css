@@ -209,7 +209,8 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 /* html, body
 --------------------------------------------------*/
 body {
-	color: #666666;
+	/*color: #666666;*/
+    color: #000000;
 	text-align: left;
 }
 /* font-size */
@@ -223,7 +224,8 @@ a {
 	text-decoration: none;
 }
 a:hover {
-	color: #888888;
+	/*color: #888888;*/
+    color: #666666;
 }
 
 

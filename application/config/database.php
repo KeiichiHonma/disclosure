@@ -89,6 +89,23 @@ $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
 
+//2
+$db['database2']['hostname'] = 'hades.corp.813.co.jp';
+$db['database2']['username'] = 'job';
+$db['database2']['password'] = 'kyeoisihcihoi';
+$db['database2']['database'] = 'job';
+
+$db['database2']['dbdriver'] = 'mysql';
+$db['database2']['dbprefix'] = '';
+$db['database2']['pconnect'] = TRUE;
+$db['database2']['db_debug'] = TRUE;
+$db['database2']['cache_on'] = FALSE;
+$db['database2']['cachedir'] = '';
+$db['database2']['char_set'] = 'utf8';
+$db['database2']['dbcollat'] = 'utf8_general_ci';
+$db['database2']['swap_pre'] = '';
+$db['database2']['autoinit'] = TRUE;
+$db['database2']['stricton'] = FALSE;
 
 /* End of file database.php */
 /* Location: ./application/config/database.php */

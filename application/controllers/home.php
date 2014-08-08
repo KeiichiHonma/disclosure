@@ -12,7 +12,7 @@ class Home extends MY_Controller
         $this->load->database();
         $this->load->model('Category_model');
         $this->load->model('Presenter_model');
-        $this->load->model('Xbrl_model');
+        $this->load->model('Document_model');
         $this->categories = $this->Category_model->getAllcategories();
         $this->data = array();
     }
@@ -21,22 +21,16 @@ class Home extends MY_Controller
      * search area action
      *
      */
-    function index($page = 1)
+    function index()
     {
         $data['bodyId'] = 'ind';
+        $data['seven_dates'] = $this->Document_model->getDocumentDateGroupByDate();
         $order = "created";
         $orderExpression = "created DESC";//作成新しい
-        $xbrlsResult =$this->Xbrl_model->getXbrlsOrder($orderExpression,$page);
-        $data['xbrls'] = $xbrlsResult['data'];
-        $data['page'] = $page;
-        $data['order'] = $order;
+        $last_date = end($data['seven_dates']);
+        $data['xbrls'] =$this->Document_model->getAllDocumentsByDate($last_date->date,$orderExpression);
         
-        $data['pageFormat'] = "{$order}/%d";
-        $data['rowCount'] = intval($this->config->item('paging_row_count'));
-        $data['columnCount'] = intval($this->config->item('paging_column_count'));
-        $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
-        $data['maxPageCount'] = (int) ceil(intval($xbrlsResult['count']) / intval($this->config->item('paging_count_per_page')));
-        $data['orderSelects'] = $this->lang->line('order_select');
+        $data['categories'] = $this->categories;
         
         //set header title
         $data['header_title'] = $this->lang->line('common_header_title');
@@ -45,7 +39,7 @@ class Home extends MY_Controller
 
         //$this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/jquery.bxslider.css','/css/add.css','css/start/jquery-ui-1.9.2.custom.css','css/datepicker.css')));
         $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/add.css','css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
-        $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/jquery-1.8.3.js','js/jquery-ui-1.9.2.custom.js')));
+        $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/jquery-ui-1.9.2.custom.js','js/scrolltop.js')));
         $this->load->view('home/index', array_merge($this->data,$data));
     }
 

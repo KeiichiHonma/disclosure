@@ -229,32 +229,6 @@
     background:#d4d4d4;
 }
 
-#contentsInner .allDlBtn{
-    width:15%;
-    float:right;
-    margin:10px 0 10px 10px;
-}
-
-#contentsInner .allDlBtn a{
-    display:block;
-    background:#e3e2e2;
-    text-align:center;
-    font-weight:bold;
-    font-size:12px;
-    color:#8a8989;
-    border-radius: 3px;
-    -webkit-border-radius: 3px;  
-    -moz-border-radius: 3px;
-    padding:5px;
-    -moz-box-shadow: 0 3px 0px #cbcbcb;
-    -webkit-box-shadow: 0 3px 0px #cbcbcb;
-    box-shadow: 0 3px 0px #cbcbcb;
-    behavior: url(js/PIE.htc);
-}
-#contentsInner .allDlBtn a:hover{
-    background:#d4d4d4;
-}
-
 #contentsInner #history {
     width:930px;
 }
