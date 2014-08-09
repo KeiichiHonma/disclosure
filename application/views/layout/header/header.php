@@ -61,7 +61,27 @@ $(function(){
         }
     });
     /* カレンダー */
-    $("#datepicker").datepicker();            
+    $.datepicker.setDefaults( $.datepicker.regional[ "ja" ] );
+    //$( "#datepicker" ).datepicker({ minDate: -20, maxDate: 0 });
+
+$("#datepicker").datepicker({
+    minDate: -20,
+    maxDate: 0,
+    // The hidden field to receive the date
+    //altField: "#dateHidden",
+    // The format you want
+    altFormat: "yy-mm-dd",
+    // The format the user actually sees
+    //dateFormat: "dd/mm/yy",
+    dateFormat: "yy-mm-dd",
+    onSelect: function (date) {
+        // Your CSS changes, just in case you still need them
+        //$('a.ui-state-default').removeClass('ui-state-highlight');
+        //$(this).addClass('ui-state-highlight');
+        alert(date);
+    }
+});
+
     /* PC用プルダウンメニュー */
     $(".navPc li").click(function() {
         $(this).children('ul').fadeToggle(300);
@@ -93,5 +113,10 @@ function s_confirm () {
     if($(".focus").val() != '' && $(".focus").val() != "<?php echo $this->lang->line('search_box_default') ?>") $('#search').submit();
 }
 </script>
+
+<style type="text/css">
+.ui-datepicker{width: 293px;margin-bottom:30px;}
+</style>
+
 </head>
 <body id="<?php echo $bodyId; ?>">

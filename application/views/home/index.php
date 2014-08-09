@@ -94,10 +94,8 @@ contents
             </table>
         </div>
         <div id="sidebar">
-
             <div id="side_cat">
                 <h1 class="side_title">開示情報 カテゴリー</h1>
-
                 <ul>
                 <?php foreach ($categories as $category) : ?>
                 <li><a href="http://liginc.co.jp/news"><span><?php echo $category->name; ?></span><?php if(in_array($category->name,$new_categories)): ?><span class="new">new</span><?php endif; ?></a></li>
@@ -105,6 +103,7 @@ contents
                 </ul>
             </div><!-- /side_cat -->
             <div class="box_wrap">
+                <div id="datepicker"></div>
                 <div class="box_adx">
                     <img src="/images/ad_example1.gif" alt="csv" />
                 </div>
@@ -113,5 +112,16 @@ contents
         <span class="cf" />
     </div>
 </div>
+
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/slide/jcarousellite_1.0.1.pack.js"></script>
+<script type="text/javascript" src="/js/slide/jquery.tools.min.js"></script>
+
+<script type="text/javascript" src="/js/slide/jquery.fancybox-1.3.4.custom.js"></script>
+<script type="text/javascript" src="/js/slide/jquery.easing-1.3.pack.js"></script>
+<script type="text/javascript" src="/js/slide/jquery.mousewheel-3.0.4.pack.js"></script>
+<script src="/js/slide/jquery.hoverIntent.minified.js" type="text/javascript"></script>
+<script src="/js/slide/tools.js" type="text/javascript"></script>
 
 <?php $this->load->view('layout/footer/footer'); ?>

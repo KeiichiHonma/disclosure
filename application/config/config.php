@@ -400,6 +400,7 @@ $config['javascripts'][] = 'js/jquery-1.8.3.js';
 //$config['javascripts'][] = 'js/jquery-1.7.2.min.js';
 //$config['javascripts'][] = 'js/css_browser_selector.js';
 $config['javascripts'][] = 'js/jquery.sidr.min.js';
+$config['javascripts'][] = 'js/scrolltop.js';
 //$config['javascripts'][] = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js';
 //$config['javascripts'][] = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js';
 

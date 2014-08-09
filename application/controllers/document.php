@@ -54,9 +54,7 @@ var $values = array();
         
         $data['categories'] = $this->categories;
         
-        //$this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/jquery.bxslider.css','/css/add.css','css/start/jquery-ui-1.9.2.custom.css','css/datepicker.css')));
-        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/add.css','css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
-        $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/jquery-ui-1.9.2.custom.js','js/scrolltop.js')));
+        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
         $this->load->view('document/date', array_merge($this->data,$data));
     }
 
@@ -86,8 +84,7 @@ var $values = array();
         $data['header_title'] = $this->lang->line('common_header_title');
         $data['header_keywords'] = $this->lang->line('common_header_keywords');
         $data['header_description'] = $this->lang->line('common_header_description');
-        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/add.css','css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
-        $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/jquery-ui-1.9.2.custom.js','js/scrolltop.js')));
+        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
         $this->load->view('document/show', array_merge($this->data,$data));
     }
 
@@ -121,8 +118,7 @@ var $values = array();
         $data['header_title'] = $this->lang->line('common_header_title');
         $data['header_keywords'] = $this->lang->line('common_header_keywords');
         $data['header_description'] = $this->lang->line('common_header_description');
-        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/add.css','css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
-        $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/jquery-ui-1.9.2.custom.js','js/scrolltop.js')));
+        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
         $this->load->view('document/download', array_merge($this->data,$data));
     }
 
