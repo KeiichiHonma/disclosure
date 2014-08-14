@@ -31,9 +31,10 @@ header
     <div id="breadcrumb" class="scrolltop">
         <div id="breadcrumbInner" class="cf">
             <span><a href="/">開示情報</a></span>
-            <span><a href="/">今週の人気</a></span>
-            <span><a href="/income/">企業年収</a></span>
-            <span><a href="/income/">転職速報</a></span>
+            <!-- <span><a href="/">今週の人気</a></span> -->
+            <span><a href="/income/">年収速報</a></span>
+            <span><a href="/ipo/">IPO</a></span>
+            <!-- <span><a href="/change/">転職速報</a></span> -->
             
     <?php if(!isset($isIndex)) : ?>
             <div class="searchBox">

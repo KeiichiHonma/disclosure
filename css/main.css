@@ -165,6 +165,7 @@
 #document th.cell01{ border-left:1px solid #dfdedb; }
 #document td.cell02{ border-left:1px solid #dfdedb; }
 #document th.date{ width:30px; }
+#document th.code{ width:40px; }
 #document th.dl{ width:40px; }
 
 #document #download{
@@ -247,6 +248,27 @@
 .box_snsbtn li.right {
     float:right;
     margin:0 0 40px 10px
+}
+.box_snsbtn li.download {
+    width:200px;
+}
+
+.box_snsbtn li.download .title {
+    font-size:116%;
+    font-weight:bold;
+    padding:0 0 7px 0;
+    border-bottom:3px solid #e9e7e7;
+    height:1em;
+    margin:0px;
+}
+.box_snsbtn li.download .title span {
+    float:left;
+    display:block;
+    border-bottom:3px solid #fd6405;
+    padding-bottom:7px;
+    padding-left:3px;
+    padding-right:3px;
+    height:1em;
 }
 
 #download table{

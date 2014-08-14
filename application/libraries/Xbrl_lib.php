@@ -58,6 +58,7 @@ class Xbrl_lib
         $this->ci =& get_instance();
         $this->ci->load->model('Item_model');
         $this->ci->load->model('Context_model');
+        $this->ci->load->library('PHPExcel');
     }
     
     public function _parseXml($file="") {
@@ -70,7 +71,8 @@ class Xbrl_lib
     }
     
     //public function _makeCsv($xbrl_datas,$file,$is_base = FALSE) {
-    public function _makeCsvSqlData($xbrl_datas,$file,&$insert_document_data) {
+    public function _makeCsvSqlData($xbrl_datas,$file,&$insert_document_data,$edinet_code,&$tenmono_datas) {
+        require_once('application/libraries/simple_html_dom.php');
         foreach ($xbrl_datas as $line => $xbrl_data){
             if(preg_match('/^xbrl/', $xbrl_data['tag']) === 0 && preg_match('/^link/', $xbrl_data['tag']) === 0){
                 $xbrl_data_value = isset($xbrl_data['value']) ? trim($xbrl_data['value']) : '';
@@ -94,7 +96,28 @@ class Xbrl_lib
                     
                     if(!$is_ng){
                         list($namespace,$index) = explode(':',$xbrl_data['tag']);
-                        
+
+                        //tenmono
+                        if(isset($tenmono_datas['companies'][$edinet_code])){
+                            //住所
+                            if($namespace == 'jpcrp_cor' && $index == 'AddressOfRegisteredHeadquarterCoverPage'){
+                                $tenmono_datas['companies'][$edinet_code]['col_address'] = trim($xbrl_data_value);
+                                $tenmono_datas['companies'][$edinet_code]['col_map'] = $tenmono_datas['companies'][$edinet_code]['col_address'];
+                            }
+                            //公開日
+                            if($namespace == 'jpcrp_cor' && $index == 'FilingDateCoverPage'){
+                                $tenmono_datas['cdatas'][$edinet_code]['col_disclosure'] = strtotime(trim($xbrl_data_value));
+                            }
+                            //期
+                            if($namespace == 'jpcrp_cor' && $index == 'FiscalYearCoverPage'){
+                                $tenmono_datas['cdatas'][$edinet_code]['col_fiscalyear'] = trim($xbrl_data_value);
+                            }
+                            //各値
+                            if($namespace == 'jpcrp_cor' && $index == 'InformationAboutEmployeesTextBlock'){
+                                $this->_makeTenmonoData($xbrl_data_value,$tenmono_datas,$edinet_code);
+                            }
+                        }
+
                         if(!in_array($index,$this->ng_tag)){
                             $element = $this->ci->Item_model->getItemByElementName($index);
                             if(!empty($element) || $is_all_int === 1){
@@ -119,7 +142,7 @@ class Xbrl_lib
                                             $context_data = $this->ci->Context_model->getContextByContextTag($contextRef);
                                             if(empty($context_data)){
                                                 $context = $contextRef;
-                                                log_message('error','none context tag '.$contextRef.':'.$file);
+                                                $this->_insert_log_message(array('error','none context tag '.$contextRef.':'.$file));
                                             }else{
                                                 $context = $context_data->context_name;
                                             }
@@ -137,7 +160,7 @@ class Xbrl_lib
                                             $context_data = $this->ci->Context_model->getContextByContextTag($contextRef);
                                             if(empty($context_data)){
                                                 $context = $contextRef;
-                                                log_message('error','none context tag '.$contextRef.':'.$file);
+                                                $this->_insert_log_message(array('error','none context tag '.$contextRef.':'.$file));
                                             }else{
                                                 $context = $context_data->context_name;
                                             }
@@ -151,7 +174,7 @@ class Xbrl_lib
                                             $context_data = $this->ci->Context_model->getContextByContextTag($contextRef);
                                             if(empty($context_data)){
                                                 $context = $contextRef;
-                                                log_message('error','none context tag '.$contextRef.':'.$file);
+                                                $this->_insert_log_message(array('error','none context tag '.$contextRef.':'.$file));
                                             }else{
                                                 $context = $context_data->context_name;
                                             }
@@ -165,7 +188,7 @@ class Xbrl_lib
                                             $context_data = $this->ci->Context_model->getContextByContextTag($contextRef);
                                             if(empty($context_data)){
                                                 $context = $contextRef;
-                                                log_message('error','none context tag '.$contextRef.':'.$file);
+                                                $this->_insert_log_message(array('error','none context tag '.$contextRef.':'.$file));
                                             }else{
                                                 $context = $context_data->context_name;
                                             }
@@ -179,7 +202,7 @@ class Xbrl_lib
                                             $context_data = $this->ci->Context_model->getContextByContextTag($contextRef);
                                             if(empty($context_data)){
                                                 $context = $contextRef;
-                                                log_message('error','none context tag '.$contextRef.':'.$file);
+                                                $this->_insert_log_message(array('error','none context tag '.$contextRef.':'.$file));
                                             }else{
                                                 $context = $context_data->context_name;
                                             }
@@ -193,32 +216,19 @@ class Xbrl_lib
                                             $context_data = $this->ci->Context_model->getContextByContextTag($contextRef);
                                             if(empty($context_data)){
                                                 $context = $contextRef;
-                                                log_message('error','none context tag '.$contextRef.':'.$file);
+                                                $this->_insert_log_message(array('error','none context tag '.$contextRef.':'.$file));
                                             }else{
                                                 $context = $context_data->context_name;
                                             }
                                         }
                                     }else{
-                                        log_message('error','none context tag '.$contextRef.':'.$file);
+                                        $this->_insert_log_message(array('error','none context tag '.$contextRef.':'.$file));
                                         $context = $contextRef;
                                     }
                                 }else{
                                     $context = '';
                                 }
 
-/*
-                                if($contextRef != ''){
-                                    $context_data = $this->ci->Context_model->getContextByContextTag($contextRef);
-                                    if(empty($context_data)){
-                                        $context = $contextRef;
-                                        log_message('error','none context tag '.$contextRef.':'.$file);
-                                    }else{
-                                        $context = $context_data->context_name;
-                                    }
-                                }else{
-                                    $context = '';
-                                }
-*/
                                 //連結・個別
                                 if($namespace == 'jpcrp_cor'){
                                     $Consolidated_NonConsolidated_etc = 'その他';
@@ -253,6 +263,37 @@ class Xbrl_lib
                                 $text = htmlspecialchars($xbrl_data_value,ENT_NOQUOTES);
                                 $is_judge_length = isset($text[$this->ci->config->item('string_max_length')]);
                                 if($is_judge_length){
+                                    //一応DBには入れておく→メモリエラーになるので、入れない
+                                    $insert_document_data[$line]['int_data'] = 0;
+                                    $insert_document_data[$line]['text_data'] = '';
+                                    //$insert_document_data[$line]['mediumtext_data'] = $text;
+                                    $insert_document_data[$line]['mediumtext_data'] = 'over';
+
+                                    //csvには入れない
+/*
+                                    $ret = $this->_mb_str_split($text, $this->ci->config->item('string_max_length') * 2);//16,384
+                                    foreach ($ret as $split_text){
+                                        $csv_datas[$line][] = $split_text;
+                                    }
+*/
+                                }else{
+                                    if(is_numeric($text)){
+                                        $insert_document_data[$line]['int_data'] = $text;
+                                        $insert_document_data[$line]['text_data'] = '';
+                                        $insert_document_data[$line]['mediumtext_data'] = '';
+                                    }else{
+                                        $insert_document_data[$line]['int_data'] = '';
+                                        $insert_document_data[$line]['text_data'] = $text;
+                                        $insert_document_data[$line]['mediumtext_data'] = '';
+                                    }
+                                    //csv
+                                    $csv_datas[$line][] = $text;
+                                }
+/*
+長文廃止
+                                $is_judge_length = isset($text[$this->ci->config->item('string_max_length')]);
+                                if($is_judge_length){
+
                                     $insert_document_data[$line]['int_data'] = 0;
                                     $insert_document_data[$line]['text_data'] = '';
                                     $insert_document_data[$line]['mediumtext_data'] = $text;
@@ -261,6 +302,7 @@ class Xbrl_lib
                                     foreach ($ret as $split_text){
                                         $csv_datas[$line][] = $split_text;
                                     }
+
                                 }elseif(isset($text[1000])){//htmlを完全除去したい
                                     $insert_document_data[$line]['int_data'] = 0;
                                     $insert_document_data[$line]['text_data'] = '';
@@ -279,7 +321,7 @@ class Xbrl_lib
                                     //csv
                                     $csv_datas[$line][] = $text;
                                 }
-
+*/
                             }else{
                                 //if(!in_array($index,$this->ng_log_tag)) log_message('error','none index '.$xbrl_data['tag'].':'.$file);
                             }
@@ -289,6 +331,217 @@ class Xbrl_lib
             }
         }
         return $csv_datas;
+    }
+    
+    public function _makeTenmonoData($xbrl_data_value,&$tenmono_datas,$edinet_code) {
+        $html = str_get_html(str_replace(array("\r\n","\n","\r"),array('','',''),$xbrl_data_value));
+        foreach($html->find('p') as $key => $element){
+            $innertext = strip_tags($element->innertext);
+            //if ( preg_match("/^平均年間給与/", $element->innertext) ) {
+            if ( preg_match("/^平均年間給与/", $innertext) ) {
+                $pos = mb_strpos($html, '>平均年間給与');//>はあえてつけてる
+                $rest = mb_substr($html, $pos, 2500, 'UTF-8');
+
+                $implode_html = str_get_html($rest);
+                foreach($implode_html->find('p') as $key2 => $element2){
+                    $text = trim($element2->innertext);
+                    if($text != ' '){
+                        //$text = strip_tags($text);
+                        $text = mb_convert_kana($text, "a", "UTF-8");
+                        $text = str_replace(array(',','、',' ','　','名','人',' '),array('','','','','','',''),$text);//不思議な空白 「 」 がある。。
+                        //カッコ対策　16〔10〕等
+                        $kakkos = array('（','〔','(','[','［','【');
+                        foreach ($kakkos as $kakko){
+                            if( FALSE !== strstr($text,$kakko) ){
+                                $string = explode($kakko,$text);
+                                $text = $string[0];
+                            }
+                        }
+
+                        //ヶ月対策　35歳   11ヶ月　8年  10ヶ月 ６年10ヵ月等
+                        if( FALSE !== strstr($text,'ヶ月') && FALSE !== strstr($text,'歳') ){
+                            $string = explode('歳',$text);
+                            $string2 = explode('ヶ月',$string[1]);
+                            (int)$text = $string[0] + round($string2[0] / 12,1);
+                        }elseif( FALSE !== strstr($text,'ヶ月') && FALSE !== strstr($text,'才') ){
+                            $string = explode('才',$text);
+                            $string2 = explode('ヶ月',$string[1]);
+                            (int)$text = $string[0] + round($string2[0] / 12,1);
+                        }elseif( FALSE !== strstr($text,'ヶ月') && FALSE !== strstr($text,'年') ){
+                            $string = explode('年',$text);
+                            $string2 = explode('ヶ月',$string[1]);
+                            (int)$text = $string[0] + round($string2[0] / 12,1);
+                        }elseif( FALSE !== strstr($text,'ヵ月') && FALSE !== strstr($text,'歳') ){
+                            $string = explode('歳',$text);
+                            $string2 = explode('ヵ月',$string[1]);
+                            (int)$text = $string[0] + round($string2[0] / 12,1);
+                        }elseif( FALSE !== strstr($text,'ヵ月') && FALSE !== strstr($text,'才') ){
+                            $string = explode('才',$text);
+                            $string2 = explode('ヵ月',$string[1]);
+                            (int)$text = $string[0] + round($string2[0] / 12,1);
+                        }elseif( FALSE !== strstr($text,'ヵ月') && FALSE !== strstr($text,'年') ){
+                            $string = explode('年',$text);
+                            $string2 = explode('ヵ月',$string[1]);
+                            (int)$text = $string[0] + round($string2[0] / 12,1);
+                        }elseif( FALSE !== strstr($text,'か月') && FALSE !== strstr($text,'歳') ){
+                            $string = explode('歳',$text);
+                            $string2 = explode('か月',$string[1]);
+                            (int)$text = $string[0] + round($string2[0] / 12,1);
+                        }elseif( FALSE !== strstr($text,'か月') && FALSE !== strstr($text,'才') ){
+                            $string = explode('才',$text);
+                            $string2 = explode('か月',$string[1]);
+                            (int)$text = $string[0] + round($string2[0] / 12,1);
+                        }elseif( FALSE !== strstr($text,'か月') && FALSE !== strstr($text,'年') ){
+                            $string = explode('年',$text);
+                            $string2 = explode('か月',$string[1]);
+                            (int)$text = $string[0] + round($string2[0] / 12,1);
+                        }elseif( FALSE !== strstr($text,'カ月') && FALSE !== strstr($text,'歳') ){
+                            $string = explode('歳',$text);
+                            $string2 = explode('カ月',$string[1]);
+                            (int)$text = $string[0] + round($string2[0] / 12,1);
+                        }elseif( FALSE !== strstr($text,'カ月') && FALSE !== strstr($text,'才') ){
+                            $string = explode('才',$text);
+                            $string2 = explode('カ月',$string[1]);
+                            (int)$text = $string[0] + round($string2[0] / 12,1);
+                        }elseif( FALSE !== strstr($text,'カ月') && FALSE !== strstr($text,'年') ){
+                            $string = explode('年',$text);
+                            $string2 = explode('カ月',$string[1]);
+                            (int)$text = $string[0] + round($string2[0] / 12,1);
+                        }elseif( FALSE !== strstr($text,'歳') ){
+                            $string = explode('歳',$text);
+                            (int)$text = $string[0];
+                        }elseif( FALSE !== strstr($text,'才') ){
+                            $string = explode('才',$text);
+                            (int)$text = $string[0];
+                        }elseif( FALSE !== strstr($text,'年') ){
+                            $string = explode('年',$text);
+                            (int)$text = $string[0];
+                        }elseif( FALSE !== strstr($text,'千円') ){
+                            $string = explode('千円',$text);
+                            (int)$text = $string[0];
+                        }elseif( FALSE !== strstr($text,'万円') ){
+                            $string = explode('万円',$text);
+                            (int)$text = $string[0];
+                        }elseif( FALSE !== strstr($text,'円') ){
+                            $string = explode('円',$text);
+                            (int)$text = $string[0];
+                        }elseif( FALSE !== @strstr($text,'ヶ月') ){
+                            $string = explode('ヶ月',$text);
+                            (int)$text = $string[0];
+                        }elseif( FALSE !== @strstr($text,'ヵ月')){
+                            $string = explode('ヵ月',$text);
+                            (int)$text = $string[0];
+                        }elseif( FALSE !== @strstr($text,'か月') ){
+                            $string = explode('か月',$text);
+                            (int)$text = $string[0];
+                        }
+                        
+                        if( is_numeric($text) ){
+                            $result[] = $text;
+                        }
+                    }
+                }
+var_dump($result);
+die();
+                $count = count($result);
+                if($count < 4){
+                    return FALSE;
+                }elseif(){
+                
+                }
+                //順番で判定
+                $tenmono_datas['cdatas'][$edinet_code]['col_person'] = $result[0];
+                $tenmono_datas['cdatas'][$edinet_code]['col_age']    = $result[1];
+                $tenmono_datas['cdatas'][$edinet_code]['col_employ'] = $result[2];
+                $tenmono_datas['cdatas'][$edinet_code]['col_income'] = $this->_makeIncomeLength($result[3],$edinet_code);
+            }
+        }
+    }
+    
+    public function _makeIncomeLength($income,$edinet_code){
+        //=IF(LEN(H840)=7,ROUND(H840/1000,0)/10,IF(LEN(H840)=4,H840/10,IF(LEN(H840)=8,ROUND(H840/1000,0)/10,IF(LEN(H840)=5,H840/10))))
+        $len = strlen($income);
+        if($len == 8){
+            return (round($income / 10000)) / 10;//年収一千万超え
+        }elseif($len == 7){
+            return (round($income / 1000)) / 10;//7654321 単位が円
+        }elseif($len == 5){
+            return $income / 10;//年収一千万超え
+        }elseif($len == 4){
+            return $income / 10;//単位が千円
+        }elseif($len == 1){
+            return $income * 100;//単位が百万円
+        }else{
+            $this->_insert_log_message(array('error','income length '.$income.':edinet_code'.$edinet_code));
+        }
+    }
+    
+    //error log insert
+    function _insert_log_message($insert_data){
+        $data['type'] = $insert_data[0];
+        $data['log'] = $insert_data[1];
+        $this->ci->db->insert('logs', $data);//myisam
+    }
+    
+    // ----------------------------------------------------------------
+    // EXCEL出力 
+    // ----------------------------------------------------------------
+    var $alphabet = array('A','B','C','D','E','F','G','H','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ');
+    function put_excel($excel_path,$csv_datas,$excel_sheet_name,$excel_map) {
+        $objPHPExcel = null;
+        // 新規作成の場合
+        $objPHPExcel = new PHPExcel();
+        $objPHPExcel->getDefaultStyle()->getFont()->setName( 'ＭＳ Ｐゴシック' )->setSize( 11 );
+        
+        foreach ($excel_map as $xbrl_count => $xbrl_path_loop_number){
+            if($xbrl_path_loop_number > 0) $objPHPExcel->createSheet();
+            // 0番目のシートをアクティブにする（シートは左から順に、0、1，2・・・）
+            $objPHPExcel->setActiveSheetIndex($xbrl_path_loop_number);
+            // アクティブにしたシートの情報を取得
+            $objSheet = $objPHPExcel->getActiveSheet();
+            // シート名を変更する
+            $objSheet->setTitle($excel_sheet_name[$xbrl_path_loop_number]);
+            $excel_tate = 0;
+            $line = 0;
+            foreach ($csv_datas[$xbrl_count] as $values){
+                $excel_tate = $line + 1;
+                foreach ($values as $value_number => $col) {
+                    if(!isset($this->alphabet[$value_number])){
+                        $this->_insert_log_message(array('error','none alphabet '.$value_number.':'.$excel_path));
+                    }
+                    $excel_yoko = $this->alphabet[$value_number];
+                    $excel_column_name = $excel_yoko.$excel_tate;
+                    
+                    if (is_numeric($col)) {
+                        $data[$xbrl_path_loop_number][$excel_column_name] = $col;
+                        $objSheet->setCellValue($excel_column_name, $col);
+                    } else {
+                        if(is_array($col)){
+                            var_dump($col);
+                            die();
+                        }
+                        //$col = mb_convert_encoding($col, $toEncoding, $srcEncoding);
+                        $col = str_replace('"', '""', $col);
+                        $data[$xbrl_path_loop_number][$excel_column_name] = $col;
+                        $objSheet->setCellValue($excel_column_name, $col);
+                    }
+                }
+                $line++;
+            }
+            $objPHPExcel->setActiveSheetIndex(0);//sheet選択
+            // IOFactory.phpを利用する場合
+            $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+            if(is_null($excel_path)){
+                return $objWriter;
+                //$objWriter->save('php://output');
+            }else{
+                $objWriter->save($excel_path);
+            }
+            
+        }
+        // Excel2007.phpを利用する場合
+        //$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+        //$objWriter->save("sample2.xlsx");
     }
 
     function _mb_str_split($str, $split_len = 1) {

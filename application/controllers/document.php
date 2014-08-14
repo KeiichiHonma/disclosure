@@ -79,7 +79,11 @@ var $values = array();
         if($data['presenter']->securities_code > 0) $data['company'] = $this->Tenmono_model->getCompanyBySecurityCode($data['presenter']->securities_code);
 
         $data['categories'] = $this->categories;
-
+        
+        //sns用URL
+        $data['sns_url'] = '/document/show/'.$document_id;
+        $data['document_download'] = TRUE;
+        
         //set header title
         $data['header_title'] = $this->lang->line('common_header_title');
         $data['header_keywords'] = $this->lang->line('common_header_keywords');
@@ -113,7 +117,10 @@ var $values = array();
         if($data['presenter']->securities_code > 0) $data['company'] = $this->Tenmono_model->getCompanyBySecurityCode($data['presenter']->securities_code);
         
         $data['categories'] = $this->categories;
-        
+
+        //sns用URL
+        $data['sns_url'] = '/document/show/'.$document_id;
+
         //set header title
         $data['header_title'] = $this->lang->line('common_header_title');
         $data['header_keywords'] = $this->lang->line('common_header_keywords');
@@ -125,7 +132,7 @@ var $values = array();
     function prepare($document_id,$download_string)
     {
         $index = array_search($download_string,$this->config->item('allowed_download_file_type'));
-        if(empty($download_string) || !$index) show_404();
+        if(empty($download_string) || $index === FALSE) show_404();
         $document = $this->Document_model->getDocumentById($document_id);
         if(empty($document))  show_404();
 
@@ -138,7 +145,7 @@ var $values = array();
             'ip' => $_SERVER['REMOTE_ADDR'],
             'created' => date("Y-m-d H:i:s", time()),
         );
-        $this->db->insert('downloads', $data);
+        $this->db->insert('document_downloads', $data);
         $this->db->insert_id();
 
         $data = file_get_contents($path); // ファイルの内容を読み取る

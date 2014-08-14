@@ -7,9 +7,10 @@ class Tools extends CI_Controller {
     var $VAL = "_value";
     var $log_echo = FALSE;
     var $is_parse = TRUE;
+    var $is_tenmono = FALSE;
     var $xbrls_informations;
     var $xbrl_files;
-    var $alphabet = array('A','B','C','D','E','F','G','H','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ');
+    
     
     function __construct(){
         set_time_limit(0);
@@ -26,9 +27,9 @@ class Tools extends CI_Controller {
         $this->load->model('Security_model');
         $this->load->model('Presenter_model');
         $this->load->model('Document_model');
+        $this->load->model('Tenmono_model');
         $this->load->library('upload_folder');
         $this->load->library('Xbrl_lib');
-        $this->load->library('PHPExcel');
         $this->categories = $this->Category_model->getAllcategories();
         
         $this->archiver = new ZipArchive();
@@ -121,34 +122,56 @@ die();
         $base_datas = array();
         $this->_list_files($tmp_dir_path. '/',$move_ymd_path);
         
+        $tenmono_datas = array('companies'=>array(),'cdatas'=>array());
+
         $presenters_map = array();
         if(!empty($this->xbrls_informations)){
+
             //先に企業名をDBに挿入 presenter_id が必要なため
             foreach ($this->xbrls_informations as $unzip_dir_name => $xbrls_information){
                 foreach ($xbrls_information as $xbrl_dir_id => $value){
+                    $is_tenmono = FALSE;
+                    if(preg_match('/株式会社/', $value['presenter_name'])) $is_tenmono = TRUE;
                     $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'] = str_replace('株式会社','',$value['presenter_name']);
+                    
                     $presenter = $this->Presenter_model->getPresenterByName($value['presenter_name']);
+                    $security = $this->Security_model->getSecurityByName( $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'] );
+                    $edinet_code = $value['edinet_code'];
                     if(empty($presenter)){
                         //企業名は重複を防ぐため、edinetcodeで
-                        $edinet_code = $value['edinet_code'];
                         $insert_data['presenter'][$edinet_code]['edinet_code'] = $edinet_code;
                         $insert_data['presenter'][$edinet_code]['name'] = $value['presenter_name'];
-                        $security = $this->Security_model->getSecurityByName( $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'] );
                         $insert_data['presenter'][$edinet_code]['securities_code'] = empty($security) ? '' : $security->id;
+                    }
+                    //tenmono
+                    if($is_tenmono && $value['document_name'] == '有価証券報告書'){
+                        if(!empty($security)){
+                            //業界IDはこの段階ではまだ。既にtenmono側に登録があるかもしれないし、新規の企業かもしれない
+                            $tenmono_datas['companies'][$edinet_code]['col_code'] = $security->id;
+                            $variety = $this->Tenmono_model->getVarietyByVarietyName($security->category_name);
+                            $tenmono_datas['companies'][$edinet_code]['col_vid'] = $variety->_id;
+                            $tenmono_datas['companies'][$edinet_code]['col_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'];
+                        }else{
+                            //証券コードがない。記録して後日対応しないとだめ
+                            $this->xbrl_lib->_insert_log_message(array('error','none serucity_code '.$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'].':edinet_code'.$edinet_code));
+                            $tenmono_datas['companies'][$edinet_code]['col_code'] = 0;//空のデータを入れておいて後で対応する
+                            $tenmono_datas['companies'][$edinet_code]['col_vid'] = 0;//空のデータを入れておいて後で対応する
+                            $tenmono_datas['companies'][$edinet_code]['col_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'];
+                        }
                     }
                     $presenters_map[$xbrl_dir_id] = $value['presenter_name'];
                 }
             }
         }
+
         if(!empty($insert_data['presenter']))$this->db->insert_batch('presenters', $insert_data['presenter']);//myisam
 
-        //move 
+        //move
         foreach ($rename_paths as $rename_path){
             if(is_dir($rename_path['move_path'])) $this->_remove_directory($rename_path['move_path']);
             rename($rename_path['tmp_path'],$rename_path['move_path']);
             $zip_name = end(explode('/',$rename_path['zip_path']));
             rename($rename_path['zip_path'],$rename_path['move_path'].'/'.$zip_name);
-            //@unlink($rename_path['zip_path']);
         }
         $this->_remove_directory($tmp_path.$year);
 
@@ -211,16 +234,15 @@ die();
                     */
                     $format_path_ex = explode('/', $xbrl_path);
                     $count = count($format_path_ex);
+                    $edinet_code = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'];
                     //ファイル命名
-                    //$format_path_ex[$count-1] = $date.'_'.$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'];//日付+edinetcode
-                    //$format_path = implode('/',array_slice($format_path_ex,6,$count));//xbrlsから
                     $new_format_arr = array_slice($format_path_ex,6,5);
-                    $new_format_arr[] = $date.'_'.$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'];//日付+edinetcode
+                    $new_format_arr[] = $date.'_'.$edinet_code;//日付+edinetcode
                     $format_path = implode('/',$new_format_arr);//xbrlsからランダム文字列ディレクトリ20140806123925fb71まで
 
                     //最初の1ファイル分だけDBデータ生成
                     if($xbrl_number == 0){
-                        $insert_data['document'][$xbrl_dir_id]['edinet_code'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'];
+                        $insert_data['document'][$xbrl_dir_id]['edinet_code'] = $edinet_code;
                         $insert_data['document'][$xbrl_dir_id]['presenter_id'] = 0;
                         $insert_data['document'][$xbrl_dir_id]['category_id'] = 0;
                         $insert_data['document'][$xbrl_dir_id]['manage_number'] = $xbrl_dir_id;
@@ -243,7 +265,7 @@ die();
                             $insert_data['document'][$xbrl_dir_id]['presenter_id'] = $presenter->id;
                         }
                         //code生成
-                        $code = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'].'_'.$date.'_'.$xbrl_dir_id.'_'.$insert_data['document'][$xbrl_dir_id]['presenter_id'];
+                        $code = $edinet_code.'_'.$date.'_'.$xbrl_dir_id.'_'.$insert_data['document'][$xbrl_dir_id]['presenter_id'];
                         $insert_data['document'][$xbrl_dir_id]['code'] = $code;
                         //codeチェック
                         $check_xbrl = $this->Document_model->getDocumentByCode($code);
@@ -256,7 +278,7 @@ die();
                     
                     if($this->is_parse){
                         $xbrl_datas = $this->xbrl_lib->_parseXml($xbrl_path);
-                        $csv_datas[$xbrl_count] = $this->xbrl_lib->_makeCsvSqlData($xbrl_datas,$xbrl_path,$insert_data['document_data'][$xbrl_dir_id][$xbrl_number]);
+                        $csv_datas[$xbrl_count] = $this->xbrl_lib->_makeCsvSqlData($xbrl_datas,$xbrl_path,$insert_data['document_data'][$xbrl_dir_id][$xbrl_number],$edinet_code,$tenmono_datas);
                         $csv_paths[$xbrl_count] = $xbrl_number > 0 ? $format_path.'_'.$xbrl_number.'.csv' : $format_path.'.csv';
                         $excel_map[$xbrl_count]  = $xbrl_path_loop_number;
                         $excel_sheet_name[$xbrl_dir_id][$xbrl_path_loop_number] = end($new_format_arr).'_'.$xbrl_path_loop_number;
@@ -264,6 +286,8 @@ die();
                     }
                     $xbrl_path_loop_number++;
                 }
+
+                //DB追加、更新///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //既に存在していたら除去して個別更新
                 if(!empty($check_xbrl)){
                     $this->db->where('code', $code);
@@ -285,7 +309,7 @@ die();
                     $insert_data['document'][$xbrl_dir_id]['xbrl_path'] = serialize($xbrl_path_arr);//複数の可能性あり
                     $this->db->insert('documents', $insert_data['document'][$xbrl_dir_id]);
                     $document_id = $this->db->insert_id();
-                    echo $document_id."\n";
+                    //echo $document_id."\n";
                     for ($i=0;$i<$xbrl_paths_count;$i++){
                         $batch_data = array();
                         foreach ($insert_data['document_data'][$xbrl_dir_id][$i] as $value){
@@ -296,10 +320,9 @@ die();
                     }
                 }
 
-                
                 //ここでexcel
                 echo $excel_path."\n";
-                $this->put_excel($excel_path,$csv_datas,$excel_sheet_name[$xbrl_dir_id],$excel_map);
+                $this->xbrl_lib->put_excel($excel_path,$csv_datas,$excel_sheet_name[$xbrl_dir_id],$excel_map);
             }
             //1documentごとにコミット
             if ($this->db->trans_status() === FALSE) {
@@ -311,12 +334,189 @@ die();
             }
         }
         if($this->is_parse){
+            //csv書き出し
             $this->put_csv($csv_paths,$csv_datas);
+            
+            //tenmono更新///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /*
+            array(2) {
+              ["companies"]=>
+              array(1) {
+                ["E04896"]=>
+                array(4) {
+                  ["code"]=>
+                  string(4) "9627"
+                  ["vid"]=>
+                  string(2) "28"
+                  ["name"]=>
+                  string(30) "アインファーマシーズ"
+                  ["address"]=>
+                  string(53) "札幌市白石区東札幌５条２丁目４番30号"
+                }
+              }
+              ["cdatas"]=>
+              array(1) {
+                ["E04896"]=>
+                array(7) {
+                  ["code"]=>
+                  string(4) "9627"
+                  ["date"]=>
+                  string(10) "2014/07/31"
+                  ["fiscalyear"]=>
+                  string(74) "第45期（自　平成25年５月１日　至　平成26年４月30日）"
+                  ["person"]=>
+                  string(4) "2517"
+                  ["age"]=>
+                  string(4) "32.0"
+                  ["employ"]=>
+                  string(3) "4.5"
+                  ["income"]=>
+                  float(429.3)
+                }
+              }
+            }
+            */
+            $tenmono_company_ids = array();
+            //company
+            foreach ($tenmono_datas['companies'] as $edinet_code => $tenmono_company){
+                $company = $this->Tenmono_model->getCompanyBySecurityCode($tenmono_company['col_code']);
+                if(!empty($company)){
+                    $this->db->where('col_code', $tenmono_company['col_code']);
+                    $this->db->update('tab_job_company', $tenmono_company);
+                    $tenmono_company_ids[$edinet_code] = $company->_id;
+                }else{
+                    $this->db->insert('tab_job_company', $tenmono_company);
+                    $tenmono_company_ids[$edinet_code] = $this->db->insert_id();
+                }
+            }
+
+            //cdata
+            foreach ($tenmono_datas['cdatas'] as $edinet_code => $tenmono_cdata){
+                if(!isset($tenmono_datas['companies'][$edinet_code]['col_vid'])){
+                    echo $edinet_code."\n";
+                    var_dump($tenmono_datas);
+                    die();
+                }
+                
+                
+                //code生成 $vid.$cid.$disclosure_time;
+                $code = $tenmono_datas['companies'][$edinet_code]['col_vid'].$tenmono_company_ids[$edinet_code].$tenmono_cdata['col_disclosure'];
+                $cdata = $this->Tenmono_model->getCdataByCode($code);
+                
+                //edition及びtrend,pace更新
+                $old_cdatas = $this->Tenmono_model->getCdatasByCompanyId($tenmono_company_ids[$edinet_code],'tab_job_cdata.col_disclosure ASC');//古い順に取得
+                $trend = 0;
+                if(!empty($old_cdatas)){
+                    $before_income = end($old_cdatas)->col_income;
+                    if($before_income < $tenmono_cdata['col_income']){
+                        $trend = 1;
+                    }elseif($before_income == $tenmono_cdata['col_income']){
+                        $trend = 3;
+                    }elseif($before_income > $tenmono_cdata['col_income']){
+                        $trend = 2;
+                    }
+                }
+                $time = time();
+                $tenmono_cdata['col_mtime'] = $time;
+                $tenmono_cdata['col_code'] = $code;
+                $tenmono_cdata['col_vid'] = $tenmono_datas['companies'][$edinet_code]['col_vid'];
+                $tenmono_cdata['col_cid'] = $tenmono_company_ids[$edinet_code];
+                $tenmono_cdata['col_edition'] = 1;//一旦0
+                $tenmono_cdata['col_pace'] = round($tenmono_cdata['col_income'] / $tenmono_cdata['col_age'],1);
+                $tenmono_cdata['col_income_trend'] = $trend;
+                $tenmono_cdata['col_income_lifetime'] = $this->_getIncomeLifetime($tenmono_cdata['col_income'],$tenmono_cdata['col_age']);
+
+                if(!empty($cdata)){
+                    $this->db->where('col_code', $code);
+                    $this->db->update('tab_job_cdata', $tenmono_cdata);
+                }else{
+                    $tenmono_cdata['col_ctime'] = $time;
+                    $this->db->insert('tab_job_cdata', $tenmono_cdata);
+                }
+                
+                //過去のedition及びtrend,pace更新
+                if(!empty($old_cdatas)){
+                    $i = 0;
+                    $max_edition = count($old_cdatas);
+                    foreach ($old_cdatas as $key => $old_cdata){
+                        $trend = 0;
+                        $pace = round($old_cdata->col_income / $old_cdata->col_age,1);
+                        if($i == 0){
+                            $before_income = $old_cdata->col_income;
+                        }else{
+                            if($before_income < $old_cdata->col_income){
+                                $trend = 1;
+                            }elseif($before_income == $old_cdata->col_income){
+                                $trend = 3;
+                            }elseif($before_income > $old_cdata->col_income){
+                                $trend = 2;
+                            }
+                            $before_income = $old_cdata->col_income;
+                        }
+                        $this->db->where('col_code', $old_cdata->col_code);
+                        $this->db->update('tab_job_cdata', array( 'col_edition'=>$max_edition,'col_income_trend'=>$trend,'col_pace'=>$pace ));
+                        $i++;
+                        $max_edition--;
+                    }
+                }
+            }
         }
         //最後にディレクトリを削除
         $this->_remove_directory($rename_path['move_path'],TRUE,array($rename_path['move_path']));
     }
-    
+
+    private $per0 = 0.39;
+    private $per1 = 0.49;
+    private $per2 = 0.62;
+    private $per3 = 0.74;
+    private $per4 = 0.86;
+    private $per5 = 0.97;
+    private $per6 = 1;
+    private $per7 = 0.98;
+    private $per8 = 0.92;
+    private $per9 = 0.67;
+    private $per10 = 0.58;
+
+    //増加率
+    function _getAgePer($age){
+        if(20 <= $age && $age < 25){
+            return $this->per1;
+        }elseif(25 <= $age && $age < 30){
+            return $this->per2;
+        }elseif(30 <= $age && $age < 35){
+            return $this->per3;
+        }elseif(35 <= $age && $age < 40){
+            return $this->per4;
+        }elseif(40 <= $age && $age < 45){
+            return $this->per5;
+        }elseif(45 <= $age && $age < 50){
+            return $this->per6;
+        }elseif(50 <= $age && $age < 55){
+            return $this->per7;
+        }elseif(55 <= $age && $age < 60){
+            return $this->per8;
+        }elseif(60 <= $age && $age < 65){
+            return $this->per9;
+        }elseif(65 <= $age){
+            return $this->per10;
+        }else{
+            //若すぎる
+            return $this->per0;
+        }
+    }
+
+    //生涯賃金
+    function _getIncomeLifetime($income,$age){
+        $base_per = $this->_getAgePer($age);
+        $lifetie_income = 0;
+        //38年間
+        for($i=23;$i<=60;$i++){
+            $i_per = $this->_getAgePer($i);
+            $lifetie_income += $i_per / $base_per * $income;
+        }
+        return round($lifetie_income);
+    }
+
     function _list_files($tmp_dir_path,$move_ymd_path){
         $files = array();
         $list = scandir($tmp_dir_path);
@@ -482,59 +682,7 @@ die();
         fwrite($fp, "\r\n");
     }
 
-    // ----------------------------------------------------------------
-    // EXCEL出力 
-    // ----------------------------------------------------------------
-    function put_excel($excel_path,$csv_datas,$excel_sheet_name,$excel_map) {
-        $objPHPExcel = null;
-        // 新規作成の場合
-        $objPHPExcel = new PHPExcel();
-        $objPHPExcel->getDefaultStyle()->getFont()->setName( 'ＭＳ Ｐゴシック' )->setSize( 11 );
-        
-        foreach ($excel_map as $xbrl_count => $xbrl_path_loop_number){
-            if($xbrl_path_loop_number > 0) $objPHPExcel->createSheet();
-            // 0番目のシートをアクティブにする（シートは左から順に、0、1，2・・・）
-            $objPHPExcel->setActiveSheetIndex($xbrl_path_loop_number);
-            // アクティブにしたシートの情報を取得
-            $objSheet = $objPHPExcel->getActiveSheet();
-            // シート名を変更する
-            $objSheet->setTitle($excel_sheet_name[$xbrl_path_loop_number]);
-            $excel_tate = 0;
-            $line = 0;
-            foreach ($csv_datas[$xbrl_count] as $values){
-                $excel_tate = $line + 1;
-                foreach ($values as $value_number => $col) {
-                    if(!isset($this->alphabet[$value_number])){
-                        log_message('error','none alphabet '.$value_number.':'.$excel_path);
-                    }
-                    $excel_yoko = $this->alphabet[$value_number];
-                    $excel_column_name = $excel_yoko.$excel_tate;
-                    
-                    if (is_numeric($col)) {
-                        $data[$xbrl_path_loop_number][$excel_column_name] = $col;
-                        $objSheet->setCellValue($excel_column_name, $col);
-                    } else {
-                        if(is_array($col)){
-                            var_dump($col);
-                            die();
-                        }
-                        //$col = mb_convert_encoding($col, $toEncoding, $srcEncoding);
-                        $col = str_replace('"', '""', $col);
-                        $data[$xbrl_path_loop_number][$excel_column_name] = $col;
-                        $objSheet->setCellValue($excel_column_name, $col);
-                    }
-                }
-                $line++;
-            }
-            $objPHPExcel->setActiveSheetIndex(0);//sheet選択
-            // IOFactory.phpを利用する場合
-            $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-            $objWriter->save($excel_path);
-        }
-        // Excel2007.phpを利用する場合
-        //$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-        //$objWriter->save("sample2.xlsx");
-    }
+
 
     public function sitemap()
     {

@@ -1,4 +1,21 @@
 <?php $this->load->view('layout/header/header'); ?>
+    <script>
+    $(function() {
+        $( "#datepicker" ).datepicker({
+            inline: true
+        });
+
+        // Hover states on the static widgets
+        $( "#dialog-link, #icons li" ).hover(
+            function() {
+                $( this ).addClass( "ui-state-hover" );
+            },
+            function() {
+                $( this ).removeClass( "ui-state-hover" );
+            }
+        );
+    });
+    </script>
 <?php $this->load->view('layout/common/navi'); ?>
 
 <!--
@@ -8,38 +25,58 @@ contents
 -->
 <div id="contents">
     <div id ="contentsInner">
-        <div id="weather">
 
+        <div id="document_navi">
             <h3 class="center_dot"><span>企業年収速報</span></h3>
-            <div id="document">
+        </div>
+
+        <div id="income">
+            <table>
+                <tr>
+                    <th class="cell01 date">提出日</th>
+                    <th class="code">証券コード</th>
+                    <th>企業名</th>
+                    <th class="income">年収</th>
+                    <th class="trend">前年比較</th>
+                </tr>
+                <?php $count = count($cdatas);$i = 1; ?>
                 <?php foreach ($cdatas as $cdata) : ?>
-
-                    <div id="entry_list">
-                        <article class="entry">
-                            <a href="<?php echo '/document/show/'.$cdata->col_code ?>">
-                            <div class="cat life">生活<span class="cat_arrow"></span></div>
-                            <div class="title">
-                                <div class="box_time">
-                                <time datetime="2014-08-06" class="time"><?php echo strftime($this->lang->line('setting_date_format'), $cdata->col_disclosure); ?><span>(wed)</span></time>
-                                <span class="writer"><img alt='LIGブログ編集部' src='/images/income/be911a09d48e5e6adbd3b19bfcf6ffee_avatar-30x30_sample.png' class='avatar avatar-30 photo' height='30' width='30' /><?php echo $cdata->col_name; ?></span>
-                                </div>
-                                <h1><?php echo $cdata->col_name; ?></h1>
-                                <p class="sns"><span class="fb">25</span><span class="tw">14</span><span class="hb">4</span></p>
-                            </div>
-                            <figure class="figure">
-                                <p><?php echo $cdata->col_income; ?>万円</p>
-                            </figure>
-                            <div class="entry_arrow"><img src="/images/income/icon_arrow_l.png" width="18" height="17" alt=""></div>
-                            </a>
-                        </article>
-                    </div>
-
-
+                <tr<?php if($count == $i) echo ' class="last"'; ?>>
+                    <td class="cell02"><?php echo strftime($this->lang->line('setting_date_format'), $cdata->col_disclosure); ?></td>
+                    <td><?php echo $cdata->col_code; ?></td>
+                    <td style="font-size:90%;text-align:left;"><?php echo anchor('income/show/'.$cdata->col_cid, $cdata->col_name); ?></td>
+                    <td><?php echo $cdata->col_income; ?>万円</td>
+                    <?php
+                    if($cdata->col_income_trend == 1){
+                        $trend_image = 'up.gif';
+                    }elseif($cdata->col_income_trend == 2){
+                        $trend_image = 'down.gif';
+                    }elseif($cdata->col_income_trend == 0){
+                        $trend_image = 'new.gif';
+                    }elseif($high_and_low_cdata->col_income_trend == 3){
+                        $trend_image = 'stay.gif';
+                    }
+                    ?>
+                    <td><img src="/images/income/<?php echo $trend_image; ?>" /></td>
+                </tr>
+                <?php $i++; ?>
                 <?php endforeach; ?>
-            </div>
+            </table>
         </div>
         <div id="sidebar">
-            <img src="/images/ad_example1.gif" alt="csv" />
+            <div id="side_cat">
+                <h1 class="side_title">業界カテゴリ</h1>
+                <ul>
+                <?php foreach ($income_categories as $income_category) : ?>
+                <li><a href="<?php echo '/income/category/'.$income_category->_id ?>"><span><?php echo $income_category->col_name; ?></span><span class="new">平均    <?php echo $income_category->col_income_average; ?>万円</span></a></li>
+                <?php endforeach; ?>
+                </ul>
+            </div><!-- /side_cat -->
+            <div class="box_wrap">
+                <div class="box_adx">
+                    <img src="/images/ad_example1.gif" alt="csv" />
+                </div>
+            </div>
         </div>
         <span class="cf" />
     </div>

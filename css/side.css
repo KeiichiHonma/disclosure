@@ -245,7 +245,7 @@
     font-weight:700
 }
 
-#side_cat li a:hover span.new {
+#sidebar li a:hover span.new {
     color:#000;
     background:#ffffff;
     font-weight:400
@@ -256,7 +256,7 @@
     display:block
 }
 
-#side_cat li a span.new {
+#sidebar li a span.new {
     font-family:Montserrat,sans-serif;
     -webkit-font-smoothing:antialiased;
     -webkit-border-radius:5px;

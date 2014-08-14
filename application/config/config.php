@@ -392,24 +392,12 @@ if(isset($_SERVER['REQUEST_URI']) && in_array('console',explode('/',$_SERVER['RE
 $config['stylesheets'][] = 'css/master.css';
 $config['stylesheets'][] = 'css/main.css';
 $config['stylesheets'][] = 'css/side.css';
-//$config['stylesheets'][] = 'css/jquery.sidr.dark.css';
-//$config['stylesheets'][] = 'css/jquery-ui-1.10.3.custom.css';
 
-$config['javascripts'][] = 'js/jquery-1.8.3.js';
+$config['javascripts'][] = 'js/jquery-1.8.3.js';//slideでも使用
+$config['javascripts'][] = 'js/jquery.sidr.min.js';//scroll
+$config['javascripts'][] = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js';//scroll
+$config['javascripts'][] = 'js/scrolltop.js';//scroll
 
-//$config['javascripts'][] = 'js/jquery-1.7.2.min.js';
-//$config['javascripts'][] = 'js/css_browser_selector.js';
-$config['javascripts'][] = 'js/jquery.sidr.min.js';
-$config['javascripts'][] = 'js/scrolltop.js';
-//$config['javascripts'][] = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js';
-//$config['javascripts'][] = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js';
-
-//$config['javascripts'][] = 'js/jquery-1.7.2.min.js';
-//$config['javascripts'][] = 'js/css_browser_selector.js';
-//$config['javascripts'][] = 'js/jquery.sidr.min.js';
-//$config['javascripts'][] = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js';
-//$config['javascripts'][] = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js';
-//$config['javascripts'][] = 'js/jquery.corner';
 /*
 |--------------------------------------------------------------------------
 | Upload folder setting
@@ -523,7 +511,7 @@ $config['document_info_index'] = array('DocumentTitleCoverPage','GenericNameOfEn
 |
 */
 
-$config['string_max_length'] = 10000;
+$config['string_max_length'] = 1000;
 
 /*
 |--------------------------------------------------------------------------

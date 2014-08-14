@@ -36,18 +36,12 @@ class Home extends MY_Controller
         $data['header_title'] = $this->lang->line('common_header_title');
         $data['header_keywords'] = $this->lang->line('common_header_keywords');
         $data['header_description'] = $this->lang->line('common_header_description');
-
-        //$this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/jquery.bxslider.css','/css/add.css','css/start/jquery-ui-1.9.2.custom.css','css/datepicker.css')));
-        //$this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/add.css','css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
-        //$this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/jquery-ui-1.9.2.custom.js')));
-        //$this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
         $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array(
         'http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css',
         '/css/tabulous.css'
         )));
         
         $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array(
-        'http://code.jquery.com/jquery-1.8.3.js',//slideでも使用
         'http://code.jquery.com/ui/1.9.2/jquery-ui.js',
         'http://ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js',
         '',

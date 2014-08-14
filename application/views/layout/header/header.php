@@ -75,10 +75,7 @@ $("#datepicker").datepicker({
     //dateFormat: "dd/mm/yy",
     dateFormat: "yy-mm-dd",
     onSelect: function (date) {
-        // Your CSS changes, just in case you still need them
-        //$('a.ui-state-default').removeClass('ui-state-highlight');
-        //$(this).addClass('ui-state-highlight');
-        alert(date);
+        location.href='/document/date/'+date;
     }
 });
 

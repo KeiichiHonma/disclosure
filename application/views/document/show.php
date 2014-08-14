@@ -10,11 +10,8 @@ contents
     <div id ="contentsInner">
         <h1 class="l1"><?php echo $document->presenter_name.' - '.$document->document_name; ?></h1>
         <div id="document">
-            
+            <?php $this->load->view('layout/common/document_sns'); ?>
             <table>
-                <tr>
-                    <td colspan="5"  class="value"><?php $this->load->view('layout/common/document_sns'); ?></td>
-                </tr>
                 <tr>
                     <th class="cell01">提出日</th>
                     <td class="first value" colspan="4"><?php echo strftime($this->lang->line('setting_date_format'), strtotime($document->date)); ?></td>
@@ -44,11 +41,6 @@ contents
         </div>
         <div id="sidebar">
             <?php $this->load->view('layout/common/document_side'); ?>
-            <div class="box_wrap">
-                <div class="box_adx">
-                    <img src="/images/ad_example1.gif" alt="csv" />
-                </div>
-            </div>
         </div>
         <span class="cf" />
     </div>

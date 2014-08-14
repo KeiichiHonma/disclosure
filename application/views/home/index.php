@@ -1,10 +1,6 @@
 <?php $this->load->view('layout/header/header'); ?>
     <script>
     $(function() {
-        $( "#datepicker" ).datepicker({
-            inline: true
-        });
-
         // Hover states on the static widgets
         $( "#dialog-link, #icons li" ).hover(
             function() {
@@ -29,35 +25,34 @@ contents
 
             <div id="top-news1" class="cf">
                 
-                <h2 class="sprite"><span>TOP NEWS</span></h2>
                 <div id="top-news1-inner" class="cf">
                     <div id="photo-wrapper">
-                        <div class="top-news1-photo"><a href="/articles/-/44758"><img src="http://tk.ismcdn.jp/mwimgs/1/c/329/img_1c14496878109f2bae41082816c793d129413.jpg" /></a></div>
-                        <div class="top-news1-photo"><a href="/articles/-/44770"><img src="http://tk.ismcdn.jp/mwimgs/8/1/329/img_81db201ef8db4076d5fdc878e47607bb54498.jpg" /></a></div>
-                        <div class="top-news1-photo"><a href="/articles/-/44494"><img src="http://tk.ismcdn.jp/mwimgs/8/7/329/img_879406c1dd7b70abcece5caa0cda376c34641.jpg" /></a></div>
-                        <div class="top-news1-photo"><a href="/articles/-/44740"><img src="http://tk.ismcdn.jp/mwimgs/f/e/329/img_fee70d8ffb087f29dec3bca5312b8567128494.jpg" /></a></div>
+                        <div class="top-news1-photo"><a href="/articles/-/44758"><img src="/images/yuuka.jpg" /></a></div>
+                        <div class="top-news1-photo"><a href="/income/"><img src="/images/logos.jpg" /></a></div>
+                        <div class="top-news1-photo"><a href="/articles/-/44494"><img src="/images/change.jpg" /></a></div>
+                        <div class="top-news1-photo"><a href="/articles/-/44494"><img src="/images/change.jpg" /></a></div>
                     </div><!-- /photo-wrapper -->
 
                     <div class="top-news1-list">
                     <ul>
                         <li>
                             <a href="/articles/-/44758" class="link-box">
-                    <span class="column-ttl">迫る独ＶＷの影、世界一の座は盤石と言えない</span><br /><span class="column-main-ttl">トヨタ､足元は過去最高益でも浮かれず</span><span class="more sprite">MORE</span>
+                    <span class="column-ttl">エクセル、CSV、txtファイルでダウンロードできる</span><br /><span class="column-main-ttl">開示書類をわかりやすいフォーマットで提供</span><span class="more sprite">MORE</span>
                             </a>
                         </li>
                         <li>
                             <a href="/articles/-/44770" class="link-box">
-                    <span class="column-ttl">川内原発審査の問題②高橋正樹・日本大学教授</span><br /><span class="column-main-ttl">｢火山影響評価は科学的とはいえない｣</span><span class="more sprite">MORE</span>
+                    <span class="column-ttl">年収情報を速報でお届け</span><br /><span class="column-main-ttl">企業の年収情報をいち早く確認できる</span><span class="more sprite">MORE</span>
                             </a>
                         </li>
                         <li>
                             <a href="/articles/-/44494" class="link-box">
-                    <span class="column-ttl">既存事業に加え､積極的なＭ＆Ａでレバレッジ</span><br /><span class="column-main-ttl">じげん､時価総額1兆円のジゲノミクスとは？</span><span class="more sprite">MORE</span>
+                    <span class="column-ttl">今一番転職すべき企業を速報でお届け</span><br /><span class="column-main-ttl">Coming Soon</span><span class="more sprite">MORE</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/articles/-/44740" class="link-box">
-                    <span class="column-ttl">妻､まさかの決断｡そして｢夫への嫉妬｣が消えた！</span><br /><span class="column-main-ttl">｢同学歴夫婦｣が､"幸せな関係"を築くまで</span><span class="more sprite">MORE</span>
+                            <a href="/articles/-/44494" class="link-box">
+                    <span class="column-ttl">今一番転職すべき企業を速報でお届け</span><br /><span class="column-main-ttl">Coming Soon</span><span class="more sprite">MORE</span>
                             </a>
                         </li>
                     </ul>

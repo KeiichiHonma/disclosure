@@ -28,6 +28,18 @@ class Document_model extends CI_Model
         return array();
     }
 
+    function getDocumentsBySecurityCode($code)
+    {
+        $query = $this->db->query("SELECT *
+                                    FROM {$this->table_name}
+                                    INNER JOIN presenters ON {$this->table_name}.presenter_id = presenters.id
+                                    WHERE presenters.securities_code = ?"
+        , array($code)
+        );
+        if ($query->num_rows() != 0) return $query->result();
+        return array();
+    }
+
     function getDocumentDateGroupByDate()
     {
         $query = $this->db->query("SELECT date

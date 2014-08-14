@@ -1,6 +1,7 @@
 <?php
 $lang['setting_date_format'] = '%Y年%m月%d日';
 $lang['setting_datetime_format'] = '%Y年%m月%d日 %H:%M';
+$lang['setting_date_under_score_format'] = '%Y_%m_%d';
 
 $lang['order_select']['modified'] = '更新の新しい順';
 $lang['order_select']['modifiedRev'] = '更新の古い順';
