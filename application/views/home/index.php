@@ -76,7 +76,6 @@ contents
                 </tr>
                 <?php $count = count($xbrls);$i = 1; ?>
                 <?php foreach ($xbrls as $xbrl) : ?>
-                <?php $new_categories[] = $xbrl->document_name; ?>
                 <tr<?php if($count == $i) echo ' class="last"'; ?>>
                     <td class="cell02"><?php echo strftime($this->lang->line('setting_date_format'), strtotime($xbrl->date)); ?></td>
                     <td style="font-size:90%;text-align:left;"><?php echo anchor('document/show/'.$xbrl->id, $xbrl->document_name.' - '.$xbrl->presenter_name); ?></td><td>

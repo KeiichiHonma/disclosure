@@ -23,14 +23,15 @@ class Tools extends CI_Controller {
         $this->load->library('tank_auth');
         //connect database
         $this->load->database();
-        $this->load->model('Category_model');
-        $this->load->model('Security_model');
-        $this->load->model('Presenter_model');
+        //$this->load->model('Category_model');
+        //$this->load->model('Security_model');
+        //$this->load->model('Presenter_model');
+        $this->load->model('Edinet_model');
         $this->load->model('Document_model');
         $this->load->model('Tenmono_model');
         $this->load->library('upload_folder');
         $this->load->library('Xbrl_lib');
-        $this->categories = $this->Category_model->getAllcategories();
+        //$this->categories = $this->Category_model->getAllcategories();
         
         $this->archiver = new ZipArchive();
         $this->extractFiles = array();
@@ -82,9 +83,6 @@ class Tools extends CI_Controller {
             echo 'move dir error';
             die();
         }
-        //@mkdir($tmp_ymd_path);
-        //@chown($tmp_ymd_path, 'apache');
-        //@chmod($tmp_ymd_path,0770);
 
         $list = scandir($zip_path);
         $is_analyze = FALSE;
@@ -112,7 +110,6 @@ class Tools extends CI_Controller {
                         $this->archiver->close();
                         
                         //renameを記録
-                        //$rename_paths[] = array('zip_path'=>$zip_file_path,'tmp_path'=>$tmp_dir_path . $pathinfo['filename'] . $pathinfo['filename'] , 'move_path'=>$move_ymd_path . '/' . $pathinfo['filename']);
                         $rename_paths[] = array('zip_path'=>$zip_file_path,'tmp_path'=>$tmp_dir_path , 'move_path'=>$move_ymd_path . '/' . $tempFolder);
                     }else{
 var_dump('unzip error');
@@ -125,9 +122,7 @@ die();
             $this->_remove_directory($tmp_path.$year);
             die();
         }
-        //@mkdir($move_ymd_path);
-        //@chown($move_ymd_path, 'apache');
-        //@chmod($move_ymd_path,0770);
+
         $insert_data = array();
         $csv_datas = array();
         $base_datas = array();
@@ -135,7 +130,6 @@ die();
         
         $tenmono_datas = array('companies'=>array(),'cdatas'=>array());
 
-        $presenters_map = array();
         if(!empty($this->xbrls_informations)){
             //先に企業名をDBに挿入 presenter_id が必要なため
             foreach ($this->xbrls_informations as $unzip_dir_name => $xbrls_information){
@@ -144,40 +138,30 @@ die();
                     //株式会社だけ
                     if(preg_match('/株式会社/', $value['presenter_name'])){
                         $analyze_list[] = $xbrl_dir_id;
-                        $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'] = str_replace('株式会社','',$value['presenter_name']);
-                        
-                        $presenter = $this->Presenter_model->getPresenterByName($value['presenter_name']);
-                        $security = $this->Security_model->getSecurityByName( $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'] );
+                        $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'] = preg_replace('/^[　]+/u', '', trim(str_replace('株式会社','',$value['presenter_name'])));
+
                         $edinet_code = $value['edinet_code'];
-                        if(empty($presenter)){
-                            //企業名は重複を防ぐため、edinetcodeで
-                            $insert_data['presenter'][$edinet_code]['edinet_code'] = $edinet_code;
-                            $insert_data['presenter'][$edinet_code]['name'] = $value['presenter_name'];
-                            $insert_data['presenter'][$edinet_code]['securities_code'] = empty($security) ? '' : $security->id;
+                        $edinet = $this->Edinet_model->getEdinetByEdinetCode($edinet_code);
+                        if(empty($edinet)){
+                            //停止 edinet一覧を更新すべき
+                            echo 'update edinet csv !!';
+                            die();
                         }
                         //tenmono
                         if($value['document_name'] == '有価証券報告書'){
-                            if(!empty($security)){
-                                //業界IDはこの段階ではまだ。既にtenmono側に登録があるかもしれないし、新規の企業かもしれない
-                                $tenmono_datas['companies'][$edinet_code]['col_code'] = $security->id;
-                                $variety = $this->Tenmono_model->getVarietyByVarietyName($security->category_name);
-                                $tenmono_datas['companies'][$edinet_code]['col_vid'] = $variety->_id;
-                                $tenmono_datas['companies'][$edinet_code]['col_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'];
-                            }else{
-                                //証券コードがない。記録して後日対応しないとだめ
-                                $this->xbrl_lib->_insert_log_message(array('error','none serucity_code '.$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'].':edinet_code'.$edinet_code));
-                                $tenmono_datas['companies'][$edinet_code]['col_code'] = 0;//空のデータを入れておいて後で対応する
-                                $tenmono_datas['companies'][$edinet_code]['col_vid'] = 0;//空のデータを入れておいて後で対応する
-                                $tenmono_datas['companies'][$edinet_code]['col_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'];
+                            if(!empty($edinet)){
+                                //業界名がない場合は上場義務がないやつ
+                                if($edinet->category_id > 0){
+                                    $tenmono_datas['companies'][$edinet_code]['col_code'] = $edinet->security_code;
+                                    $tenmono_datas['companies'][$edinet_code]['col_vid'] = $edinet->category_id;
+                                    $tenmono_datas['companies'][$edinet_code]['col_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'];
+                                }
                             }
                         }
-                        $presenters_map[$xbrl_dir_id] = $value['presenter_name'];
                     }
                 }
             }
         }
-
-        if(!empty($insert_data['presenter']))$this->db->insert_batch('presenters', $insert_data['presenter']);//myisam
 
         //move
         foreach ($rename_paths as $rename_path){
@@ -250,6 +234,8 @@ die();
                     $format_path_ex = explode('/', $xbrl_path);
                     $count = count($format_path_ex);
                     $edinet_code = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'];
+                    $edinet = $this->Edinet_model->getEdinetByEdinetCode($edinet_code);
+                    
                     //ファイル命名
                     $new_format_arr = array_slice($format_path_ex,6,5);
                     $new_format_arr[] = $date.'_'.$edinet_code;//日付+edinetcode
@@ -257,33 +243,17 @@ die();
 
                     //最初の1ファイル分だけDBデータ生成
                     if($xbrl_number == 0){
-                        $insert_data['document'][$xbrl_dir_id]['edinet_code'] = $edinet_code;
-                        $insert_data['document'][$xbrl_dir_id]['presenter_id'] = 0;
-                        $insert_data['document'][$xbrl_dir_id]['category_id'] = 0;
+                        $insert_data['document'][$xbrl_dir_id]['edinet_id'] = $edinet->id;
                         $insert_data['document'][$xbrl_dir_id]['manage_number'] = $xbrl_dir_id;
                         $insert_data['document'][$xbrl_dir_id]['xbrl_count'] = $xbrl_paths_count;//xbrlファイルの数
-                        
                         $insert_data['document'][$xbrl_dir_id]['format_path'] = $format_path;//xbrlsから
                         $insert_data['document'][$xbrl_dir_id]['date'] = $date;
                         $insert_data['document'][$xbrl_dir_id]['document_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name'];
                         $insert_data['document'][$xbrl_dir_id]['presenter_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'];
-                        $insert_data['do<font color="#000000"></font>cument'][$xbrl_dir_id]['created'] = $created;
-
-                        //文書のカテゴリチェック
-/*
-                        if(isset($this->categories[$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name']])){
-                            $insert_data['document'][$xbrl_dir_id]['category_id'] = $this->categories[$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name']]->id;
-                        }
-*/
-                        $insert_data['document'][$xbrl_dir_id]['category_id'] = $tenmono_datas['companies'][$edinet_code]['col_vid'];
-                        //企業チェック
-                        $presenter_name = $presenters_map[$xbrl_dir_id];//XbrlSearchDlInfo.csvを使う
-                        $presenter = $this->Presenter_model->getPresenterByName($presenter_name);
-                        if(!empty($presenter)){
-                            $insert_data['document'][$xbrl_dir_id]['presenter_id'] = $presenter->id;
-                        }
+                        $insert_data['document'][$xbrl_dir_id]['created'] = $created;
+                        $insert_data['document'][$xbrl_dir_id]['category_id'] = $edinet->category_id;
                         //code生成
-                        $code = $edinet_code.'_'.$date.'_'.$xbrl_dir_id.'_'.$insert_data['document'][$xbrl_dir_id]['presenter_id'];
+                        $code = $edinet->id.'_'.$date.'_'.$xbrl_dir_id.'_';
                         $insert_data['document'][$xbrl_dir_id]['code'] = $code;
                         //codeチェック
                         $check_xbrl = $this->Document_model->getDocumentByCode($code);

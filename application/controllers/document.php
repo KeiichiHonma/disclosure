@@ -15,8 +15,9 @@ var $values = array();
         $this->load->database();
         $this->load->model('Item_model');
         $this->load->model('Category_model');
-        $this->load->model('Security_model');
-        $this->load->model('Presenter_model');
+        //$this->load->model('Security_model');
+        //$this->load->model('Presenter_model');
+        $this->load->model('Edinet_model');
         $this->load->model('Document_model');
         $this->load->model('Tenmono_model');
         $this->load->library('Xbrl_lib');
@@ -71,12 +72,12 @@ var $values = array();
 
         //その他の文書
         $orderExpression = "created DESC";//作成新しい
-        $etc_documents = $this->Document_model->getDocumentsByPresenterIdOrder($data['document']->presenter_id,$orderExpression,1);
+        $etc_documents = $this->Document_model->getDocumentsByEdinetIdOrder($data['document']->edinet_id,$orderExpression,1);
         $data['etc_documents'] = $etc_documents['data'];
         
         //tenmonoデータ
-        $data['presenter'] = $this->Presenter_model->getPresenterById($data['document']->presenter_id);
-        if($data['presenter']->securities_code > 0) $data['company'] = $this->Tenmono_model->getCompanyBySecurityCode($data['presenter']->securities_code);
+        $data['edinet'] = $this->Edinet_model->getEdinetById($data['document']->edinet_id);
+        if($data['edinet']->security_code > 0) $data['company'] = $this->Tenmono_model->getCompanyBySecurityCode($data['edinet']->security_code);
 
         $data['categories'] = $this->categories;
         

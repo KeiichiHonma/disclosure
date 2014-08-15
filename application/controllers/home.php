@@ -26,13 +26,10 @@ class Home extends MY_Controller
     function index()
     {
         $data['bodyId'] = 'ind';
-        $data['new_categories'] = $this->Document_model->getDocumentsCategoryByDateGroupByCategory();
-var_dump($data['new_categories']);
-die();
+        $data['new_categories'] = $this->Document_model->getDocumentsCategoryByDateGroupByCategory(date("Y-m-d H:i:s",strtotime("-7 day")));
+
         $order = "date";
         $orderExpression = "date DESC";//作成新しい
-        //$last_date = end($data['seven_dates']);
-        //$data['xbrls'] =$this->Document_model->getAllDocumentsByDate($last_date->date,$orderExpression);
         $xbrls =$this->Document_model->getDocumentsOrder($orderExpression,1);
         $data['xbrls'] = $xbrls['data'];
         

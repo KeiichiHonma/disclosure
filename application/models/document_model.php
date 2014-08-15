@@ -54,11 +54,11 @@ class Document_model extends CI_Model
 
     function getDocumentsCategoryByDateGroupByCategory($date)
     {
-        $query = $this->db->query("SELECT date
+        $query = $this->db->query("SELECT *
                                     FROM {$this->table_name}
-                                    GROUP BY {$this->table_name}.category_id
-                                    ORDER BY {$this->table_name}.date ASC
-                                    WHERE {$this->table_name}.date >= ?"
+                                    WHERE {$this->table_name}.date >= ?
+                                    GROUP BY {$this->table_name}.category_id"
+                                    
         , array($date)
         );
         if ($query->num_rows() != 0) return $query->result();
@@ -155,17 +155,17 @@ class Document_model extends CI_Model
         return $result;
     }
 
-    function getDocumentsByPresenterIdOrder($presenter_id,$order, $page)
+    function getDocumentsByEdinetIdOrder($edinet_id,$order, $page)
     {
         $result = array();
         $perPageCount = $this->CI->config->item('paging_count_per_page');
         $offset = $perPageCount * ($page - 1);
         $query = $this->db->query("SELECT SQL_CALC_FOUND_ROWS *
                                     FROM {$this->table_name}
-                                    WHERE {$this->table_name}.presenter_id = ?
+                                    WHERE {$this->table_name}.edinet_id = ?
                                     ORDER BY {$this->table_name}.{$order}
                                     LIMIT {$offset},{$perPageCount}"
-        , array(intval($presenter_id))
+        , array(intval($edinet_id))
         );
 
         if ($query->num_rows() != 0) {
