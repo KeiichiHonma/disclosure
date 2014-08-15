@@ -10,9 +10,9 @@ footer
 
             <div class="boxLeft">
                   <ul class="clearfix mb05">
-                        <?php foreach ($categories as $category) : ?>
-                        <li><?php echo force_anchor('search/category/'.$category->id, $category->name); ?></li>
-                        <?php endforeach; ?>
+                    <?php foreach ($income_categories as $income_category) : ?>
+                    <li><a href="<?php echo '/income/category/'.$income_category->_id; ?>"><span><?php echo $income_category->col_name; ?></span><span class="new">平均    <?php echo $income_category->col_income_average; ?>万円</span></a></li>
+                    <?php endforeach; ?>
                   </ul>
             </div>
 

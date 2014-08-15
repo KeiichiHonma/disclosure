@@ -13,12 +13,12 @@ var $values = array();
         $this->load->helper('image');
         $this->lang->load('setting');
         $this->load->database();
-        $this->load->model('Category_model');
+        //$this->load->model('Category_model');
         $this->load->model('Security_model');
         $this->load->model('Document_model');
         $this->load->model('Tenmono_model');
         $this->load->library('Xbrl_lib');
-        $this->categories = $this->Category_model->getAllcategories();
+        //$this->categories = $this->Category_model->getAllcategories();
         $this->income_categories = $this->Tenmono_model->getAllTenmonoCategories();
         $this->data = array();
     }
@@ -44,7 +44,7 @@ var $values = array();
         'css/income.css'
         )));
         
-        $data['categories'] = $this->categories;
+        //$data['categories'] = $this->categories;
         $data['income_categories'] = $this->income_categories;
         $this->load->view('income/index', array_merge($this->data,$data));
     }

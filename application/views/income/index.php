@@ -68,7 +68,7 @@ contents
                 <h1 class="side_title">業界カテゴリ</h1>
                 <ul>
                 <?php foreach ($income_categories as $income_category) : ?>
-                <li><a href="<?php echo '/income/category/'.$income_category->_id ?>"><span><?php echo $income_category->col_name; ?></span><span class="new">平均    <?php echo $income_category->col_income_average; ?>万円</span></a></li>
+                <li><a href="<?php echo '/income/category/'.$income_category->_id; ?>"><span><?php echo $income_category->col_name; ?></span><span class="new">平均    <?php echo $income_category->col_income_average; ?>万円</span></a></li>
                 <?php endforeach; ?>
                 </ul>
             </div><!-- /side_cat -->

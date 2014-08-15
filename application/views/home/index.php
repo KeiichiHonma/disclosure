@@ -61,7 +61,7 @@ contents
 
             </div>
 
-            <?php $this->load->view('layout/common/date_navi'); ?>
+
             <h3 class="center_dot"><span>最新の開示情報</span></h3>
         </div>
         <div id="document_navi_ad">
@@ -90,10 +90,10 @@ contents
         </div>
         <div id="sidebar">
             <div id="side_cat">
-                <h1 class="side_title">開示情報 カテゴリー</h1>
+                <h1 class="side_title">業界カテゴリ</h1>
                 <ul>
-                <?php foreach ($categories as $category) : ?>
-                <li><a href="http://liginc.co.jp/news"><span><?php echo $category->name; ?></span><?php if(in_array($category->name,$new_categories)): ?><span class="new">new</span><?php endif; ?></a></li>
+                <?php foreach ($income_categories as $income_category) : ?>
+                <li><a href="<?php echo '/income/category/'.$income_category->_id; ?>"><span><?php echo $income_category->col_name; ?></span></a></li>
                 <?php endforeach; ?>
                 </ul>
             </div><!-- /side_cat -->

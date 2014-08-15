@@ -20,7 +20,7 @@ body {
     position:relative;
 }
 #header h1{
-    width:94px;
+    width:244px;
     height:25px;
     text-indent:-9999px;
     position:absolute;
@@ -29,10 +29,10 @@ body {
 }
 #header h1 a{
     display:block;
-    width:94px;
+    width:244px;
     height:25px;
-    background: url(../images/h1_logo.png) 0 0 no-repeat;
-    background-size:94px 25px;
+    background: url(../images/logo.png) 0 0 no-repeat;
+    background-size:244px 25px;
 }
 #header h2{
     width:223px;

@@ -1,6 +1,9 @@
 <?php $this->load->view('layout/header/header'); ?>
 <?php $this->load->view('layout/common/navi'); ?>
-
+<?php
+$pattern = array('A','B','C','D','E','F','G','H','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+$replacement = array(' A',' B',' C',' D',' E',' F',' G',' H',' J',' K',' L',' M',' N',' O',' P',' Q',' R',' S',' T',' U',' V',' W',' X',' Y',' Z');
+?>
 <!--
 //////////////////////////////////////////////////////////////////////////////
 contents
@@ -19,7 +22,10 @@ contents
                 <?php $count = count($document_datas);$i = 1; ?>
                 <?php foreach ($document_datas as $number => $document_data) : ?>
                 <tr<?php if($count == $i) echo ' class="last"'; ?>>
-                    <th class="cell01"><?php echo $document_data->element_title; ?></th>
+                
+                
+                
+                    <th class="cell01"><?php echo preg_match("/^[a-zA-Z]+$/", $document_data->element_title) ? str_replace($pattern, $replacement, $document_data->element_title) : $document_data->element_title; ?></th>
                     <td nowrap><?php echo $document_data->context_period; ?></td>
                     <td nowrap><?php echo $document_data->context_consolidated; ?></td>
                     <td nowrap><?php echo $document_data->context_term; ?></td>

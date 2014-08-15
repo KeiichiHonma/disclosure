@@ -114,7 +114,7 @@ class Xbrl_lib
                             }
                             //各値
                             if($namespace == 'jpcrp_cor' && $index == 'InformationAboutEmployeesTextBlock'){
-                                $this->_makeTenmonoData($xbrl_data_value,$tenmono_datas,$edinet_code);
+                                $bl = $this->_makeTenmonoData($xbrl_data_value,$tenmono_datas,$edinet_code);
                             }
                         }
 
@@ -441,14 +441,21 @@ class Xbrl_lib
                         }
                     }
                 }
-var_dump($result);
-die();
-                $count = count($result);
-                if($count < 4){
+                if(!isset($result)){
+                    unset($tenmono_datas['cdatas'][$edinet_code]);
+                    $this->_insert_log_message(array('error','cdata none income data:edinet_code'.$edinet_code));
                     return FALSE;
-                }elseif(){
-                
+                }else{
+                    $count = count($result);
+                    if($count < 4){
+                        unset($tenmono_datas['cdatas'][$edinet_code]);
+                        $this->_insert_log_message(array('error','cdata count '.$count.':edinet_code'.$edinet_code));
+                        return FALSE;
+                    }elseif($count > 4){
+                        $this->_insert_log_message(array('error','cdata count over 4'.$count.':edinet_code'.$edinet_code));
+                    }
                 }
+
                 //順番で判定
                 $tenmono_datas['cdatas'][$edinet_code]['col_person'] = $result[0];
                 $tenmono_datas['cdatas'][$edinet_code]['col_age']    = $result[1];
@@ -469,10 +476,15 @@ die();
             return $income / 10;//年収一千万超え
         }elseif($len == 4){
             return $income / 10;//単位が千円
+        }elseif($len == 3){//たぶんよくある誤記３桁で記載している場合は０の記載漏れ
+            return $income;//そのまま
+        }elseif($len == 2){//たぶんよくある誤記
+            return $income;//そのまま
         }elseif($len == 1){
             return $income * 100;//単位が百万円
         }else{
             $this->_insert_log_message(array('error','income length '.$income.':edinet_code'.$edinet_code));
+            return $income;//そのまま
         }
     }
     
@@ -480,6 +492,7 @@ die();
     function _insert_log_message($insert_data){
         $data['type'] = $insert_data[0];
         $data['log'] = $insert_data[1];
+        $data['created'] = date('Y-m-d H:i:s');
         $this->ci->db->insert('logs', $data);//myisam
     }
     

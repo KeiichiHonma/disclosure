@@ -52,6 +52,19 @@ class Document_model extends CI_Model
         return array();
     }
 
+    function getDocumentsCategoryByDateGroupByCategory($date)
+    {
+        $query = $this->db->query("SELECT date
+                                    FROM {$this->table_name}
+                                    GROUP BY {$this->table_name}.category_id
+                                    ORDER BY {$this->table_name}.date ASC
+                                    WHERE {$this->table_name}.date >= ?"
+        , array($date)
+        );
+        if ($query->num_rows() != 0) return $query->result();
+        return array();
+    }
+
     function getDocumentDataByDocumentId($document_id)
     {
         $query = $this->db->query("SELECT *
@@ -116,6 +129,32 @@ class Document_model extends CI_Model
         return array();
     }
 
+    function getDocumentsOrder($order, $page)
+    {
+        $result = array();
+        $perPageCount = $this->CI->config->item('paging_count_per_page');
+        $offset = $perPageCount * ($page - 1);
+        $query = $this->db->query("SELECT SQL_CALC_FOUND_ROWS *
+                                    FROM {$this->table_name}
+                                    ORDER BY {$this->table_name}.{$order}
+                                    LIMIT {$offset},{$perPageCount}"
+        );
+
+        if ($query->num_rows() != 0) {
+            $result['data'] = $query->result();
+            $query = $this->db->query("SELECT FOUND_ROWS() as count");
+            if($query->num_rows() == 1) {
+                foreach ($query->result() as $row)
+                $result['count'] = $row->count;
+            }
+        } else {
+            $result['data'] = array();
+            $result['count'] = 0;
+        }
+
+        return $result;
+    }
+
     function getDocumentsByPresenterIdOrder($presenter_id,$order, $page)
     {
         $result = array();
@@ -142,6 +181,19 @@ class Document_model extends CI_Model
         }
 
         return $result;
+    }
+
+    function getAllDocuments()
+    {
+        $result = array();
+        $query = $this->db->query("SELECT *,{$this->table_name}.id AS id,tab_job_variety._id AS vid
+                                    FROM {$this->table_name}
+                                    INNER JOIN presenters ON {$this->table_name}.presenter_id = presenters.id
+                                    INNER JOIN securities ON presenters.securities_code = securities.id
+                                    INNER JOIN tab_job_variety ON tab_job_variety.col_name = securities.category_name"
+        );
+        if ($query->num_rows() != 0) return $query->result();
+        return array();
     }
 }
 

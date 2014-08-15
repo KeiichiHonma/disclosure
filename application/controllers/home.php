@@ -10,10 +10,12 @@ class Home extends MY_Controller
         $this->load->helper('image');
         $this->lang->load('setting');
         $this->load->database();
-        $this->load->model('Category_model');
+        //$this->load->model('Category_model');
+        $this->load->model('Tenmono_model');
         $this->load->model('Presenter_model');
         $this->load->model('Document_model');
-        $this->categories = $this->Category_model->getAllcategories();
+        //$this->categories = $this->Category_model->getAllcategories();
+        $this->income_categories = $this->Tenmono_model->getAllTenmonoCategories();
         $this->data = array();
     }
 
@@ -24,14 +26,18 @@ class Home extends MY_Controller
     function index()
     {
         $data['bodyId'] = 'ind';
-        $data['seven_dates'] = $this->Document_model->getDocumentDateGroupByDate();
-        $order = "created";
-        $orderExpression = "created DESC";//作成新しい
-        $last_date = end($data['seven_dates']);
-        $data['xbrls'] =$this->Document_model->getAllDocumentsByDate($last_date->date,$orderExpression);
+        $data['new_categories'] = $this->Document_model->getDocumentsCategoryByDateGroupByCategory();
+var_dump($data['new_categories']);
+die();
+        $order = "date";
+        $orderExpression = "date DESC";//作成新しい
+        //$last_date = end($data['seven_dates']);
+        //$data['xbrls'] =$this->Document_model->getAllDocumentsByDate($last_date->date,$orderExpression);
+        $xbrls =$this->Document_model->getDocumentsOrder($orderExpression,1);
+        $data['xbrls'] = $xbrls['data'];
         
-        $data['categories'] = $this->categories;
-        
+        //$data['categories'] = $this->categories;
+        $data['income_categories'] = $this->income_categories;
         //set header title
         $data['header_title'] = $this->lang->line('common_header_title');
         $data['header_keywords'] = $this->lang->line('common_header_keywords');
