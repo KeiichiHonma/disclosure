@@ -34,7 +34,7 @@ class category_model extends CI_Model
                                     FROM {$this->table_name}
                                     ORDER BY {$this->table_name}.id ASC"
         );
-        if ($query->num_rows() != 0) return $query->result('flip','name');
+        if ($query->num_rows() != 0) return $query->result('flip','id');
         return array();
     }
 

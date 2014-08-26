@@ -37,8 +37,8 @@ function file_get_html() {
     $dom = new simple_html_dom;
     $args = func_get_args();
     $dom->load(call_user_func_array('file_get_contents', $args), true);
-    
-    $pos = strpos($http_response_header[0], '200');
+    $pos = @strpos($http_response_header[0], '200');
+/*
     if ($pos === false) {
         // 例外処理
         //再実行
@@ -53,7 +53,7 @@ function file_get_html() {
             $dom->load(call_user_func_array('file_get_contents', $args), true);
         }
     }
-
+*/
     return $dom;
 }
 

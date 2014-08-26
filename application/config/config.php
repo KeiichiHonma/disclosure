@@ -390,6 +390,8 @@ if(isset($_SERVER['REQUEST_URI']) && in_array('console',explode('/',$_SERVER['RE
 |
 */
 $config['stylesheets'][] = 'css/master.css';
+$config['stylesheets'][] = 'css/jquery.sidr.dark.css';
+$config['stylesheets'][] = 'css/jquery-ui-1.10.3.custom.css';
 $config['stylesheets'][] = 'css/main.css';
 $config['stylesheets'][] = 'css/side.css';
 

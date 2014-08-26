@@ -6,12 +6,12 @@ footer
 <div id="footer">
     <div id="footerInner">
         <div id="footerInnerIn" class="cf">
-            <img src="/images/h1_logo.png" alt=""/>
+            <img src="/images/logo.png" alt=""/>
 
             <div class="boxLeft">
                   <ul class="clearfix mb05">
-                    <?php foreach ($income_categories as $income_category) : ?>
-                    <li><a href="<?php echo '/income/category/'.$income_category->_id; ?>"><span><?php echo $income_category->col_name; ?></span></a></li>
+                    <?php foreach ($categories as $category) : ?>
+                    <li><a href="<?php echo '/income/category/'.$category->id; ?>"><span><?php echo $category->name; ?></span></a></li>
                     <?php endforeach; ?>
                   </ul>
             </div>

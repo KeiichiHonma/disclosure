@@ -1,13 +1,13 @@
 <?php
 $lang['header_website_name'] = 'グラマー [Gramer]';
 
-$lang['header_title'] = '晴れてよかった！を創る｜未来の天気ならハレコ [hareco]';
-$lang['header_keywords'] = '天気,ハレコ,温泉,ゴルフ,テーマパーク,アクティビティ,レジャー,おでかけ,天気予報,天気予想,ハレコ,hareco';
-$lang['header_description'] = 'でかけるなら晴れがいい。世界初、天気予測エンジンで晴れを提案するサービス「ハレコ」';
+$lang['header_title'] = '有価証券報告書、年収情報のオープンデータ活用サービス | オープンデータ.company';
+$lang['header_keywords'] = 'オープンデータ,opendata,有価証券報告書,開示情報,有報';
+$lang['header_description'] = '有価証券報告書や企業年収等のオープンデータをエクセルやCSVファイルでダウンロードできるサイトです。';
 
-$lang['common_header_title'] = '有価証券報告書等のオープンデータ | 企業情報のオープンデータ活用サービス';
-$lang['common_header_keywords'] = 'オープンデータ,opendata,有価証券報告書,開示情報';
-$lang['common_header_description'] = 'オープンデータ活用サービス';
+$lang['common_header_title'] = '%s｜有価証券報告書・年収情報ならオープンデータ.company';
+$lang['common_header_keywords'] = '%s,オープンデータ,opendata,有価証券報告書,開示情報,有報';
+$lang['common_header_description'] = '%sのオープンデータ。有価証券報告書や企業年収等のオープンデータをエクセルやCSVファイルでダウンロードできるサイトです';
 
 $lang['holiday_title'] = '次の晴れる連休';
 $lang['search_box_default'] = '企業名検索';

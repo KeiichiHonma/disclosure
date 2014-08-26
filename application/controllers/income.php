@@ -13,13 +13,12 @@ var $values = array();
         $this->load->helper('image');
         $this->lang->load('setting');
         $this->load->database();
-        //$this->load->model('Category_model');
-        $this->load->model('Security_model');
+        $this->load->model('Edinet_model');
+        $this->load->model('Category_model');
         $this->load->model('Document_model');
         $this->load->model('Tenmono_model');
-        $this->load->library('Xbrl_lib');
-        //$this->categories = $this->Category_model->getAllcategories();
         $this->income_categories = $this->Tenmono_model->getAllTenmonoCategories();
+        $this->categories = $this->Category_model->getAllCategories();
         $this->data = array();
     }
 
@@ -31,89 +30,138 @@ var $values = array();
     {
         
         $data['bodyId'] = 'ind';
-        $order = "created";
-        $orderExpression = "created DESC";//作成新しい
-        $cdatas = $this->Tenmono_model->getCdataOrderDisclosure($page);
+        $orderExpression = "tab_job_cdata.col_disclosure DESC";
+        $cdatas = $this->Tenmono_model->getCdataOrderDisclosure($orderExpression,$page);
         $data['cdatas'] = $cdatas['data'];
-
-        //set header title
-        $data['header_title'] = $this->lang->line('common_header_title');
-        $data['header_keywords'] = $this->lang->line('common_header_keywords');
-        $data['header_description'] = $this->lang->line('common_header_description');
-        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array(
-        'css/income.css'
-        )));
         
-        //$data['categories'] = $this->categories;
         $data['income_categories'] = $this->income_categories;
+        $data['categories'] = $this->categories;
+        
+        //set header title
+        $header_string = '企業年収速報';
+        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
+        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
+        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
+        
         $this->load->view('income/index', array_merge($this->data,$data));
     }
 
-    function show($company_id)
+    /**
+     * search category action
+     *
+     */
+    function category($category_id,$page = 1)
+    {
+        $data['bodyId'] = 'ind';
+        $orderExpression = "tab_job_cdata.col_disclosure DESC";
+        $category_id = intval($category_id);
+        $data['category_id'] = $category_id;
+        
+        if($category_id == 1){
+            $cdatas =$this->Tenmono_model->getCdataOrderDisclosure($orderExpression,$page);
+        }else{
+            $cdatas =$this->Tenmono_model->getCdataByCategoryIdOrderDisclosure($category_id,$orderExpression,$page);
+        }
+        
+        $data['cdatas'] = $cdatas['data'];
+
+        $data['page'] = $page;
+        $data['pageFormat'] = "income/category/{$category_id}/%d";
+        $data['rowCount'] = intval($this->config->item('paging_row_count'));
+        $data['columnCount'] = intval($this->config->item('paging_column_count'));
+        $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
+        $data['maxPageCount'] = (int) ceil(intval($cdatas['count']) / intval($this->config->item('paging_count_per_page')));
+
+        $data['income_categories'] = $this->income_categories;
+        $data['categories'] = $this->categories;
+
+        //set header title
+        $header_string = $data['categories'][$category_id]->name.'カテゴリの企業年収一覧';
+        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
+        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
+        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
+        
+        $this->load->view('income/category', array_merge($this->data,$data));
+    }
+
+    function show($presenter_name_key = '')
     {
         $data['bodyId'] = 'ind';
         $data['income_side_current'] = 'income_show';
+        if(empty($presenter_name_key))  show_404();
+        $data['edinet'] = $this->Edinet_model->getEdinetByPresenterNameKey($presenter_name_key);
+        if(empty($data['edinet']))  show_404();
         
-        $data['company'] = $this->Tenmono_model->getCompanyByCompanyId($company_id);
+        $data['company'] = $this->Tenmono_model->getCompanyBySecurityCode($data['edinet']->security_code);
         if(empty($data['company']))  show_404();
         
-        $data['cdatas'] = $this->Tenmono_model->getCdatasByCompanyId($company_id);
+        $data['cdatas'] = $this->Tenmono_model->getCdatasByCompanyId($data['company']->_id);
         $first_cdata = reset($data['cdatas']);
+
         //Higher
-        $higher_cdatas = $this->Tenmono_model->getCdatasNotInCompanyIdHighAndLowIncomeByVarietyid($company_id,$first_cdata->col_income,$data['company']->col_vid,'>=','ASC');
+        $higher_cdatas = $this->Tenmono_model->getCdatasNotInCompanyIdHighAndLowIncomeByVarietyid($data['company']->_id,$first_cdata->col_income,$data['company']->col_vid,'>=','ASC');
 
         //Lower
-        $lower_cdatas = $this->Tenmono_model->getCdatasNotInCompanyIdHighAndLowIncomeByVarietyid($company_id,$first_cdata->col_income,$data['company']->col_vid,'<=','DESC');
+        $lower_cdatas = $this->Tenmono_model->getCdatasNotInCompanyIdHighAndLowIncomeByVarietyid($data['company']->_id,$first_cdata->col_income,$data['company']->col_vid,'<=','DESC');
         if(!empty($higher_cdatas) || !empty($lower_cdatas)){
             $data['high_and_low_cdatas'] = array_merge(array_reverse($higher_cdatas),$lower_cdatas);
         }
 
         //文書情報
-        $data['documents'] = $this->Document_model->getDocumentsBySecurityCode($data['company']->col_code);
+        $data['documents'] = $this->Document_model->getDocumentsByEdinetId($data['edinet']->id);
 
-        $data['categories'] = $this->categories;
         $data['income_categories'] = $this->income_categories;
-        
+        $data['categories'] = $this->categories;
         //sns用URL
-        $data['sns_url'] = '/income/show/'.$data['company']->_id;
+        $data['sns_url'] = '/income/show/'.$presenter_name_key;
         $data['cdata_download'] = TRUE;
         
         //set header title
-        $data['header_title'] = $this->lang->line('common_header_title');
-        $data['header_keywords'] = $this->lang->line('common_header_keywords');
-        $data['header_description'] = $this->lang->line('common_header_description');
-        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/income.css')));
+        $header_string = strftime($this->lang->line('setting_date_format'), $first_cdata->col_disclosure).'公開 ' .$data['edinet']->presenter_name.'の年収';
+        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
+        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
+        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
         $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/Chart.js')));
         $this->load->view('income/show', array_merge($this->data,$data));
     }
 
-    function download($company_id,$download_string)
+    function download($presenter_name_key = '',$download_string)
     {
         $data['bodyId'] = 'ind';
         if(empty($download_string) || !in_array($download_string,$this->config->item('allowed_download_file_type'))) show_404();
-        
+
         $data['download_string'] = $download_string;
         $data['income_side_current'] = 'income_dl_'.$download_string;
-        
-        $data['company'] = $this->Tenmono_model->getCompanyByCompanyId($company_id);
+
+        if(empty($presenter_name_key))  show_404();
+        $data['edinet'] = $this->Edinet_model->getEdinetByPresenterNameKey($presenter_name_key);
+        if(empty($data['edinet']))  show_404();
+
+        $data['company'] = $this->Tenmono_model->getCompanyBySecurityCode($data['edinet']->security_code);
         if(empty($data['company']))  show_404();
         
-        $data['cdatas'] = $this->Tenmono_model->getCdatasByCompanyId($company_id);
+        $data['cdatas'] = $this->Tenmono_model->getCdatasByCompanyId($data['company']->_id);
         if(empty($data['cdatas']))  show_404();
-
+        $first_cdata = reset($data['cdatas']);
+        
         //文書情報
-        $data['documents'] = $this->Document_model->getDocumentsBySecurityCode($data['company']->col_code);
+        $data['documents'] = $this->Document_model->getDocumentsByEdinetId($data['edinet']->id);
 
-        $data['categories'] = $this->categories;
         $data['income_categories'] = $this->income_categories;
-
+        $data['categories'] = $this->categories;
         //sns用URL
-        $data['sns_url'] = '/income/show/'.$data['company']->_id;
+        $data['sns_url'] = '/income/show/'.$presenter_name_key;
 
         //set header title
-        $data['header_title'] = $this->lang->line('common_header_title');
-        $data['header_keywords'] = $this->lang->line('common_header_keywords');
-        $data['header_description'] = $this->lang->line('common_header_description');
+        if($download_string == 'xlsx'){
+            $download_name = 'エクセルファイル';
+        }elseif($download_string == 'csv'){
+            $download_name = 'CSVファイル';
+        }
+        $header_string = strftime($this->lang->line('setting_date_format'), $first_cdata->col_disclosure).'提出 ' .$data['edinet']->presenter_name.'の年収'.$download_name.'をダウンロード';
+        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
+        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
+        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
         $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
         $this->load->view('income/download', array_merge($this->data,$data));
     }

@@ -21,10 +21,12 @@ contents
 -->
 <div id="contents">
     <div id ="contentsInner">
+        <div class="box_adx spdisp">
+            <img src="/images/ad_example_sp1.jpg" alt="" />
+        </div>
         <div id="document_navi">
 
-            <div id="top-news1" class="cf">
-                
+            <div id="top-news1" class="cf undisp">
                 <div id="top-news1-inner" class="cf">
                     <div id="photo-wrapper">
                         <div class="top-news1-photo"><a href="/articles/-/44758"><img src="/images/yuuka.jpg" /></a></div>
@@ -58,29 +60,27 @@ contents
                     </ul>
                     </div><!-- /top-news1-list -->
                 </div><!-- /top-news1-inner -->
-
             </div>
-
-
             <h3 class="center_dot"><span>最新の開示情報</span></h3>
         </div>
-        <div id="document_navi_ad">
-        <img src="/images/ad_example1.gif" alt="csv" />
+        <div id="document_navi_ad" class="undisp">
+            <img src="/images/ad_example1.gif" alt="csv" />
         </div>
         <div id="document">
             <table>
                 <tr>
                     <th class="cell01 date">提出日</th>
                     <th>書類</th>
-                    <th class="dl">ダウンロード</th>
+                    <th class="dl undisp">ダウンロード</th>
                 </tr>
                 <?php $count = count($xbrls);$i = 1; ?>
                 <?php foreach ($xbrls as $xbrl) : ?>
                 <tr<?php if($count == $i) echo ' class="last"'; ?>>
-                    <td class="cell02"><?php echo strftime($this->lang->line('setting_date_format'), strtotime($xbrl->date)); ?></td>
-                    <td style="font-size:90%;text-align:left;"><?php echo anchor('document/show/'.$xbrl->id, $xbrl->document_name.' - '.$xbrl->presenter_name); ?></td><td>
-                    <?php echo anchor('document/download/'.$xbrl->id.'/csv','<img src="/images/icon/csv_30.png" alt="csv" />'); ?>
-                    <?php echo anchor('document/download/'.$xbrl->id.'/xlsx','<img src="/images/icon/xlsx_30.png" alt="xlsx" />'); ?>
+                    <td class="cell02"><span class="undisp"><?php echo strftime("%Y年", strtotime($xbrl->date)); ?></span><?php echo strftime("%m月%d日", strtotime($xbrl->date)); ?></td>
+                    <td style="font-size:90%;text-align:left;"><?php echo anchor('document/show/'.$xbrl->id, $xbrl->document_name.' - '.$xbrl->presenter_name); ?></td>
+                    <td class="undisp">
+                        <?php echo anchor('document/download/'.$xbrl->id.'/csv','<img src="/images/icon/csv_30.png" alt="csv" />'); ?>
+                        <?php echo anchor('document/download/'.$xbrl->id.'/xlsx','<img src="/images/icon/xlsx_30.png" alt="xlsx" />'); ?>
                     </td>
                 </tr>
                 <?php $i++; ?>
@@ -91,15 +91,17 @@ contents
             <div id="side_cat">
                 <h1 class="side_title">業界カテゴリ</h1>
                 <ul>
-                <?php foreach ($income_categories as $income_category) : ?>
-                <li><a href="<?php echo '/income/category/'.$income_category->_id; ?>"><span><?php echo $income_category->col_name; ?></span></a></li>
+                <?php foreach ($categories as $category) : ?>
+                <li><a href="<?php echo '/document/category/'.$category->id; ?>"><span><?php echo $category->name; ?></span></a></li>
                 <?php endforeach; ?>
                 </ul>
             </div><!-- /side_cat -->
             <div class="box_wrap">
-                <div id="datepicker"></div>
-                <div class="box_adx">
-                    <img src="/images/ad_example1.gif" alt="csv" />
+                <div class="box_adx pcdisp">
+                    <img src="/images/ad_example1.gif" alt="" />
+                </div>
+                <div class="box_adx spdisp">
+                    <img src="/images/ad_example_sp1.jpg" alt="" />
                 </div>
             </div>
         </div>

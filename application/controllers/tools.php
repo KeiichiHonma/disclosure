@@ -10,6 +10,7 @@ class Tools extends CI_Controller {
     var $is_tenmono = FALSE;
     var $xbrls_informations;
     var $xbrl_files;
+    var $htmls_informations;
     
     
     function __construct(){
@@ -36,21 +37,21 @@ class Tools extends CI_Controller {
         $this->archiver = new ZipArchive();
         $this->extractFiles = array();
     }
-    public function test()
-    {
-        $this->load->model('Document_model');
-        $xbrls =$this->Document_model->getAllDocuments();
-        foreach ($xbrls as $key => $value){
-            $this->db->where('id', $value->id);
-            $this->db->update('documents', array('category_id'=>$value->vid));
+
+    public function update_presenter_name_key(){
+        $edinets = $this->Edinet_model->getAllEdinets();
+        foreach ($edinets as $edinet){
+            $str = trim(str_replace(array('company,','corporation','inc','limited','incorporated','co','ltd','.',',',''),array('','','','','','','','',''),strtolower($edinet->presenter_name_en)));
+            $str = str_replace(' ','_',$str);
+            $this->db->where('id', $edinet->id);
+            $this->db->update('edinets', array('presenter_name_key'=>$str));
         }
         
-
     }
     
     public function analyze()
     {
-        echo date('Ymd H:i',time())."\n";
+        //echo date('Ymd H:i',time())."\n";
         $time = time();
         $today = date('Y',$time).'/'.date('m',$time).'/'.date('d',$time);
         list($year,$month,$day) = explode('/',$today);
@@ -108,12 +109,19 @@ class Tools extends CI_Controller {
                      
                         // ZIPファイルをクローズ
                         $this->archiver->close();
+                        $move_path = $move_ymd_path . '/' . $tempFolder;
+                        $bl = FALSE;
+                        if( chown($tmp_dir_path, 'apache') && chgrp($tmp_dir_path, 'apache') && chmod($tmp_dir_path,0770) ) $bl = TRUE;
+                        if(!$bl){
+                        echo ('unzip error1');
+                        die();
+                        }
                         
                         //renameを記録
-                        $rename_paths[] = array('zip_path'=>$zip_file_path,'tmp_path'=>$tmp_dir_path , 'move_path'=>$move_ymd_path . '/' . $tempFolder);
+                        $rename_paths[] = array('zip_path'=>$zip_file_path,'tmp_path'=>$tmp_dir_path , 'move_path'=>$move_path);
                     }else{
-var_dump('unzip error');
-die();
+                        echo ('unzip error2');
+                        die();
                     }
                 }
             }
@@ -127,9 +135,27 @@ die();
         $csv_datas = array();
         $base_datas = array();
         $this->_list_files($tmp_dir_path. '/',$move_ymd_path);
-        
-        $tenmono_datas = array('companies'=>array(),'cdatas'=>array());
+/*
+        $xbrl_dir_id = 'S1001MZP';//アークコア
+        //$xbrl_dir_id = 'S1002AXB';//ヤマダコーポレーション
+        if(!empty($this->htmls_informations[$xbrl_dir_id])){
+            foreach ($this->htmls_informations[$xbrl_dir_id] as $file_number => $html_file){
+                $html_index = array();
+                $last_val = end(explode('/',$html_file));
+                if(!preg_match('/^0000000/', $last_val)){
+                    $insert_html_data['document_id'] = 1;
+                    $insert_html_data['filename'] = $last_val;
+                    $insert_html_data['html_data'] = $this->xbrl_lib->_makeHtmlData($insert_html_data['document_id'],$html_file,$html_index,$move_ymd_path);
+                    $insert_html_data['html_index_serialize'] = empty($html_index) ? '' : serialize($html_index);
+                    $this->db->insert('document_htmls', $insert_html_data);
+                }
+            }
+        }
+        die();
+*/
 
+
+        $tenmono_datas = array('companies'=>array(),'cdatas'=>array());
         if(!empty($this->xbrls_informations)){
             //先に企業名をDBに挿入 presenter_id が必要なため
             foreach ($this->xbrls_informations as $unzip_dir_name => $xbrls_information){
@@ -175,7 +201,6 @@ die();
         //実際にファイル解析
         $xbrl_count = 0;
         $created = date("Y-m-d H:i:s", time());
-
         foreach ($this->xbrl_files as $unzip_dir_name =>  $xbrls){
             foreach ($xbrls as $xbrl_dir_id =>  $xbrl_paths){
 
@@ -253,7 +278,7 @@ die();
                         $insert_data['document'][$xbrl_dir_id]['created'] = $created;
                         $insert_data['document'][$xbrl_dir_id]['category_id'] = $edinet->category_id;
                         //code生成
-                        $code = $edinet->id.'_'.$date.'_'.$xbrl_dir_id.'_';
+                        $code = $edinet->id.'_'.$date.'_'.$xbrl_dir_id;
                         $insert_data['document'][$xbrl_dir_id]['code'] = $code;
                         //codeチェック
                         $check_xbrl = $this->Document_model->getDocumentByCode($code);
@@ -283,7 +308,8 @@ die();
                     //個別のデータは一旦削除
                     $this->db->where('document_id', $check_xbrl->id);
                     $this->db->delete('document_datas');
-
+                    
+                    //document_datas開始
                     for ($i=0;$i<$xbrl_paths_count;$i++){
                         $batch_data = array();
                         foreach ($insert_data['document_data'][$xbrl_dir_id][$i] as $value){
@@ -297,7 +323,10 @@ die();
                     $insert_data['document'][$xbrl_dir_id]['xbrl_path'] = serialize($xbrl_path_arr);//複数の可能性あり
                     $this->db->insert('documents', $insert_data['document'][$xbrl_dir_id]);
                     $document_id = $this->db->insert_id();
-                    //echo $document_id."\n";
+
+                    echo 'document_id done : '.$document_id."\n";
+                    
+                    //document_datas開始
                     for ($i=0;$i<$xbrl_paths_count;$i++){
                         $batch_data = array();
                         foreach ($insert_data['document_data'][$xbrl_dir_id][$i] as $value){
@@ -306,6 +335,25 @@ die();
                         }
                         $this->db->insert_batch('document_datas', $batch_data);
                     }
+
+                    if(!empty($this->htmls_informations[$xbrl_dir_id])){
+                        $html_index = array();
+                        foreach ($this->htmls_informations[$xbrl_dir_id] as $file_number => $html_file){
+                            $last_val = end(explode('/',$html_file));
+                            if(!preg_match('/^0000000/', $last_val)){
+                                $insert_html_data['document_id'] = $document_id;
+                                $insert_html_data['filename'] = $last_val;
+                                $insert_html_data['html_data'] = $this->xbrl_lib->_makeHtmlData($insert_html_data['document_id'],$html_file,$html_index[$file_number],$move_ymd_path);
+                                //$insert_html_data['html_index_serialize'] = empty($html_index) ? '' : serialize($html_index);
+                                $this->db->insert('document_htmls', $insert_html_data);
+                            }
+                        }
+                        if(!empty($html_index)){
+                            $this->db->where('id', $document_id);
+                            $this->db->update('documents', array('html_index_serialize'=>serialize($html_index)));
+                        }
+                    }
+
                 }
 
                 //ここでexcel
@@ -574,6 +622,66 @@ die();
                     $dirs = explode('/',$tmp_dir_path);
                     //XbrlSearchDlInfo.csv
                     $this->xbrls_informations[$dirs[11]] = $this->_read_form_edinetinfo_csv($tmp_dir_path . $file);
+                }elseif($pathinfo['filename'] == 'manifest_PublicDoc' && $pathinfo['extension'] == 'xml'){//htmlのファイル構造
+                    $dirs = explode('/',$tmp_dir_path);
+                    /*
+                    array(16) {
+                      [0]=>
+                      string(0) ""
+                      [1]=>
+                      string(3) "usr"
+                      [2]=>
+                      string(5) "local"
+                      [3]=>
+                      string(7) "apache2"
+                      [4]=>
+                      string(6) "htdocs"
+                      [5]=>
+                      string(10) "disclosure"
+                      [6]=>
+                      string(7) "uploads"
+                      [7]=>
+                      string(3) "tmp"
+                      [8]=>
+                      string(4) "2014"
+                      [9]=>
+                      string(2) "08"
+                      [10]=>
+                      string(2) "06"
+                      [11]=>
+                      string(18) "201408061232131ac3"
+                      [12]=>
+                      string(8) "S1001W63"
+                      [13]=>
+                      string(4) "XBRL"
+                      [14]=>
+                      string(9) "PublicDoc"
+                      [15]=>
+                      string(0) ""
+                    }
+                    */
+                    //move
+                    $base_path = '';
+                    $xbrl_path = '';
+                    $xbrl_add_path = '';
+                    foreach ($dirs as $key => $value){
+                        if(!empty($value)){
+                            if($key >= 11){
+                                $xbrl_add_path .= '/'.$value;
+                            }else{
+                                $base_path .= '/'.$value;
+                            }
+                        }
+
+                    }
+                    $move_xbrl_path = $move_ymd_path.$xbrl_add_path.'/';
+                    $xbrl_datas = $this->xbrl_lib->_parseXml($tmp_dir_path . $file);//manifest_PublicDoc.xml
+                    /*
+                    tmpで処理したい時
+                    */
+                    //$this->htmls_informations[$dirs[12]] = $this->xbrl_lib->_listedXbrlHtml($xbrl_datas,$tmp_dir_path,$move_xbrl_path);
+                    
+                    $this->htmls_informations[$dirs[12]] = $this->xbrl_lib->_listedXbrlHtml($xbrl_datas,$move_xbrl_path);
                 }
             } else if( is_dir($tmp_dir_path . $file) && $file != 'AuditDoc') {
                 $files = array_merge($files, $this->_list_files($tmp_dir_path . $file . '/',$move_ymd_path));
@@ -762,7 +870,7 @@ die();
 
     function _make_date_directory($path) {
         $bl = FALSE;
-        if( is_dir($path) || ( mkdir($path) && chown($path, 'apache') && chmod($path,0770) ) )$bl = TRUE;
+        if( is_dir($path) || ( mkdir($path) && chown($path, 'apache') && chgrp($path, 'apache')&& chmod($path,0770) ) )$bl = TRUE;
         return $bl;
     }
 

@@ -1,4 +1,5 @@
 <?php if ($maxPageCount > 1) : ?>
+<div class="pager pt20 pb20">
     <ul>
     <?php if ($page > 1) : ?>
     <li><?php echo anchor(sprintf($pageFormat, $page-1), 'PREV'); ?></li>
@@ -18,4 +19,5 @@
     <?php endif ; ?>
     
     </ul>
+</div>
 <?php endif ; ?>

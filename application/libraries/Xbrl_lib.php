@@ -69,8 +69,103 @@ class Xbrl_lib
         xml_parser_free($xml_parser);
         return $xbrl_datas;
     }
+
+    //public function _listedXbrlHtml($xbrl_datas,$tmp_dir_path,$move_xbrl_path) {
+    public function _listedXbrlHtml($xbrl_datas,$move_xbrl_path) {
+        $htmls = array();
+        //require_once('application/libraries/simple_html_dom.php');
+        foreach ($xbrl_datas as $line => $xbrl_data){
+            if($xbrl_data['tag'] == 'ixbrl'){
+                $htmls[] = $move_xbrl_path.$xbrl_data['value'];
+            }
+        }
+        return $htmls;
+    }
     
-    //public function _makeCsv($xbrl_datas,$file,$is_base = FALSE) {
+    private $h_tags = array('h1','h2','h3','h4','h5');
+    
+    public function _makeHtmlData($document_id,$html_file,&$html_index_file_number,$move_ymd_path) {
+        require_once('application/libraries/simple_html_dom.php');
+        $simple_html_dom = file_get_html($html_file);
+        $data = array();
+
+        //hタグリスト
+        foreach ($this->h_tags as $tag){
+            foreach($simple_html_dom->find($tag) as $element){
+                $html_index_file_number[$tag][] = $element->plaintext;
+            }
+        }
+
+        //img
+        foreach($simple_html_dom->find('img') as $element){
+                if(isset($element->src)){
+                    $res_image_path = $element->src;
+                    if($ex = explode('/',$res_image_path)){
+                        $res_image_path = end($ex);
+                    }
+                    $paths = explode('/',$html_file);
+                    array_pop($paths);
+                    $image_filepath = implode('/',$paths).'/'.$element->src;
+                    $move_image_path = $move_ymd_path.'/'.$document_id.'_'.$res_image_path;
+                    rename($image_filepath,$move_image_path);
+                    $html_imagepath = explode('disclosure/',$move_image_path);
+                    $element->src = '/'.$html_imagepath[1];//上書き
+                }
+            
+        }
+        $html = '';
+        $style = $simple_html_dom->find('style',0)->innertext;
+        if(strlen($style) > 0){
+            $html .=  '<style type="text/css">'.$style.'</style>';
+        }
+        $html .= $simple_html_dom->find('body',0)->innertext;
+
+/*
+        $html = '';
+        $index = array();
+        $html_go = FALSE;
+        foreach ($html_datas as $key => $html_data){
+            
+            //index
+            if(preg_match('/^<h1/', $html_data)){
+                $html_indexs_file_number['h1'][] = strip_tags($html_data);
+            }elseif(preg_match('/^<h2/', $html_data)){
+                $html_indexs_file_number['h2'][] = strip_tags($html_data);
+            }elseif(preg_match('/^<h3/', $html_data)){
+                $html_indexs_file_number['h3'][] = strip_tags($html_data);
+            }elseif(preg_match('/^<h4/', $html_data)){
+                $html_indexs_file_number['h4'][] = strip_tags($html_data);
+            }elseif(preg_match('/^<h5/', $html_data)){
+                $html_indexs_file_number['h5'][] = strip_tags($html_data);
+            }elseif(preg_match('/<img/', $html_data)){
+                //$paths = explode('/',$html_file);
+                preg_match_all('/<img.*?src=(["\'])(.+?)\1.*?>/i', $html_data, $res);
+                //preg_match_all('/<img[^src]+src=[\'"]*((?:(?!hogefuga).)*?(jpg|gif|png))[^>]+>/i',$html_data,$res);
+                if(isset($res[2][0])){
+                    $res_image_path = $res[2][0];
+                    if($ex = explode('/',$res_image_path)){
+                        $res_image_path = end($ex);
+                    }
+                    $paths = explode('/',$html_file);
+                    array_pop($paths);
+                    $image_filepath = implode('/',$paths).'/'.$res[2][0];
+                    $move_image_path = $move_ymd_path.'/'.$document_id.'_'.$res_image_path;
+                    rename($image_filepath,$move_image_path);
+                    //$html_images[] = $move_image_path;
+                    //str_replace($res[0][0],$html_datas,)
+                    $html_imagepath = explode('disclosure/',$move_image_path);
+                    $html_data = preg_replace('!(?<=src\=\").+(?=\"(\s|\/\>))!', '/'.$html_imagepath[1],$html_data );
+                }
+            }
+            
+            //html
+            if($html_go) $html .= $html_data;
+            if(preg_match('/^<body/', $html_data)) $html_go = TRUE;
+            if(preg_match('/^<\/body/', $html_data)) $html_go = FALSE;
+        }
+*/
+        return $html;
+    }
     public function _makeCsvSqlData($xbrl_datas,$file,&$insert_document_data,$edinet_code,&$tenmono_datas) {
         require_once('application/libraries/simple_html_dom.php');
         foreach ($xbrl_datas as $line => $xbrl_data){
@@ -147,6 +242,7 @@ class Xbrl_lib
                                                 $context = $context_data->context_name;
                                             }
                                         }
+                                    //Prior2YearConsolidatedInstant
                                     }elseif(preg_match('/^Prior1/', $contextRef)){
                                         if(preg_match('/^Prior1Year/', $contextRef) && preg_match('/Instant/', $contextRef)){
                                             $context = '前期末';
@@ -166,7 +262,7 @@ class Xbrl_lib
                                             }
                                         }
                                     }elseif(preg_match('/^Prior2/', $contextRef) === 1){
-                                        if(preg_match('/^Prior2YearInstant/', $contextRef)){
+                                        if(preg_match('/^Prior2Year/', $contextRef) && preg_match('/Instant/', $contextRef)){
                                             $context = '前々期末';
                                         }elseif(preg_match('/^Prior2YearDuration/', $contextRef)){
                                             $context = '前々期';
@@ -180,7 +276,7 @@ class Xbrl_lib
                                             }
                                         }
                                     }elseif(preg_match('/^Prior3/', $contextRef) === 1){
-                                        if(preg_match('/^Prior3YearInstant/', $contextRef)){
+                                        if(preg_match('/^Prior3Year/', $contextRef) && preg_match('/Instant/', $contextRef)){
                                             $context = '三期前時点';
                                         }elseif(preg_match('/^Prior3YearDuration/', $contextRef)){
                                             $context = '三期前';
@@ -194,7 +290,7 @@ class Xbrl_lib
                                             }
                                         }
                                     }elseif(preg_match('/^Prior4/', $contextRef) === 1){
-                                        if(preg_match('/^Prior4YearInstant/', $contextRef)){
+                                        if(preg_match('/^Prior4Year/', $contextRef) && preg_match('/Instant/', $contextRef)){
                                             $context = '四期前時点';
                                         }elseif(preg_match('/^Prior4YearDuration/', $contextRef)){
                                             $context = '四期前';

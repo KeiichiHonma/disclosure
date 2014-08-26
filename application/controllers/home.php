@@ -10,12 +10,11 @@ class Home extends MY_Controller
         $this->load->helper('image');
         $this->lang->load('setting');
         $this->load->database();
-        //$this->load->model('Category_model');
+        $this->load->model('Category_model');
         $this->load->model('Tenmono_model');
         $this->load->model('Presenter_model');
         $this->load->model('Document_model');
-        //$this->categories = $this->Category_model->getAllcategories();
-        $this->income_categories = $this->Tenmono_model->getAllTenmonoCategories();
+        $this->categories = $this->Category_model->getAllCategories();
         $this->data = array();
     }
 
@@ -33,26 +32,14 @@ class Home extends MY_Controller
         $xbrls =$this->Document_model->getDocumentsOrder($orderExpression,1);
         $data['xbrls'] = $xbrls['data'];
         
-        //$data['categories'] = $this->categories;
-        $data['income_categories'] = $this->income_categories;
+        $data['categories'] = $this->categories;
         //set header title
-        $data['header_title'] = $this->lang->line('common_header_title');
-        $data['header_keywords'] = $this->lang->line('common_header_keywords');
-        $data['header_description'] = $this->lang->line('common_header_description');
-        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array(
-        'http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css',
-        '/css/tabulous.css'
-        )));
-        
-        $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array(
-        'http://code.jquery.com/ui/1.9.2/jquery-ui.js',
-        'http://ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js',
-        '',
-        '',
-        '',
-        )));
-        
-        
+        $data['header_title'] = $this->lang->line('header_title');
+        $data['header_keywords'] = $this->lang->line('header_keywords');
+        $data['header_description'] = $this->lang->line('header_description');
+        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css','/css/tabulous.css')));
+        $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('http://code.jquery.com/ui/1.9.2/jquery-ui.js','http://ajax.googleapis.com/ajax/libs/jqueryui/1/i18n/jquery.ui.datepicker-ja.min.js')));
+
         $this->load->view('home/index', array_merge($this->data,$data));
     }
 

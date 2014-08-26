@@ -8,7 +8,7 @@ contents
 -->
 <div id="contents">
     <div id ="contentsInner">
-        <h1 class="l1"><?php echo $document->presenter_name.' - '.$document->document_name; ?>のダウンロード</h1>
+        <h1 class="l1"><?php echo $document->presenter_name.' - '.$document->document_name; ?>の<?php echo $download_string; ?>ダウンロード</h1>
         <div id="document">
             <?php $this->load->view('layout/common/document_sns'); ?>
                 <img src="/images/ad_example1.gif" alt="ad" class="ml10"/><img src="/images/ad_example1.gif" alt="ad" class="mr10 fr" />

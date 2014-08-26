@@ -1,4 +1,4 @@
-            <ul class="box_snsbtn cf">
+            <ul class="box_upper cf undisp">
                 <li class="fb">
                     <div id="fb-root"></div>
                     <script>(function(d, s, id) {
@@ -41,8 +41,8 @@
                     <a href="<?php echo '/document/download/'.$document->id.'/xlsx'; ?>"><span class="ico"><img src="/images/icon/xlsx_30.png" alt="excel" class="mt05" /></a>
                     <?php elseif(isset($cdata_download)): ?>
                     <h3 class="title"><span>データダウンロード</span></h2>
-                    <a href="<?php echo '/income/download/'.$company->_id.'/csv'; ?>"><span class="ico"><img src="/images/icon/csv_30.png" alt="csv" class="mt05" /></a>
-                    <a href="<?php echo '/income/download/'.$company->_id.'/xlsx'; ?>"><span class="ico"><img src="/images/icon/xlsx_30.png" alt="excel" class="mt05" /></a>
+                    <a href="<?php echo '/income/download/'.$edinet->presenter_name_key.'/csv'; ?>"><span class="ico"><img src="/images/icon/csv_30.png" alt="csv" class="mt05" /></a>
+                    <a href="<?php echo '/income/download/'.$edinet->presenter_name_key.'/xlsx'; ?>"><span class="ico"><img src="/images/icon/xlsx_30.png" alt="excel" class="mt05" /></a>
                     <?php endif; ?>
                 </li>
             </ul>

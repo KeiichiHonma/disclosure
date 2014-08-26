@@ -28,13 +28,12 @@ class Document_model extends CI_Model
         return array();
     }
 
-    function getDocumentsBySecurityCode($code)
+    function getDocumentsByEdinetId($edinet_id)
     {
         $query = $this->db->query("SELECT *
                                     FROM {$this->table_name}
-                                    INNER JOIN presenters ON {$this->table_name}.presenter_id = presenters.id
-                                    WHERE presenters.securities_code = ?"
-        , array($code)
+                                    WHERE {$this->table_name}.edinet_id = ?"
+        , array(intval($edinet_id))
         );
         if ($query->num_rows() != 0) return $query->result();
         return array();
@@ -70,6 +69,17 @@ class Document_model extends CI_Model
         $query = $this->db->query("SELECT *
                                     FROM document_datas
                                     WHERE document_datas.document_id = ?"
+        , array(intval($document_id))
+        );
+        if ($query->num_rows() != 0) return $query->result();
+        return array();
+    }
+
+    function getDocumentHtmlByDocumentId($document_id)
+    {
+        $query = $this->db->query("SELECT *
+                                    FROM document_htmls
+                                    WHERE document_htmls.document_id = ?"
         , array(intval($document_id))
         );
         if ($query->num_rows() != 0) return $query->result();
@@ -138,6 +148,34 @@ class Document_model extends CI_Model
                                     FROM {$this->table_name}
                                     ORDER BY {$this->table_name}.{$order}
                                     LIMIT {$offset},{$perPageCount}"
+        );
+
+        if ($query->num_rows() != 0) {
+            $result['data'] = $query->result();
+            $query = $this->db->query("SELECT FOUND_ROWS() as count");
+            if($query->num_rows() == 1) {
+                foreach ($query->result() as $row)
+                $result['count'] = $row->count;
+            }
+        } else {
+            $result['data'] = array();
+            $result['count'] = 0;
+        }
+
+        return $result;
+    }
+
+    function getDocumentsByCategoryIdOrder($category_id,$order, $page)
+    {
+        $result = array();
+        $perPageCount = $this->CI->config->item('paging_count_per_page');
+        $offset = $perPageCount * ($page - 1);
+        $query = $this->db->query("SELECT SQL_CALC_FOUND_ROWS *
+                                    FROM {$this->table_name}
+                                    WHERE {$this->table_name}.category_id = ?
+                                    ORDER BY {$this->table_name}.{$order}
+                                    LIMIT {$offset},{$perPageCount}"
+        , array(intval($category_id))
         );
 
         if ($query->num_rows() != 0) {
