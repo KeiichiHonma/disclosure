@@ -145,7 +145,7 @@ class Tools extends CI_Controller {
                 if(!preg_match('/^0000000/', $last_val)){
                     $insert_html_data['document_id'] = 1;
                     $insert_html_data['filename'] = $last_val;
-                    $insert_html_data['html_data'] = $this->xbrl_lib->_makeHtmlData($insert_html_data['document_id'],$html_file,$html_index,$move_ymd_path);
+                    $insert_html_data['html_data'] = $this->xbrl_lib->_makeHtmlData($insert_html_data['document_id'],$html_file,$html_index,$file_number,$move_ymd_path);
                     $insert_html_data['html_index_serialize'] = empty($html_index) ? '' : serialize($html_index);
                     $this->db->insert('document_htmls', $insert_html_data);
                 }
@@ -303,8 +303,6 @@ class Tools extends CI_Controller {
                 //DB追加、更新///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //既に存在していたら除去して個別更新
                 if(!empty($check_xbrl)){
-                    $this->db->where('code', $code);
-                    $this->db->update('documents', $insert_data['document'][$xbrl_dir_id]);
                     //個別のデータは一旦削除
                     $this->db->where('document_id', $check_xbrl->id);
                     $this->db->delete('document_datas');
@@ -318,6 +316,27 @@ class Tools extends CI_Controller {
                         }
                         $this->db->insert_batch('document_datas', $batch_data);
                     }
+
+                    //個別のデータは一旦削除
+                    $this->db->where('document_id', $check_xbrl->id);
+                    $this->db->delete('document_htmls');
+
+                    if(!empty($this->htmls_informations[$xbrl_dir_id])){
+                        $html_index = array();
+                        foreach ($this->htmls_informations[$xbrl_dir_id] as $file_number => $html_file){
+                            $last_val = end(explode('/',$html_file));
+                            $insert_html_data['document_id'] = $check_xbrl->id;
+                            $insert_html_data['filename'] = $last_val;
+                            $insert_html_data['html_data'] = $this->xbrl_lib->_makeHtmlData($insert_html_data['document_id'],$html_file,$html_index,$file_number,$move_ymd_path);
+                            $this->db->insert('document_htmls', $insert_html_data);
+                        }
+                        if(!empty($html_index)){
+                            $insert_data['document'][$xbrl_dir_id]['html_index_serialize'] = serialize($html_index);
+                        }
+                    }
+                    //最後にdocument更新
+                    $this->db->where('code', $code);
+                    $this->db->update('documents', $insert_data['document'][$xbrl_dir_id]);
                 }else{
                     //DB追加
                     $insert_data['document'][$xbrl_dir_id]['xbrl_path'] = serialize($xbrl_path_arr);//複数の可能性あり
@@ -340,13 +359,10 @@ class Tools extends CI_Controller {
                         $html_index = array();
                         foreach ($this->htmls_informations[$xbrl_dir_id] as $file_number => $html_file){
                             $last_val = end(explode('/',$html_file));
-                            if(!preg_match('/^0000000/', $last_val)){
-                                $insert_html_data['document_id'] = $document_id;
-                                $insert_html_data['filename'] = $last_val;
-                                $insert_html_data['html_data'] = $this->xbrl_lib->_makeHtmlData($insert_html_data['document_id'],$html_file,$html_index[$file_number],$move_ymd_path);
-                                //$insert_html_data['html_index_serialize'] = empty($html_index) ? '' : serialize($html_index);
-                                $this->db->insert('document_htmls', $insert_html_data);
-                            }
+                            $insert_html_data['document_id'] = $document_id;
+                            $insert_html_data['filename'] = $last_val;
+                            $insert_html_data['html_data'] = $this->xbrl_lib->_makeHtmlData($insert_html_data['document_id'],$html_file,$html_index,$file_number,$move_ymd_path);
+                            $this->db->insert('document_htmls', $insert_html_data);
                         }
                         if(!empty($html_index)){
                             $this->db->where('id', $document_id);

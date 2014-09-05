@@ -99,9 +99,10 @@ var $values = array();
     }
 
 
-    function show($document_id,$html_number = 1)//1から
+    function show($document_id,$target_html_number = 0)//1から
     {
         $data['bodyId'] = 'ind';
+        $data['pageId'] = 'document_show';
         $data['document_side_current'] = 'document_show';
         $order = "created";
         $orderExpression = "created DESC";//作成新しい
@@ -112,7 +113,8 @@ var $values = array();
         $data['html_index'] = unserialize($data['document']->html_index_serialize);
 
         $document_htmls = $this->Document_model->getDocumentHtmlByDocumentId($document_id);
-        $data['document_htmls'] = $document_htmls[$html_number];
+        $data['document_htmls'] = $document_htmls[$target_html_number];
+        $data['target_html_number'] = $target_html_number;
         
         //その他の文書
         $orderExpression = "created DESC";//作成新しい
@@ -135,7 +137,9 @@ var $values = array();
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
-
+        
+        $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/jquery.sticky.js')));
+        
         $this->load->view('document/show', array_merge($this->data,$data));
     }
 

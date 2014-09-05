@@ -9,7 +9,7 @@ header
         <h2>企業情報のオープンデータ活用サービス</h2>
     </div>
     <!-- パンクズ -->
-    <div id="breadcrumb" class="scrolltop">
+    <div id="breadcrumb"<?php if(!isset($pageId) || $pageId != 'document_show'): ?><?php echo ' class="scrolltop"'; ?><?php endif; ?>>
         <div id="breadcrumbInner" class="cf">
             <span><a href="/">財務速報</a></span>
             <span><a href="/income/">年収速報</a></span>

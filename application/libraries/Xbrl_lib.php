@@ -70,12 +70,10 @@ class Xbrl_lib
         return $xbrl_datas;
     }
 
-    //public function _listedXbrlHtml($xbrl_datas,$tmp_dir_path,$move_xbrl_path) {
     public function _listedXbrlHtml($xbrl_datas,$move_xbrl_path) {
         $htmls = array();
-        //require_once('application/libraries/simple_html_dom.php');
         foreach ($xbrl_datas as $line => $xbrl_data){
-            if($xbrl_data['tag'] == 'ixbrl'){
+            if($xbrl_data['tag'] == 'ixbrl' && !preg_match('/^0000000/', $xbrl_data['value'])){
                 $htmls[] = $move_xbrl_path.$xbrl_data['value'];
             }
         }
@@ -84,15 +82,18 @@ class Xbrl_lib
     
     private $h_tags = array('h1','h2','h3','h4','h5');
     
-    public function _makeHtmlData($document_id,$html_file,&$html_index_file_number,$move_ymd_path) {
+    public function _makeHtmlData($document_id,$html_file,&$html_index,$file_number,$move_ymd_path) {
         require_once('application/libraries/simple_html_dom.php');
         $simple_html_dom = file_get_html($html_file);
         $data = array();
 
         //hタグリスト
         foreach ($this->h_tags as $tag){
-            foreach($simple_html_dom->find($tag) as $element){
-                $html_index_file_number[$tag][] = $element->plaintext;
+            foreach($simple_html_dom->find($tag) as $key => $element){
+                $html_index[$file_number][$tag][] = $element->plaintext;
+                if($tag == 'h2' || $tag == 'h3'){
+                    $element->id = $element->id != '' ? $element->id.' '.$tag.'_'.$file_number.'_'.$key : $tag.'_'.$file_number.'_'.$key;
+                }
             }
         }
 
@@ -119,7 +120,6 @@ class Xbrl_lib
             $html .=  '<style type="text/css">'.$style.'</style>';
         }
         $html .= $simple_html_dom->find('body',0)->innertext;
-
 /*
         $html = '';
         $index = array();

@@ -79,7 +79,8 @@ class Document_model extends CI_Model
     {
         $query = $this->db->query("SELECT *
                                     FROM document_htmls
-                                    WHERE document_htmls.document_id = ?"
+                                    WHERE document_htmls.document_id = ?
+                                    ORDER BY document_htmls.id ASC"
         , array(intval($document_id))
         );
         if ($query->num_rows() != 0) return $query->result();

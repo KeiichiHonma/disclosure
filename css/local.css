@@ -1218,7 +1218,7 @@ body#ind {
     -moz-box-shadow:0 0 10px 0 rgba(0,0,0,.2);
     box-shadow:0 0 10px 0 rgba(0,0,0,.2)
 }
-
+div#side_cat{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "ＭＳ ゴシック", "Osaka", sans-serif !important;}
 #side_cat li {
     border-top:#e8e8e8 1px solid
 }
@@ -1335,7 +1335,7 @@ body#ind {
     -moz-box-shadow:0 0 10px 0 rgba(0,0,0,.2);
     box-shadow:0 0 10px 0 rgba(0,0,0,.2);
 }
-
+div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "ＭＳ ゴシック", "Osaka", sans-serif !important;}
 .side_list li {
     border-top:#e8e8e8 1px solid
 }

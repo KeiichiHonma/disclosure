@@ -36,11 +36,11 @@
                 </li>
                 <li class="download">
                     <?php if(isset($document_download)): ?>
-                    <h3 class="title"><span>データダウンロード</span></h2>
+                    <h3 class="title"><span>データダウンロード</span></h3>
                     <a href="<?php echo '/document/download/'.$document->id.'/csv'; ?>"><span class="ico"><img src="/images/icon/csv_30.png" alt="csv" class="mt05" /></a>
                     <a href="<?php echo '/document/download/'.$document->id.'/xlsx'; ?>"><span class="ico"><img src="/images/icon/xlsx_30.png" alt="excel" class="mt05" /></a>
                     <?php elseif(isset($cdata_download)): ?>
-                    <h3 class="title"><span>データダウンロード</span></h2>
+                    <h3 class="title"><span>データダウンロード</span></h3>
                     <a href="<?php echo '/income/download/'.$edinet->presenter_name_key.'/csv'; ?>"><span class="ico"><img src="/images/icon/csv_30.png" alt="csv" class="mt05" /></a>
                     <a href="<?php echo '/income/download/'.$edinet->presenter_name_key.'/xlsx'; ?>"><span class="ico"><img src="/images/icon/xlsx_30.png" alt="excel" class="mt05" /></a>
                     <?php endif; ?>
