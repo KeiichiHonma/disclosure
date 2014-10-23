@@ -15,28 +15,25 @@ contents
 
         <div id="document">
             <?php $this->load->view('common/pager'); ?>
-            <table>
+            <table class="finance">
                 <tr>
-                    <th class="code undisp">証券コード</th>
-                    <th>企業名</th>
+                    <th>提出日</th>
+                    <th class="code">証券<br />コード</th>
+                    <th class="company_name">企業名</th>
+                    
                     <?php if($type == "bs"): ?>
-                    <th>流動資産</th>
-                    <th>固定資産</th>
                     <th>資産合計</th>
-                    <th>流動負債</th>
-                    <th>固定負債</th>
                     <th>負債合計</th>
                     <th>資本金</th>
                     <th>株主資本</th>
                     <?php endif; ?>
                     <?php if($type == "pl"): ?>
-                    <th>売上高</th>
+                    <th><?php echo anchor('finance/ranking/'.$type.'/'.(!is_null($year) && is_numeric($year) ? $year : date("Y",time())).'/'.($order == 'net-sales' ? 'net-salesRev' : 'net-sales').'/'.$page,'売上高'.($order == 'net-sales' ? '<i class="fa fa-arrow-circle-o-up fa-2x"></i>' : '<i class="fa fa-arrow-circle-down fa-2x"></i>')); ?></th>
                     <th>売上原価</th>
+                    <th><?php echo anchor('finance/ranking/'.$type.'/'.(!is_null($year) && is_numeric($year) ? $year : date("Y",time())).'/'.($order == 'net-sales' ? 'net-salesRev' : 'net-sales').'/'.$page,'売上原価'.($order == 'net-sales' ? '<i class="fa fa-arrow-circle-o-up fa-2x"></i>' : '<i class="fa fa-arrow-circle-down fa-2x"></i>')); ?></th>
                     <th>売上総利益</th>
                     <th>営業利益</th>
                     <th>経常利益</th>
-                    <th>特別利益</th>
-                    <th>特別損失</th>
                     <th>特別損益収支</th>
                     <th>当期純利益</th>
                     <?php endif; ?>
@@ -48,21 +45,20 @@ contents
                     <th>財務CF</th>
                     <th>キャッシュフロー</th>
                     <?php endif; ?>
-                    <th>業種</th>
-                    <th>市場</th>
-                    
+                    <th>市場<br />業種</th>
                 </tr>
                 <?php $count = count($finances);$i = 1; ?>
                 <?php foreach ($finances as $finance) : ?>
                 <tr<?php if($count == $i) echo ' class="last"'; ?>>
-                    <td><?php echo $finance->security_code > 0 ? anchor('finance/show/'.$finance->presenter_name_key,$finance->security_code) : '-'; ?></td>
-                    <td><?php echo anchor('finance/show/'.$finance->presenter_name_key,$finance->presenter_name); ?></td>
+                    <td class="txt">
+                    
+                    <?php echo strftime("%y/", strtotime($finance->date)); ?></span><?php echo strftime("%m/%d", strtotime($finance->date)); ?>
+                    
+                    </td>
+                    <td class="txt"><?php echo $finance->security_code > 0 ? anchor('finance/show/'.$finance->presenter_name_key,$finance->security_code) : '-'; ?></td>
+                    <td class="txt"><?php echo anchor('finance/show/'.$finance->presenter_name_key,$finance->presenter_name); ?></td>
                     <?php if($type == "bs"): ?>
-                    <td><?php echo number_format($finance->current_assets); ?></td>
-                    <td><?php echo number_format($finance->noncurrent_assets); ?></td>
                     <td><?php echo number_format($finance->assets); ?></td>
-                    <td><?php echo number_format($finance->current_liabilities); ?></td>
-                    <td><?php echo number_format($finance->noncurrent_liabilities); ?></td>
                     <td><?php echo number_format($finance->liabilities); ?></td>
                     <td><?php echo number_format($finance->capital_stock); ?></td>
                     <td><?php echo number_format($finance->shareholders_equity); ?></td>
@@ -73,8 +69,6 @@ contents
                     <td><?php echo number_format($finance->gross_profit); ?></td>
                     <td><?php echo number_format($finance->operating_income); ?></td>
                     <td><?php echo number_format($finance->ordinary_income); ?></td>
-                    <td><?php echo number_format($finance->extraordinary_income); ?></td>
-                    <td><?php echo number_format($finance->extraordinary_losses); ?></td>
                     <td><?php echo number_format($finance->extraordinary_total); ?></td>
                     <td><?php echo number_format($finance->net_income); ?></td>
                     <?php endif; ?>
@@ -87,8 +81,10 @@ contents
                     <td><?php echo number_format($finance->net_increase_decrease_in_cash_and_cash_equivalents); ?></td>
                     <?php endif; ?>
 
-                    <td><?php echo anchor('finance/category/'.$finance->category_id.'/'.$type.(!is_null($year) && is_numeric($year) ? '/'.$year : ''),$finance->category_name); ?></td>
-                    <td><?php if(isset($markets[$finance->market_id])): ?><?php echo anchor('finance/market/'.$finance->market_id.'/'.$type.(!is_null($year) && is_numeric($year) ? '/'.$year : ''),$markets[$finance->market_id]->name); ?><?php endif; ?></td>
+                    <td class="txt">
+                    <?php echo anchor('finance/category/'.$finance->category_id.'/'.$type.(!is_null($year) && is_numeric($year) ? '/'.$year : ''),$finance->category_name); ?>
+                    <?php if(isset($markets[$finance->market_id])): ?><br /><?php echo anchor('finance/market/'.$finance->market_id.'/'.$type.(!is_null($year) && is_numeric($year) ? '/'.$year : ''),$markets[$finance->market_id]->name); ?><?php endif; ?>
+                    </td>
                 </tr>
                 <?php $i++; ?>
                 <?php endforeach; ?>

@@ -26,33 +26,28 @@ class Finance extends MY_Controller
      * ranking action
      *
      */
-    function ranking($type='bs', $year = null, $order = "date", $page = 1)
+    function ranking($type='bs', $year = null, $order = null, $page = 1)
     {
         if(!in_array($type,$this->types)) show_404();
         $data['bodyId'] = 'ind';
         $page = intval($page);
-        if ($order == "date") {
+        
+        if(is_null($year) && is_null($order)){
             $order = "date";
             $orderExpression = "date DESC";//作成新しい
-        } else if ($order == "modifiedRev") {
-            $orderExpression = "modified ASC";
-        } else if ($order == "created") {
-            $orderExpression = "created DESC";
-        } else if ($order == "createdRev") {
-            $orderExpression = "created ASC";
-        } else {
-            $order = "modified";
-            $orderExpression = "date DESC";//作成新しい
+        }else{
+            list($order,$orderExpression) = $this->_set_order($type,$order);
         }
+
         $data['type'] = $type;
-        $data['year'] = is_null($year) ? date("Y",time()) : $year;
+        $data['year'] = $year;
         $financesResult = $this->Finance_model->getFinancesOrder($data['year'], $orderExpression, $page);
 
         $data['finances'] = $financesResult['data'];
 
         $data['page'] = $page;
         $data['order'] = $order;
-        $data['pageFormat'] = "finance/balancesheet/{$order}/%d";
+        $data['pageFormat'] = "finance/ranking/{$type}/{$year}/{$order}/%d";
         $data['rowCount'] = intval($this->config->item('paging_row_count'));
         $data['columnCount'] = intval($this->config->item('paging_column_count'));
         $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
@@ -90,6 +85,8 @@ class Finance extends MY_Controller
             $order = "modified";
             $orderExpression = "date DESC";//作成新しい
         }
+        
+        $data['category_id'] = $category_id;
         $data['type'] = $type;
         $data['year'] = $year;
         $financesResult = $this->Finance_model->getFinancesOrderByCategoryId($category_id,$data['year'], $orderExpression, $page);
@@ -98,7 +95,7 @@ class Finance extends MY_Controller
 
         $data['page'] = $page;
         $data['order'] = $order;
-        $data['pageFormat'] = "finance/balancesheet/{$order}/%d";
+        $data['pageFormat'] = "finance/category/{$category_id}/{$type}/{$year}/{$order}/%d";
         $data['rowCount'] = intval($this->config->item('paging_row_count'));
         $data['columnCount'] = intval($this->config->item('paging_column_count'));
         $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
@@ -136,6 +133,7 @@ class Finance extends MY_Controller
             $order = "modified";
             $orderExpression = "date DESC";//作成新しい
         }
+        $data['category_id'] = $category_id;
         $data['type'] = $type;
         $data['year'] = $year;
         $financesResult = $this->Finance_model->getFinancesOrderByMarketId($market_id,$data['year'], $orderExpression, $page);
@@ -144,7 +142,7 @@ class Finance extends MY_Controller
 
         $data['page'] = $page;
         $data['order'] = $order;
-        $data['pageFormat'] = "finance/balancesheet/{$order}/%d";
+        $data['pageFormat'] = "finance/market/{$market_id}/{$type}/{$year}/{$order}/%d";
         $data['rowCount'] = intval($this->config->item('paging_row_count'));
         $data['columnCount'] = intval($this->config->item('paging_column_count'));
         $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
@@ -215,6 +213,99 @@ class Finance extends MY_Controller
         $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/Chart.js')));
         $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('/css/tab.css')));
         $this->load->view('finance/show', array_merge($this->data,$data));
+    }
+    
+    function _set_order($type,$order){
+        if ($order == "date") {
+            $orderExpression = "date DESC";//作成新しい
+        }elseif ($order == "dateRev") {
+            $orderExpression = "date ASC";
+        }
+        if($type == 'pl'){
+            if ($order == "net-sales") {
+                $orderExpression = "net_sales DESC";//売上高
+            } else if ($order == "net-salesRev") {
+                $orderExpression = "net_sales ASC";
+            } else if ($order == "cost-of-sales") {
+                $orderExpression = "cost_of_sales DESC";//売上原価
+            } else if ($order == "cost-of-salesRev") {
+                $orderExpression = "cost_of_sales ASC";
+            } else if ($order == "gross-profit") {
+                $orderExpression = "gross_profit DESC";//売上総利益
+            } else if ($order == "gross-profitRev") {
+                $orderExpression = "gross_profit ASC";
+            } else if ($order == "operating-income") {
+                $orderExpression = "operating_income DESC";//営業利益
+            } else if ($order == "operating-incomeRev") {
+                $orderExpression = "operating_income ASC";
+            } else if ($order == "ordinary-income") {
+                $orderExpression = "ordinary_income DESC";//経常利益
+            } else if ($order == "ordinary-incomeErv") {
+                $orderExpression = "ordinary_income ASC";
+            } else if ($order == "extraordinary-total") {
+                $orderExpression = "extraordinary_total DESC";//特別損益収支
+            } else if ($order == "extraordinary-totalRev") {
+                $orderExpression = "extraordinary_total ASC";
+            } else if ($order == "net-income") {
+                $orderExpression = "net_income DESC";//当期純利益
+            } else if ($order == "net-incomeRev") {
+                $orderExpression = "net_income ASC";
+            }else{
+                $order = "net-sales";
+                $orderExpression = "net_sales DESC";//売上高
+            }
+        }elseif($type == 'bs'){
+            if ($order == "assets") {
+                $orderExpression = "assets DESC";//資産
+            } else if ($order == "assetsRev") {
+                $orderExpression = "assets ASC";
+            } else if ($order == "liabilities") {
+                $orderExpression = "liabilities DESC";//負債
+            } else if ($order == "liabilitiesRev") {
+                $orderExpression = "liabilities ASC";
+            } else if ($order == "capital-stock") {
+                $orderExpression = "capital_stock DESC";//資本金
+            } else if ($order == "capital-stockRev") {
+                $orderExpression = "capital_stock ASC";
+            } else if ($order == "shareholders-equity") {
+                $orderExpression = "shareholders_equity DESC";//株主資本
+            } else if ($order == "shareholders-equityRev") {
+                $orderExpression = "shareholders_equity ASC";
+            }else{
+                $order = "assets";
+                $orderExpression = "assets DESC";//資産
+            }
+        }elseif($type == 'cf'){
+            if ($order == "net-income") {
+                $orderExpression = "net_income DESC";//当期純利益
+            } else if ($order == "net-incomeRev") {
+                $orderExpression = "net_income ASC";
+            } else if ($order == "depreciation-and-amortization") {
+                $orderExpression = "depreciation_and_amortization DESC";//減価償却費
+            } else if ($order == "depreciation-and-amortizationRev") {
+                $orderExpression = "depreciation_and_amortization ASC";
+            } else if ($order == "net-cash-provided-by-used-in-operating-activities") {
+                $orderExpression = "net_cash_provided_by_used_in_operating_activities DESC";//営業活動によるキャッシュ・フロー
+            } else if ($order == "net-cash-provided-by-used-in-operating-activitiesRev") {
+                $orderExpression = "net_cash_provided_by_used_in_operating_activities ASC";
+            } else if ($order == "net-cash-provided-by-used-in-investing-activities") {
+                $orderExpression = "net_cash_provided_by_used_in_investing_activities DESC";//投資活動によるキャッシュ・フロー
+            } else if ($order == "net-cash-provided-by-used-in-investing-activitiesRev") {
+                $orderExpression = "net_cash_provided_by_used_in_investing_activities ASC";
+            } else if ($order == "net-cash-provided-by-used-in-financing-activitiesRev") {
+                $orderExpression = "net_cash_provided_by_used_in_financing_activities DESC";//財務活動によるキャッシュ・フロー
+            } else if ($order == "net-cash-provided-by-used-in-financing-activitiesRevRev") {
+                $orderExpression = "net_cash_provided_by_used_in_financing_activities ASC";
+            } else if ($order == "net-increase-decrease-in-cash-and-cash-equivalents") {
+                $orderExpression = "net_increase_decrease_in_cash_and_cash_equivalents DESC";//キャッシュ・フロー
+            } else if ($order == "net-increase-decrease-in-cash-and-cash-equivalentsRev") {
+                $orderExpression = "net_increase_decrease_in_cash_and_cash_equivalents ASC";
+            }else{
+                $order = "net-income";
+                $orderExpression = "net_income DESC";//当期純利益
+            }
+        }
+        return array($order,$orderExpression);
     }
 }
 

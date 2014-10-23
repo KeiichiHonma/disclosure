@@ -1384,41 +1384,10 @@ div#side_cat{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3"
     font-weight:700
 }
 
-#side_cat li a:hover span.ico {
-    color:#000;
-    background:#ececec;
-    font-weight:400
-}
-
 #side_cat li a span.ico {
-    font-family:Montserrat,sans-serif;
-    -webkit-font-smoothing:antialiased;
-    -webkit-border-radius:5px;
-    -moz-border-radius:5px;
-    -ms-border-radius:5px;
-    -o-border-radius:5px;
-    border-radius:5px;
+
     float:right;
-    /*background:#ececec;*/
-    color:#999;
-    padding:0 5px;
-    -webkit-transition:background .3s ease;
-    -moz-transition:background .3s ease;
-    -o-transition:background .3s ease;
-    transition:background .3s ease
-}
 
-#side_cat .current span.ico {
-    /*background:#000;*/
-    color:#fff;
-    font-weight:700;
-    font-weight:400
-}
-
-#side_cat .news .current span.ico {
-    background:#82ad00;
-    color:#fff;
-    font-weight:700
 }
 
 .side_list {
@@ -1600,7 +1569,7 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
 
 #document table.finance th{
     font-size:90%;
-    padding: 5px;
+    padding: 2px;
 }
 #document table.finance td{
     font-size:90%;
@@ -1613,6 +1582,16 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
     font-weight:normal;
     text-align:left;
     padding-left:20px;
+}
+#document table.finance td.txt{
+    font-size:90%;
+    text-align:center;
+}
+#document table.finance th.code{
+    width:100px;
+}
+#document table.finance th.company_name{
+    width:200px;
 }
 #document #download{
     width:600px;

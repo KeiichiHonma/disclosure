@@ -11,11 +11,13 @@ class Site extends MY_Controller
         $this->lang->load('setting');
         $this->load->database();
         $this->load->model('Category_model');
+        $this->load->model('Market_model');
         $this->load->model('Tenmono_model');
         $this->load->model('Presenter_model');
         $this->load->model('Document_model');
         $this->load->model('Edinet_model');
         $this->data['categories'] = $this->Category_model->getAllCategories();
+        $this->data['markets'] = $this->Market_model->getAllMarkets();
     }
 
 

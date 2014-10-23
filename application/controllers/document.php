@@ -179,7 +179,7 @@ var $values = array();
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
 
-        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('/css/tab.css')));
+        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/tab.css')));
         $this->load->view('document/data', array_merge($this->data,$data));
     }
 
@@ -218,7 +218,7 @@ var $values = array();
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
-        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('/css/tab.css')));
+        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/tab.css')));
         $this->load->view('document/download', array_merge($this->data,$data));
     }
 

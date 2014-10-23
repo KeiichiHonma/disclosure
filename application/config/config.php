@@ -394,6 +394,7 @@ $config['stylesheets'][] = 'css/jquery.sidr.dark.css';
 $config['stylesheets'][] = 'css/jquery-ui-1.10.3.custom.css';
 $config['stylesheets'][] = 'css/main.css';
 $config['stylesheets'][] = 'css/side.css';
+$config['stylesheets'][] = 'css/font-awesome.min.css';
 
 $config['javascripts'][] = 'js/jquery-1.8.3.js';//slideでも使用
 $config['javascripts'][] = 'js/jquery.sidr.min.js';//scroll

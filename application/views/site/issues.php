@@ -1,9 +1,4 @@
 <?php $this->load->view('layout/header/header'); ?>
-<script>
-    $(window).load(function(){
-      $("#sticker").sticky({ topSpacing: 45, center:true, className:"hey" });
-    });
-</script>
 <?php $this->load->view('layout/common/navi'); ?>
 <!--
 //////////////////////////////////////////////////////////////////////////////
@@ -13,7 +8,7 @@ contents
 <div id="contents">
     <div id ="contentsInner">
         <h1 class="l1"><?php echo $this->lang->line('common_title_issues'); ?></h1>
-            <div class="sort">
+            <div class="sort pager">
                 <ul class="clearfix">
                     <li><?php echo anchor('site/issues/1', '1000番台',($page == 1 ? 'class="active"' : '')); ?></li>
                     <li><?php echo anchor('site/issues/2', '2000番台',($page == 2 ? 'class="active"' : '')); ?></li>
@@ -31,7 +26,14 @@ contents
                 <?php foreach ($chunk_edinets as $edinets) : ?>
                 <tr>
                     <?php foreach ($edinets as $edinet) : ?>
-                    <td><?php echo $edinet->presenter_name; ?><?php echo $edinet->security_code; ?></td>
+                    <td>
+<strong><?php echo anchor('finance/show/'.$edinet->presenter_name_key,$edinet->security_code.'<br />'.$edinet->presenter_name); ?></strong><br />
+<span style="font-size:90%;"><?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/pl','P/L'); ?>&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/bs','BS'); ?>&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/cf','CF'); ?><br />
+<?php echo anchor('finance/category/'.$edinet->category_id.'/pl',$edinet->category_name); ?>
+<?php if(isset($markets[$edinet->market_id])): ?><br /><?php echo anchor('finance/market/'.$edinet->market_id.'/pl',$markets[$edinet->market_id]->name); ?><?php endif; ?></span>
+
+                    
+                    </td>
                     <?php endforeach; ?>
                 </tr>
                 <?php endforeach; ?>

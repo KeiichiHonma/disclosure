@@ -158,16 +158,6 @@ class Tools extends CI_Controller {
     {
         $finances = array
         (
-
-            //貸借対照表
-            array('current_assets',2874,'当期末'),//流動資産
-            array('noncurrent_assets',3090,'当期末'),//固定資産
-            array('assets',800,'当期末'),//資産
-            array('current_liabilities',3206,'当期末'),//流動負債
-            array('noncurrent_liabilities',3269,'当期末'),//固定負債
-            array('liabilities',801,'当期末'),//負債
-            array('capital_stock',3277,'当期末'),//資本金
-            array('shareholders_equity',3324,'当期末'),//株主資本 //資本金 資本剰余金 利益剰余金 自己株式の合計、合計の株主資本を使用
             //損益計算書
             array('net_sales',789,'当期'),//売上高
             array('cost_of_sales',3432,'当期'),//売上原価
@@ -177,8 +167,17 @@ class Tools extends CI_Controller {
             array('extraordinary_income',808,'当期'),//特別利益
             array('extraordinary_losses',810,'当期'),//特別損失
             array('net_income',799,'当期'),//当期純利益
+            //貸借対照表
+            array('current_assets',2874,'当期末'),//流動資産
+            array('noncurrent_assets',3090,'当期末'),//固定資産
+            array('assets',800,'当期末'),//資産
+            array('current_liabilities',3206,'当期末'),//流動負債
+            array('noncurrent_liabilities',3269,'当期末'),//固定負債
+            array('liabilities',801,'当期末'),//負債
+            array('capital_stock',3277,'当期末'),//資本金
+            array('shareholders_equity',3324,'当期末'),//株主資本 //資本金 資本剰余金 利益剰余金 自己株式の合計、合計の株主資本を使用
             //キャッシュフロー計算書
-            array('depreciation_and_amortization',4680,'当期'),//減価償却費、営業活動によるキャッシュ・フロー
+            array('depreciation_and_amortization',4680,'当期'),//減価償却費
             array('net_cash_provided_by_used_in_operating_activities',4944,'当期'),//営業活動によるキャッシュ・フロー
             array('net_cash_provided_by_used_in_investing_activities',5055,'当期'),//投資活動によるキャッシュ・フロー
             array('net_cash_provided_by_used_in_financing_activities',5105,'当期'),//財務活動によるキャッシュ・フロー
