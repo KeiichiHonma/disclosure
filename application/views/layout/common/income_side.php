@@ -1,15 +1,5 @@
         <div id="sidebar">
-            <div id="side_cat">
-                <h1 class="side_title"><?php echo $company->col_name; ?></h1>
-                <ul>
-                    <li<?php if($income_side_current == 'income_show'): ?> class="current"<?php endif; ?>><a href="<?php echo '/income/show/'.$edinet->presenter_name_key; ?>"><span>年収情報</span><span class="ico"><img src="/images/icon/comnpany_info_20.png" alt="omnpany_info" /></span></a></li>
-                    <li<?php if($income_side_current == 'income_dl_csv'): ?> class="current"<?php endif; ?>><a href="<?php echo '/income/download/'.$edinet->presenter_name_key.'/csv'; ?>"><span>CSVファイルダウンロード</span><span class="ico"><img src="/images/icon/csv_20.png" alt="csv" /></a></li>
-                    <li<?php if($income_side_current == 'income_dl_xlsx'): ?> class="current"<?php endif; ?>><a href="<?php echo '/income/download/'.$edinet->presenter_name_key.'/xlsx'; ?>"><span>EXCELファイルダウンロード</span><span class="ico"><img src="/images/icon/xlsx_20.png" alt="xlsx" /></span></a></li>
-                    <?php if(!empty($documents)): ?>
-                    <li<?php if($income_side_current == 'document_show'): ?> class="current"<?php endif; ?>><a href="<?php echo '/document/company/'.$edinet->presenter_name_key; ?>"><span>開示情報一覧</span><span class="ico"><img src="/images/icon/document_20.png" alt="document" /></span></a></li>
-                    <?php endif; ?>
-                </ul>
-            </div><!-- /side_cat -->
+            <?php $this->load->view('layout/common/switch_side'); ?>
             <div class="side_list">
                 <h1 class="side_title">業界カテゴリ</h1>
                 <ul>

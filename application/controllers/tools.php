@@ -7,7 +7,8 @@ class Tools extends CI_Controller {
     var $VAL = "_value";
     var $log_echo = FALSE;
     var $is_parse = TRUE;
-    var $is_tenmono = FALSE;
+    var $is_tenmono = TRUE;
+    var $is_tenmono_cdata_all = FALSE;
     var $xbrls_informations;
     var $xbrl_files;
     var $htmls_informations;
@@ -38,6 +39,80 @@ class Tools extends CI_Controller {
         $this->extractFiles = array();
     }
 
+    public function update_edinet_csv()
+    {
+        $csv  = array();
+        $file = '/usr/local/apache2/htdocs/disclosure/uploads/EdinetcodeDlInfo.csv';
+        $fp   = fopen($file, "r");
+         
+        while (($data = fgetcsv($fp, 0, ",")) !== FALSE) {
+          $csv[] = $data;
+        }
+        fclose($fp);
+        $this->load->model('Category_model');
+        $categories = $this->Category_model->getAllCategories('name');
+        
+        foreach ($csv as $key => $value){
+            if($key > 1){
+                $presenter_name = mb_convert_encoding($value[6],"UTF-8","SJIS-win");
+                $presenter_name = str_replace(array('　株式会社','　有限会社','　合同会社'),array('','',''),$presenter_name);
+                $presenter_name = str_replace(array('株式会社　','有限会社　','合同会社　'),array('','',''),$presenter_name);
+                $presenter_name = str_replace(array('株式会社','有限会社','合同会社'),array('','',''),$presenter_name);
+                if(isset($value[11])){
+                    if(strlen($value[11]) == 5 && preg_match('/0$/', $value[11])){//0で終わる
+                        $security_code = $user_ids = substr($value[11], 0, -1);   //最後の「,」を削除
+                    }else{
+                        $security_code = $value[11];
+                    }
+                }else{
+                    $value[11] = 0;
+                    $security_code = 0;
+                }
+
+                /*
+                csvが空の場合がある、重複する場合がある
+                */
+                $presenter_name_key = mb_convert_encoding($value[7],"UTF-8","SJIS-win");
+                $presenter_name_key = trim(str_replace(array('corporation japan','company,','corporation','inc','limited','incorporated','co','ltd','.',','),array('','','','','','','','',''),strtolower($presenter_name_key)));
+                $ng = array('\\','\'','|','`','^','"','<','>',')','(','}','{',']','[',')',';','/','?',':','@','&','=','+','$',',','%');
+                $rep = array('','','','','','','','','','','','','','','','','','','','','','','','','');
+                $presenter_name_key = str_replace($ng,$rep,$presenter_name_key);
+                if($presenter_name_key == ''){
+                    //echo mb_convert_encoding($value[6],"UTF-8","SJIS-win");
+                    //continue;
+                    $presenter_name_key = $security_code;
+                }else{
+                    $presenter_name_key = str_replace(' ','_',$presenter_name_key);
+                    $category_name = isset($value[10]) ? mb_convert_encoding($value[10],"UTF-8","SJIS-win") : 0;
+
+                    //重複チェック
+                    $edinet = $this->Edinet_model->getEdinetByPresenterNameKey($presenter_name_key);
+                    if(!empty($edinet)) $presenter_name_key = $presenter_name_key.$security_code;
+                }
+
+                $data = array(
+                    'presenter_type' => trim(mb_convert_encoding($value[1],"UTF-8","SJIS-win")),
+                    'presentation_class' => trim(mb_convert_encoding($value[2],"UTF-8","SJIS-win")),
+                    'concatenated' => trim(mb_convert_encoding($value[3],"UTF-8","SJIS-win")),
+                    'capital' => trim(mb_convert_encoding($value[4],"UTF-8","SJIS-win")),
+                    'closing_date' => trim(mb_convert_encoding($value[5],"UTF-8","SJIS-win")),
+                    'presenter_name' => trim($presenter_name),
+                    'presenter_name_en' => trim(mb_convert_encoding($value[7],"UTF-8","SJIS-win")),
+                    'presenter_name_kana' => trim(mb_convert_encoding($value[8],"UTF-8","SJIS-win")),
+                    'presenter_name_key' => trim($presenter_name_key),
+                    'address' => trim(mb_convert_encoding($value[9],"UTF-8","SJIS-win")),
+                    'category_name' => $category_name,
+                    'category_id' => isset($categories[$category_name]) ? $categories[$category_name]->id : 0,
+                    'edinet_security_code' => $value[11],
+                    'security_code' => $security_code
+                );
+                $this->db->where('edinet_code', $value[0]);
+                $this->db->update('edinets', $data);
+            }
+
+        }
+    }
+
     public function update_presenter_name_key(){
         $edinets = $this->Edinet_model->getAllEdinets();
         foreach ($edinets as $edinet){
@@ -47,6 +122,173 @@ class Tools extends CI_Controller {
             $this->db->update('edinets', array('presenter_name_key'=>$str));
         }
         
+    }
+
+    public function update_market_id()
+    {
+        $markets = $this->Edinet_model->getAllMarkets();
+        $edinets = $this->Edinet_model->getAllEdinets();
+        foreach ($edinets as $edinet){
+            if($edinet->security_code > 0){
+                $security = $this->Edinet_model->getSecurityBySecurityCode($edinet->security_code);
+                if(!empty($security) && isset($markets[$security->place_name])){
+                    $data = array(
+                        'market_id' => $markets[$security->place_name]->id
+                    );
+                    $this->db->where('id', $edinet->id);
+                    $this->db->update('edinets', $data);
+
+                }else{
+                    //マーケットと対応したコードがない
+                    echo $edinet->security_code.$edinet->presenter_name."<br />\n";
+                }
+
+            }
+        }
+    }
+    
+    
+    /*
+    対象の項目がドキュメントに必ずあるわけではない。
+    つまり項目ごとの一括のループではなく、
+    全ての有価証券報告書ドキュメントを取得して、
+    IDごとに項目があるかどうか確認しながら挿入していく必要がある
+    */
+    public function finance($start = 0,$limit = 50)
+    {
+        $finances = array
+        (
+
+            //貸借対照表
+            array('current_assets',2874,'当期末'),//流動資産
+            array('noncurrent_assets',3090,'当期末'),//固定資産
+            array('assets',800,'当期末'),//資産
+            array('current_liabilities',3206,'当期末'),//流動負債
+            array('noncurrent_liabilities',3269,'当期末'),//固定負債
+            array('liabilities',801,'当期末'),//負債
+            array('capital_stock',3277,'当期末'),//資本金
+            array('shareholders_equity',3324,'当期末'),//株主資本 //資本金 資本剰余金 利益剰余金 自己株式の合計、合計の株主資本を使用
+            //損益計算書
+            array('net_sales',789,'当期'),//売上高
+            array('cost_of_sales',3432,'当期'),//売上原価
+            array('gross_profit',3638,'当期'),//売上総利益
+            array('operating_income',796,'当期'),//営業利益
+            array('ordinary_income',797,'当期'),//経常利益
+            array('extraordinary_income',808,'当期'),//特別利益
+            array('extraordinary_losses',810,'当期'),//特別損失
+            array('net_income',799,'当期'),//当期純利益
+            //キャッシュフロー計算書
+            array('depreciation_and_amortization',4680,'当期'),//減価償却費、営業活動によるキャッシュ・フロー
+            array('net_cash_provided_by_used_in_operating_activities',4944,'当期'),//営業活動によるキャッシュ・フロー
+            array('net_cash_provided_by_used_in_investing_activities',5055,'当期'),//投資活動によるキャッシュ・フロー
+            array('net_cash_provided_by_used_in_financing_activities',5105,'当期'),//財務活動によるキャッシュ・フロー
+            array('net_increase_decrease_in_cash_and_cash_equivalents',5107,'当期'),//キャッシュ・フロー → 現金及び現金同等物の増減額（△は減少）
+        );
+        $documents =$this->Document_model->getAllDocuments($start,$limit);
+        $batch_data = array();
+        $i = 0;
+        foreach ($documents as $index => $document){
+            $batch_data[$i]['document_id'] = $document->id;
+            $batch_data[$i]['created'] = date("Y-m-d H:i:s", time());
+            foreach ($finances as $finance){
+                $finance_data = $this->Document_model->getDocumentDataByDocumentIdByTarget($document->id,$finance[1],$finance[2]);
+                if(!empty($finance_data)){
+                    if($finance[0] == 'extraordinary_income'){
+                        $extraordinary_income = $finance_data[0]->int_data;
+                        $batch_data[$i][$finance[0]] = floor($finance_data[0]->int_data / 1000000);
+                    }elseif($finance[0] == 'extraordinary_losses'){
+                        $extraordinary_losses = $finance_data[0]->int_data;
+                        $extraordinary_total = $extraordinary_income - $extraordinary_losses;
+                        $batch_data[$i]['extraordinary_losses'] = floor($finance_data[0]->int_data / 1000000);
+                        $batch_data[$i]['extraordinary_total'] = floor($extraordinary_total / 1000000);
+                    }else{
+                        $batch_data[$i][$finance[0]] = floor($finance_data[0]->int_data / 1000000);
+                    }
+                }else{
+                    //個別を確認
+                    $finance_data = $this->Document_model->getDocumentDataByDocumentIdByTarget($document->id,$finance[1],$finance[2],'個別');
+                    if(!empty($finance_data)){
+                        if($finance[0] == 'extraordinary_income'){
+                            $extraordinary_income = $finance_data[0]->int_data;
+                            $batch_data[$i][$finance[0]] = floor($finance_data[0]->int_data / 1000000);
+                        }elseif($finance[0] == 'extraordinary_losses'){
+                            $extraordinary_losses = $finance_data[0]->int_data;
+                            $extraordinary_total = $extraordinary_income - $extraordinary_losses;
+                            $batch_data[$i]['extraordinary_losses'] = floor($finance_data[0]->int_data / 1000000);
+                            $batch_data[$i]['extraordinary_total'] = floor($extraordinary_total / 1000000);
+                        }else{
+                            $batch_data[$i][$finance[0]] = floor($finance_data[0]->int_data / 1000000);
+                        }
+                    }else{
+                        $batch_data[$i][$finance[0]] = 0;
+                    }
+                }
+                
+            }
+            $i++;
+        }
+        $this->db->insert_batch('document_finances', $batch_data);
+    }
+    
+    //csv書き出し
+    private $pattern = array('A','B','C','D','E','F','G','H','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+    private $replacement = array(' A',' B',' C',' D',' E',' F',' G',' H',' J',' K',' L',' M',' N',' O',' P',' Q',' R',' S',' T',' U',' V',' W',' X',' Y',' Z');
+    public function export_file($start = 0,$limit = 50)
+    {
+        $documents =$this->Document_model->getAllDocuments($start,$limit);
+        foreach ($documents as $document){
+            $csv_data = array();
+            $document_datas =$this->Document_model->getDocumentDataByDocumentId($document->id);
+            $line = 0;
+            foreach ($document_datas as $document_data){
+                if($document_data->item_id == 0){
+                    $name = str_replace($this->pattern, $this->replacement, $document_data->element_name);
+                }else{
+                    if($document_data->redundant_label_ja != ''){
+                        $name = $document_data->redundant_label_ja;
+                    }elseif ($document_data->style_tree != ''){
+                        $name = $document_data->style_tree;
+                    }elseif ($document_data->detail_tree != ''){
+                        $name = $document_data->detail_tree;
+                    }else{
+                        $name = $document_data->element_name;
+                    }
+                    
+                }
+                $csv_data[$line][] = $name;
+                $csv_data[$line][] = $document_data->context_period;
+                $csv_data[$line][] = $document_data->context_consolidated;
+                $csv_data[$line][] = $document_data->context_term;
+                $csv_data[$line][] = $document_data->unit;
+                if( $document_data->text_data != '' ){
+                    $value = $document_data->text_data;
+                }elseif ($document_data->mediumtext_data != ''){
+                    $value = $document_data->mediumtext_data;
+                }elseif (is_numeric($document_data->int_data)){
+                    $value = $document_data->int_data;
+                }else{
+                    $value = '';
+                }
+                $csv_data[$line][] = $value;
+                $line++;
+            }
+            //path
+            $csv_path = $document->format_path.'.csv';
+            $excel_path = $document->format_path.'.xlsx';
+            $paths = explode('/',$document->format_path);
+            $excel_sheet_name = end($paths);
+            
+            // CSVファイル書き込み
+            $fp = fopen($csv_path, 'w+');
+            foreach ($csv_data as $line => $value){
+                $byte = $this->_fputcsv($fp, $value, FALSE);
+            }
+            fclose($fp);
+            
+            // EXCELファイル書き込み
+            $this->xbrl_lib->put_excel($excel_path,$csv_data,$excel_sheet_name);
+            echo  $document->format_path."\n";
+        }
     }
     
     public function analyze()
@@ -118,7 +360,11 @@ class Tools extends CI_Controller {
                         }
                         
                         //renameを記録
-                        $rename_paths[] = array('zip_path'=>$zip_file_path,'tmp_path'=>$tmp_dir_path , 'move_path'=>$move_path);
+                        $rename_index = explode('disclosure/',$move_path);//xbrlsからランダム文字列ディレクトリ20140806123925fb71まで
+                        $rename_paths[$rename_index[1]] = array('zip_path'=>$zip_file_path,'tmp_path'=>$tmp_dir_path , 'move_path'=>$move_path);
+                        
+                        //tmp pathを記録
+                        $tmp_dir_paths[] = $tmp_dir_path;
                     }else{
                         echo ('unzip error2');
                         die();
@@ -130,11 +376,12 @@ class Tools extends CI_Controller {
             $this->_remove_directory($tmp_path.$year);
             die();
         }
-
         $insert_data = array();
         $csv_datas = array();
         $base_datas = array();
-        $this->_list_files($tmp_dir_path. '/',$move_ymd_path);
+        foreach ($tmp_dir_paths as $tmp_dir_path){
+            $this->_list_files($tmp_dir_path. '/',$move_ymd_path);
+        }
 /*
         $xbrl_dir_id = 'S1001MZP';//アークコア
         //$xbrl_dir_id = 'S1002AXB';//ヤマダコーポレーション
@@ -154,16 +401,15 @@ class Tools extends CI_Controller {
         die();
 */
 
-
         $tenmono_datas = array('companies'=>array(),'cdatas'=>array());
         if(!empty($this->xbrls_informations)){
+            $analyze_list = array();
             //先に企業名をDBに挿入 presenter_id が必要なため
             foreach ($this->xbrls_informations as $unzip_dir_name => $xbrls_information){
-                $analyze_list = array();
                 foreach ($xbrls_information as $xbrl_dir_id => $value){
                     //株式会社だけ
                     if(preg_match('/株式会社/', $value['presenter_name'])){
-                        $analyze_list[] = $xbrl_dir_id;
+                        $analyze_list[$unzip_dir_name][] = $xbrl_dir_id;
                         $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'] = preg_replace('/^[　]+/u', '', trim(str_replace('株式会社','',$value['presenter_name'])));
 
                         $edinet_code = $value['edinet_code'];
@@ -188,26 +434,22 @@ class Tools extends CI_Controller {
                 }
             }
         }
-
         //move
         foreach ($rename_paths as $rename_path){
             if(is_dir($rename_path['move_path'])) $this->_remove_directory($rename_path['move_path']);
             rename($rename_path['tmp_path'],$rename_path['move_path']);
             $zip_name = end(explode('/',$rename_path['zip_path']));
-            //rename($rename_path['zip_path'],$rename_path['move_path'].'/'.$zip_name);
+            rename($rename_path['zip_path'],$rename_path['move_path'].'/'.$zip_name);
         }
         $this->_remove_directory($tmp_path.$year);
-
         //実際にファイル解析
         $xbrl_count = 0;
         $created = date("Y-m-d H:i:s", time());
         foreach ($this->xbrl_files as $unzip_dir_name =>  $xbrls){
             foreach ($xbrls as $xbrl_dir_id =>  $xbrl_paths){
-
             //start transaction manually
             $this->db->trans_begin();
-
-                if(!in_array($xbrl_dir_id,$analyze_list) ) continue;
+                if(!in_array($xbrl_dir_id,$analyze_list[$unzip_dir_name]) ) continue;
                 $xbrl_paths_count = count($xbrl_paths);
                 $xbrl_path_loop_number = 0;
                 $excel_map = array();
@@ -265,13 +507,19 @@ class Tools extends CI_Controller {
                     $new_format_arr = array_slice($format_path_ex,6,5);
                     $new_format_arr[] = $date.'_'.$edinet_code;//日付+edinetcode
                     $format_path = implode('/',$new_format_arr);//xbrlsからランダム文字列ディレクトリ20140806123925fb71まで
-
                     //最初の1ファイル分だけDBデータ生成
                     if($xbrl_number == 0){
                         $insert_data['document'][$xbrl_dir_id]['edinet_id'] = $edinet->id;
                         $insert_data['document'][$xbrl_dir_id]['manage_number'] = $xbrl_dir_id;
                         $insert_data['document'][$xbrl_dir_id]['xbrl_count'] = $xbrl_paths_count;//xbrlファイルの数
                         $insert_data['document'][$xbrl_dir_id]['format_path'] = $format_path;//xbrlsから
+                        //zip name
+                        $paths = explode('/',$format_path);
+                        array_pop($paths);
+                        $rename_index = implode('/',$paths);
+                        $zip_name = end(explode('/',$rename_paths[$rename_index]['zip_path']));
+
+                        $insert_data['document'][$xbrl_dir_id]['zip_name'] = $zip_name;
                         $insert_data['document'][$xbrl_dir_id]['date'] = $date;
                         $insert_data['document'][$xbrl_dir_id]['document_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['document_name'];
                         $insert_data['document'][$xbrl_dir_id]['presenter_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'];
@@ -340,6 +588,10 @@ class Tools extends CI_Controller {
                 }else{
                     //DB追加
                     $insert_data['document'][$xbrl_dir_id]['xbrl_path'] = serialize($xbrl_path_arr);//複数の可能性あり
+                    //空の場合は空フラグを立てる
+                    if(empty($this->htmls_informations[$xbrl_dir_id])){
+                        $insert_data['document'][$xbrl_dir_id]['is_html'] = 1;
+                    }
                     $this->db->insert('documents', $insert_data['document'][$xbrl_dir_id]);
                     $document_id = $this->db->insert_id();
 
@@ -371,10 +623,10 @@ class Tools extends CI_Controller {
                     }
 
                 }
-
+                echo $excel_path.' - '.$xbrl_dir_id."\n";
                 //ここでexcel
-                echo $excel_path."\n";
-                $this->xbrl_lib->put_excel($excel_path,$csv_datas,$excel_sheet_name[$xbrl_dir_id],$excel_map);
+                //echo $excel_path."\n";
+                //$this->xbrl_lib->put_excel($excel_path,$csv_datas,$excel_sheet_name[$xbrl_dir_id],$excel_map);
                 //1documentごとにコミット
                 if ($this->db->trans_status() === FALSE) {
                     $this->db->trans_rollback();
@@ -387,7 +639,7 @@ class Tools extends CI_Controller {
         }
         if($this->is_parse){
             //csv書き出し
-            $this->put_csv($csv_paths,$csv_datas);
+            //$this->put_csv($csv_paths,$csv_datas);
             
             //tenmono更新///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             /*
@@ -428,87 +680,169 @@ class Tools extends CI_Controller {
               }
             }
             */
-            $tenmono_company_ids = array();
-            //company
-            foreach ($tenmono_datas['companies'] as $edinet_code => $tenmono_company){
-                $company = $this->Tenmono_model->getCompanyBySecurityCode($tenmono_company['col_code']);
-                if(!empty($company)){
-                    $this->db->where('col_code', $tenmono_company['col_code']);
-                    $this->db->update('tab_job_company', $tenmono_company);
-                    $tenmono_company_ids[$edinet_code] = $company->_id;
-                }else{
-                    $this->db->insert('tab_job_company', $tenmono_company);
-                    $tenmono_company_ids[$edinet_code] = $this->db->insert_id();
-                }
-            }
-
-            //cdata
-            foreach ($tenmono_datas['cdatas'] as $edinet_code => $tenmono_cdata){
-                if(!isset($tenmono_datas['companies'][$edinet_code]['col_vid'])){
-                    echo $edinet_code."\n";
-                    var_dump($tenmono_datas);
-                    die();
-                }
-                
-                
-                //code生成 $vid.$cid.$disclosure_time;
-                $code = $tenmono_datas['companies'][$edinet_code]['col_vid'].$tenmono_company_ids[$edinet_code].$tenmono_cdata['col_disclosure'];
-                $cdata = $this->Tenmono_model->getCdataByCode($code);
-                
-                //edition及びtrend,pace更新
-                $old_cdatas = $this->Tenmono_model->getCdatasByCompanyId($tenmono_company_ids[$edinet_code],'tab_job_cdata.col_disclosure ASC');//古い順に取得
-                $trend = 0;
-                if(!empty($old_cdatas)){
-                    $before_income = end($old_cdatas)->col_income;
-                    if($before_income < $tenmono_cdata['col_income']){
-                        $trend = 1;
-                    }elseif($before_income == $tenmono_cdata['col_income']){
-                        $trend = 3;
-                    }elseif($before_income > $tenmono_cdata['col_income']){
-                        $trend = 2;
+            if($this->is_tenmono){
+                $tenmono_company_ids = array();
+                //company
+                foreach ($tenmono_datas['companies'] as $edinet_code => $tenmono_company){
+                    $is_xbrl = FALSE;
+                    $company = $this->Tenmono_model->getCompanyBySecurityCode($tenmono_company['col_code']);
+                    if(!empty($company)){
+                        //updateは停止
+                        //$this->db->where('col_code', $tenmono_company['col_code']);
+                        //$this->db->update('tab_job_company', $tenmono_company);
+                        //$tenmono_company_ids[$edinet_code] = $company->_id;
+                    }elseif( isset($tenmono_datas['cdatas'][$edinet_code]['col_income']) &&is_numeric($tenmono_datas['cdatas'][$edinet_code]['col_income']) ){
+                        $is_xbrl = TRUE;
+                        echo 'add - '.$tenmono_company['col_name']."\n";
+                        $time = time();
+                        $tenmono_company['col_ctime'] = $time;
+                        $tenmono_company['col_mtime'] = $time;
+                        $this->db->insert('tab_job_company', $tenmono_company);
+                        $tenmono_company_ids[$edinet_code] = $this->db->insert_id();
                     }
-                }
-                $time = time();
-                $tenmono_cdata['col_mtime'] = $time;
-                $tenmono_cdata['col_code'] = $code;
-                $tenmono_cdata['col_vid'] = $tenmono_datas['companies'][$edinet_code]['col_vid'];
-                $tenmono_cdata['col_cid'] = $tenmono_company_ids[$edinet_code];
-                $tenmono_cdata['col_edition'] = 1;//一旦0
-                $tenmono_cdata['col_pace'] = round($tenmono_cdata['col_income'] / $tenmono_cdata['col_age'],1);
-                $tenmono_cdata['col_income_trend'] = $trend;
-                $tenmono_cdata['col_income_lifetime'] = $this->_getIncomeLifetime($tenmono_cdata['col_income'],$tenmono_cdata['col_age']);
 
-                if(!empty($cdata)){
-                    $this->db->where('col_code', $code);
-                    $this->db->update('tab_job_cdata', $tenmono_cdata);
-                }else{
-                    $tenmono_cdata['col_ctime'] = $time;
-                    $this->db->insert('tab_job_cdata', $tenmono_cdata);
-                }
-                
-                //過去のedition及びtrend,pace更新
-                if(!empty($old_cdatas)){
-                    $i = 0;
-                    $max_edition = count($old_cdatas);
-                    foreach ($old_cdatas as $key => $old_cdata){
-                        $trend = 0;
-                        $pace = round($old_cdata->col_income / $old_cdata->col_age,1);
-                        if($i == 0){
-                            $before_income = $old_cdata->col_income;
+                    //xbrlで登録した企業は年収データ登録
+                    if( $is_xbrl || ( !empty($company) && $company->is_xbrl == 0 && isset($tenmono_datas['cdatas'][$edinet_code]['col_income']) &&is_numeric($tenmono_datas['cdatas'][$edinet_code]['col_income']) ) ){
+                        if(!isset($tenmono_datas['companies'][$edinet_code]['col_vid'])){
+                            $vid  = $tenmono_datas['companies'][$edinet_code]['col_vid'];
                         }else{
-                            if($before_income < $old_cdata->col_income){
+                            $vid  = 0;
+                        }
+                        //code生成 $vid.$cid.$disclosure_time;
+                        $code = $vid.$tenmono_company_ids[$edinet_code].$tenmono_datas['cdatas'][$edinet_code]['col_disclosure'];
+                        $cdata = $this->Tenmono_model->getCdataByCode($code);
+
+                        //edition及びtrend,pace更新
+                        $old_cdatas = $this->Tenmono_model->getCdatasByCompanyId($tenmono_company_ids[$edinet_code],'tab_job_cdata.col_disclosure ASC');//古い順に取得
+
+                        $trend = 0;
+                        if(!empty($old_cdatas)){
+                            $before_income = end($old_cdatas)->col_income;
+                            if($before_income < $tenmono_datas['cdatas'][$edinet_code]['col_income']){
                                 $trend = 1;
-                            }elseif($before_income == $old_cdata->col_income){
+                            }elseif($before_income == $tenmono_datas['cdatas'][$edinet_code]['col_income']){
                                 $trend = 3;
-                            }elseif($before_income > $old_cdata->col_income){
+                            }elseif($before_income > $tenmono_datas['cdatas'][$edinet_code]['col_income']){
                                 $trend = 2;
                             }
-                            $before_income = $old_cdata->col_income;
                         }
-                        $this->db->where('col_code', $old_cdata->col_code);
-                        $this->db->update('tab_job_cdata', array( 'col_edition'=>$max_edition,'col_income_trend'=>$trend,'col_pace'=>$pace ));
-                        $i++;
-                        $max_edition--;
+                        $time = time();
+                        $tenmono_datas['cdatas'][$edinet_code]['col_mtime'] = $time;
+                        $tenmono_datas['cdatas'][$edinet_code]['col_code'] = $code;
+                        $tenmono_datas['cdatas'][$edinet_code]['col_vid'] = $vid;
+                        $tenmono_datas['cdatas'][$edinet_code]['col_cid'] = $tenmono_company_ids[$edinet_code];
+                        $tenmono_datas['cdatas'][$edinet_code]['col_edition'] = 1;//一旦0
+                        $tenmono_datas['cdatas'][$edinet_code]['col_pace'] = round($tenmono_datas['cdatas'][$edinet_code]['col_income'] / $tenmono_datas['cdatas'][$edinet_code]['col_age'],1);
+                        $tenmono_datas['cdatas'][$edinet_code]['col_income_trend'] = $trend;
+                        $tenmono_datas['cdatas'][$edinet_code]['col_income_lifetime'] = $this->_getIncomeLifetime($tenmono_datas['cdatas'][$edinet_code]['col_income'],$tenmono_datas['cdatas'][$edinet_code]['col_age']);
+var_dump($tenmono_datas);
+die();
+                        if(!empty($cdata)){
+                            $this->db->where('col_code', $code);
+                            $this->db->update('tab_job_cdata', $tenmono_datas['cdatas'][$edinet_code]);
+                        }else{
+                            $tenmono_datas['cdatas'][$edinet_code]['col_ctime'] = $time;
+                            $this->db->insert('tab_job_cdata', $tenmono_datas['cdatas'][$edinet_code]);
+                        }
+                        
+                        //過去のedition及びtrend,pace更新
+                        if(!empty($old_cdatas)){
+                            $i = 0;
+                            $max_edition = count($old_cdatas);
+                            foreach ($old_cdatas as $key => $old_cdata){
+                                $trend = 0;
+                                $pace = round($old_cdata->col_income / $old_cdata->col_age,1);
+                                if($i == 0){
+                                    $before_income = $old_cdata->col_income;
+                                }else{
+                                    if($before_income < $old_cdata->col_income){
+                                        $trend = 1;
+                                    }elseif($before_income == $old_cdata->col_income){
+                                        $trend = 3;
+                                    }elseif($before_income > $old_cdata->col_income){
+                                        $trend = 2;
+                                    }
+                                    $before_income = $old_cdata->col_income;
+                                }
+                                $this->db->where('col_code', $old_cdata->col_code);
+                                $this->db->update('tab_job_cdata', array( 'col_edition'=>$max_edition,'col_income_trend'=>$trend,'col_pace'=>$pace ));
+                                $i++;
+                                $max_edition--;
+                            }
+                        }
+                    }
+                }
+                
+                //一括は2014年の指定月分から
+                if($this->is_tenmono_cdata_all){
+                    foreach ($tenmono_datas['cdatas'] as $edinet_code => $tenmono_cdata){
+                        if(!isset($tenmono_datas['companies'][$edinet_code]['col_vid'])){
+                            echo $edinet_code."\n";
+                            var_dump($tenmono_datas);
+                            die();
+                        }
+                        
+                        
+                        //code生成 $vid.$cid.$disclosure_time;
+                        $code = $tenmono_datas['companies'][$edinet_code]['col_vid'].$tenmono_company_ids[$edinet_code].$tenmono_cdata['col_disclosure'];
+                        $cdata = $this->Tenmono_model->getCdataByCode($code);
+                        
+                        //edition及びtrend,pace更新
+                        $old_cdatas = $this->Tenmono_model->getCdatasByCompanyId($tenmono_company_ids[$edinet_code],'tab_job_cdata.col_disclosure ASC');//古い順に取得
+                        $trend = 0;
+                        if(!empty($old_cdatas)){
+                            $before_income = end($old_cdatas)->col_income;
+                            if($before_income < $tenmono_cdata['col_income']){
+                                $trend = 1;
+                            }elseif($before_income == $tenmono_cdata['col_income']){
+                                $trend = 3;
+                            }elseif($before_income > $tenmono_cdata['col_income']){
+                                $trend = 2;
+                            }
+                        }
+                        $time = time();
+                        $tenmono_cdata['col_mtime'] = $time;
+                        $tenmono_cdata['col_code'] = $code;
+                        $tenmono_cdata['col_vid'] = $tenmono_datas['companies'][$edinet_code]['col_vid'];
+                        $tenmono_cdata['col_cid'] = $tenmono_company_ids[$edinet_code];
+                        $tenmono_cdata['col_edition'] = 1;//一旦0
+                        $tenmono_cdata['col_pace'] = round($tenmono_cdata['col_income'] / $tenmono_cdata['col_age'],1);
+                        $tenmono_cdata['col_income_trend'] = $trend;
+                        $tenmono_cdata['col_income_lifetime'] = $this->_getIncomeLifetime($tenmono_cdata['col_income'],$tenmono_cdata['col_age']);
+
+                        if(!empty($cdata)){
+                            $this->db->where('col_code', $code);
+                            $this->db->update('tab_job_cdata', $tenmono_cdata);
+                        }else{
+                            $tenmono_cdata['col_ctime'] = $time;
+                            $this->db->insert('tab_job_cdata', $tenmono_cdata);
+                        }
+                        
+                        //過去のedition及びtrend,pace更新
+                        if(!empty($old_cdatas)){
+                            $i = 0;
+                            $max_edition = count($old_cdatas);
+                            foreach ($old_cdatas as $key => $old_cdata){
+                                $trend = 0;
+                                $pace = round($old_cdata->col_income / $old_cdata->col_age,1);
+                                if($i == 0){
+                                    $before_income = $old_cdata->col_income;
+                                }else{
+                                    if($before_income < $old_cdata->col_income){
+                                        $trend = 1;
+                                    }elseif($before_income == $old_cdata->col_income){
+                                        $trend = 3;
+                                    }elseif($before_income > $old_cdata->col_income){
+                                        $trend = 2;
+                                    }
+                                    $before_income = $old_cdata->col_income;
+                                }
+                                $this->db->where('col_code', $old_cdata->col_code);
+                                $this->db->update('tab_job_cdata', array( 'col_edition'=>$max_edition,'col_income_trend'=>$trend,'col_pace'=>$pace ));
+                                $i++;
+                                $max_edition--;
+                            }
+                        }
                     }
                 }
             }
@@ -919,6 +1253,7 @@ class Tools extends CI_Controller {
     }
    }
   }
+  unset($doc);
   return $body;
  }
 /**********************************************************

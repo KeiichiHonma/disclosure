@@ -28,13 +28,13 @@ class category_model extends CI_Model
         return array();
     }
     
-    function getAllCategories()
+    function getAllCategories($flip_key = 'id')
     {
         $query = $this->db->query("SELECT *
                                     FROM {$this->table_name}
                                     ORDER BY {$this->table_name}.id ASC"
         );
-        if ($query->num_rows() != 0) return $query->result('flip','id');
+        if ($query->num_rows() != 0) return $query->result('flip',$flip_key);
         return array();
     }
 

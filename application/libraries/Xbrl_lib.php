@@ -330,6 +330,8 @@ class Xbrl_lib
                                     $Consolidated_NonConsolidated_etc = 'その他';
                                 }elseif(preg_match('/NonConsolidatedMember$/', $contextRef)){//NonConsolidatedMemberで終わる
                                     $Consolidated_NonConsolidated_etc = '個別';
+                                }elseif(!preg_match('/NonConsolidated/', $contextRef) && preg_match('/Consolidated/', $contextRef)){//NonConsolidatedがなくて、Consolidatedがある場合は個別
+                                    $Consolidated_NonConsolidated_etc = '連結';
                                 }else{
                                     $Consolidated_NonConsolidated_etc = '連結';
                                 }
@@ -342,15 +344,25 @@ class Xbrl_lib
                                     $duration_instant = '';
                                 }
                                 $csv_datas[$line][] = $xbrl_data['tag'];
-                                $csv_datas[$line][] = !empty($element) ? $element[0]->style_tree != '' ? $element[0]->style_tree : $element[0]->detail_tree : $index;
+                                //$csv_datas[$line][] = !empty($element) ? $element[0]->style_tree != '' ? $element[0]->style_tree : $element[0]->detail_tree : $index;
+                                if(!empty($element)){
+                                    if($element[0]->redundant_label_ja != ''){
+                                        $csv_datas[$line][] = $element[0]->redundant_label_ja;
+                                    }else{
+                                        $csv_datas[$line][] = $element[0]->style_tree != '' ? $element[0]->style_tree : $element[0]->detail_tree;
+                                    }
+                                }else{
+                                    $csv_datas[$line][] = $index;
+                                }
                                 $csv_datas[$line][] = $context;//コンテキストID
                                 $csv_datas[$line][] = $Consolidated_NonConsolidated_etc;//連結・個別
                                 $csv_datas[$line][] = $duration_instant;//期間・時点
                                 $csv_datas[$line][] = isset($xbrl_data['attributes']['unitRef']) ? $xbrl_data['attributes']['unitRef'] : '';
                                 
+                                $insert_document_data[$line]['item_id'] = !empty($element) ? $element[0]->id : 0;
                                 $insert_document_data[$line]['prefix'] = $namespace;
                                 $insert_document_data[$line]['element_name'] = $index;
-                                $insert_document_data[$line]['element_title'] = !empty($element) ? $element[0]->style_tree != '' ? $element[0]->style_tree : $element[0]->detail_tree : $index;
+                                //$insert_document_data[$line]['element_title'] = !empty($element) ? $element[0]->style_tree != '' ? $element[0]->style_tree : $element[0]->detail_tree : $index;
                                 $insert_document_data[$line]['context_period'] = $context;//コンテキストID
                                 $insert_document_data[$line]['context_consolidated'] = $Consolidated_NonConsolidated_etc;//連結・個別
                                 $insert_document_data[$line]['context_term'] = $duration_instant;//期間・時点
@@ -596,7 +608,60 @@ class Xbrl_lib
     // EXCEL出力 
     // ----------------------------------------------------------------
     var $alphabet = array('A','B','C','D','E','F','G','H','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ','BA','BB','BC','BD','BE','BF','BG','BH','BI','BJ','BK','BL','BM','BN','BO','BP','BQ','BR','BS','BT','BU','BV','BW','BX','BY','BZ');
-    function put_excel($excel_path,$csv_datas,$excel_sheet_name,$excel_map) {
+    function put_excel($excel_path,$csv_data,$excel_sheet_name) {
+        $objPHPExcel = null;
+        // 新規作成の場合
+        $objPHPExcel = new PHPExcel();
+        $objPHPExcel->getDefaultStyle()->getFont()->setName( 'ＭＳ Ｐゴシック' )->setSize( 11 );
+        
+
+        // 0番目のシートをアクティブにする（シートは左から順に、0、1，2・・・）
+        $objPHPExcel->setActiveSheetIndex(0);
+        // アクティブにしたシートの情報を取得
+        $objSheet = $objPHPExcel->getActiveSheet();
+        // シート名を変更する
+        $objSheet->setTitle($excel_sheet_name);
+        $excel_tate = 0;
+        $line = 0;
+        foreach ($csv_data as $values){
+            $excel_tate = $line + 1;
+            foreach ($values as $value_number => $col) {
+                if(!isset($this->alphabet[$value_number])){
+                    $this->_insert_log_message(array('error','none alphabet '.$value_number.':'.$excel_path));
+                }
+                $excel_yoko = $this->alphabet[$value_number];
+                $excel_column_name = $excel_yoko.$excel_tate;
+                
+                if (is_numeric($col)) {
+                    $objSheet->setCellValue($excel_column_name, $col);
+                } else {
+                    if(is_array($col)){
+                        var_dump($col);
+                        die();
+                    }
+                    $col = str_replace('"', '""', $col);
+                    $objSheet->setCellValue($excel_column_name, $col);
+                }
+            }
+            $line++;
+        }
+        //$objPHPExcel->setActiveSheetIndex(0);//sheet選択
+        // IOFactory.phpを利用する場合
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        if(is_null($excel_path)){
+            return $objWriter;
+            //$objWriter->save('php://output');
+        }else{
+            $objWriter->save($excel_path);
+            unset($objWriter);
+            unset($objPHPExcel);
+        }
+
+        // Excel2007.phpを利用する場合
+        //$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+        //$objWriter->save("sample2.xlsx");
+    }
+    function put_excel_bak($excel_path,$csv_datas,$excel_sheet_name,$excel_map) {
         $objPHPExcel = null;
         // 新規作成の場合
         $objPHPExcel = new PHPExcel();
@@ -645,6 +710,8 @@ class Xbrl_lib
                 //$objWriter->save('php://output');
             }else{
                 $objWriter->save($excel_path);
+                unset($objWriter);
+                unset($objPHPExcel);
             }
             
         }

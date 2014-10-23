@@ -58,7 +58,8 @@ class Edinet_model extends CI_Model
                                     FROM {$this->table_name}
                                     ORDER BY {$this->table_name}.id ASC"
         );
-        if ($query->num_rows() != 0) return $query->result('flip','key');
+        //if ($query->num_rows() != 0) return $query->result('flip','key');
+        if ($query->num_rows() != 0) return $query->result();
         return array();
     }
 
@@ -71,6 +72,32 @@ class Edinet_model extends CI_Model
                                     FROM {$this->table_name}
                                     ORDER BY {$this->table_name}.{$order}
                                     LIMIT {$offset},{$perPageCount}"
+        );
+
+        if ($query->num_rows() != 0) {
+            $result['data'] = $query->result();
+            $query = $this->db->query("SELECT FOUND_ROWS() as count");
+            if($query->num_rows() == 1) {
+                foreach ($query->result() as $row)
+                $result['count'] = $row->count;
+            }
+        } else {
+            $result['data'] = array();
+            $result['count'] = 0;
+        }
+
+        return $result;
+    }
+
+    function getEdinetsSecuritiesOrder($from_number = 1000)
+    {
+        $to_number = $from_number + 1000;
+        $result = array();
+        $query = $this->db->query("SELECT SQL_CALC_FOUND_ROWS *
+                                    FROM {$this->table_name}
+                                    WHERE {$this->table_name}.security_code >= ? AND {$this->table_name}.security_code < ?
+                                    ORDER BY {$this->table_name}.security_code ASC"
+        , array(intval($from_number),intval($to_number))
         );
 
         if ($query->num_rows() != 0) {
@@ -133,6 +160,27 @@ class Edinet_model extends CI_Model
         }
 
         return $result;
+    }
+
+    function getSecurityBySecurityCode($security_code)
+    {
+        $query = $this->db->query("SELECT *
+                                    FROM securities
+                                    WHERE securities.id = ?"
+        , array(intval($security_code))
+        );
+
+        if ($query->num_rows() == 1) return $query->row();
+        return array();
+    }
+    
+    function getAllMarkets()
+    {
+        $query = $this->db->query("SELECT *
+                                    FROM markets"
+        );
+        if ($query->num_rows() != 0) return $query->result('flip','market_name');
+        return array();
     }
 }
 

@@ -11,9 +11,12 @@ header
     <!-- パンクズ -->
     <div id="breadcrumb"<?php if(!isset($pageId) || $pageId != 'document_show'): ?><?php echo ' class="scrolltop"'; ?><?php endif; ?>>
         <div id="breadcrumbInner" class="cf">
-            <span><a href="/">財務速報</a></span>
-            <span><a href="/income/">年収速報</a></span>
-            <span><a href="/search/">詳細検索</a></span>
+            <span><a href="/"><?php echo $this->lang->line('common_title_home'); ?></a></span>
+            <span><a href="/income/"><?php echo $this->lang->line('common_title_income'); ?></a></span>
+            <span><a href="/finance/ranking/pl/2009"><?php echo $this->lang->line('common_title_pl'); ?></a></span>
+            <span><a href="/finance/ranking/bs/2009"><?php echo $this->lang->line('common_title_bs'); ?></a></span>
+            <span><a href="/finance/ranking/cf/2009"><?php echo $this->lang->line('common_title_cf'); ?></a></span>
+            <span><a href="/site/issues"><?php echo $this->lang->line('common_title_issues'); ?></a></span>
             
     <?php if(!isset($isIndex)) : ?>
             <div class="searchBox undisp">

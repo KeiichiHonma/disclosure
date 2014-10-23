@@ -77,7 +77,7 @@ contents
                 <?php foreach ($xbrls as $xbrl) : ?>
                 <tr<?php if($count == $i) echo ' class="last"'; ?>>
                     <td class="cell02"><span class="undisp"><?php echo strftime("%Y年", strtotime($xbrl->date)); ?></span><?php echo strftime("%m月%d日", strtotime($xbrl->date)); ?></td>
-                    <td style="font-size:90%;text-align:left;"><?php echo anchor('document/show/'.$xbrl->id, $xbrl->document_name.' - '.$xbrl->presenter_name); ?></td>
+                    <td style="font-size:90%;text-align:left;"><?php echo anchor('document/'.( $xbrl->is_html == 1 ? 'data' : 'show' ).'/'.$xbrl->id, $xbrl->document_name.' - '.$xbrl->presenter_name); ?></td>
                     <td class="undisp">
                         <?php echo anchor('document/download/'.$xbrl->id.'/csv','<img src="/images/icon/csv_30.png" alt="csv" />'); ?>
                         <?php echo anchor('document/download/'.$xbrl->id.'/xlsx','<img src="/images/icon/xlsx_30.png" alt="xlsx" />'); ?>
@@ -89,12 +89,7 @@ contents
         </div>
         <div id="sidebar">
             <div id="side_cat">
-                <h1 class="side_title">業界カテゴリ</h1>
-                <ul>
-                <?php foreach ($categories as $category) : ?>
-                <li><a href="<?php echo '/document/category/'.$category->id; ?>"><span><?php echo $category->name; ?></span></a></li>
-                <?php endforeach; ?>
-                </ul>
+                <?php $this->load->view('layout/common/categories'); ?>
             </div><!-- /side_cat -->
             <div class="box_wrap">
                 <div class="box_adx pcdisp">

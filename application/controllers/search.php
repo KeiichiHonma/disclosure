@@ -14,9 +14,8 @@ class Search extends MY_Controller
         $this->load->model('Category_model');
         $this->load->model('Document_model');
         $this->load->model('Tenmono_model');
-        $this->income_categories = $this->Tenmono_model->getAllTenmonoCategories();
-        $this->categories = $this->Category_model->getAllCategories();
-        $this->data = array();
+        $this->data['income_categories'] = $this->Tenmono_model->getAllTenmonoCategories();
+        $this->data['categories'] = $this->Category_model->getAllCategories();
     }
 
     /**
@@ -46,9 +45,7 @@ class Search extends MY_Controller
         $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
         $data['maxPageCount'] = (int) ceil(intval($edinetsResult['count']) / intval($this->config->item('paging_count_per_page')));
         $data['orderSelects'] = $this->lang->line('order_select');
-        
-        $data['categories'] = $this->categories;
-        
+
         //set header title
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['search_keywords']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['search_keywords']);

@@ -15,6 +15,8 @@ contents
         <div class="box_adx mb20 spdisp">
             <img src="/images/ad_example_sp1.jpg" alt="" />
         </div>
+
+        <?php $this->load->view('layout/common/document_tab'); ?>
         <div id="document">
             <?php $this->load->view('layout/common/document_sns'); ?>
             <table>
@@ -28,18 +30,33 @@ contents
                 <?php $count = count($document_datas);$i = 1; ?>
                 <?php foreach ($document_datas as $number => $document_data) : ?>
                 <tr<?php if($count == $i) echo ' class="last"'; ?>>
-                    <th class="cell01"><?php echo preg_match("/^[a-zA-Z]+$/", $document_data->element_title) ? str_replace($pattern, $replacement, $document_data->element_title) : $document_data->element_title; ?></th>
+                    <th class="cell01">
+                    <?php if($document_data->item_id == 0): ?>
+                        <?php echo str_replace($pattern, $replacement, $document_data->element_name); ?>
+                    <?php else: ?>
+                        <?php if($document_data->redundant_label_ja != ''): ?>
+                            <?php echo $document_data->redundant_label_ja; ?>
+                        <?php elseif($document_data->style_tree != ''): ?>
+                            <?php echo $document_data->style_tree; ?>
+                        <?php elseif($document_data->detail_tree != ''): ?>
+                            <?php echo $document_data->detail_tree; ?>
+                        <?php else: ?>
+                            <?php echo $document_data->element_name; ?>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <?php //echo '<br />'.$document_data->element_name; ?>
+                    </th>
                     <td class="period" nowrap><?php echo $document_data->context_period; ?></td>
                     <td class="undisp" nowrap><?php echo $document_data->context_consolidated; ?></td>
                     <td class="undisp" nowrap><?php echo $document_data->context_term; ?></td>
                     <?php if( $document_data->unit == 'JPY' && is_numeric($document_data->int_data) ): ?>
                         <td class="jpy value"><?php echo number_format($document_data->int_data).'円'; ?></td>
-                    <?php elseif( is_numeric($document_data->int_data) ): ?>
-                        <td class="value"><?php echo number_format($document_data->int_data); ?></td>
                     <?php elseif( $document_data->text_data != '' ): ?>
                         <td class="value"><?php echo $document_data->text_data; ?></td>
                     <?php elseif( $document_data->mediumtext_data != '' ): ?>
                         <td class="value"><?php //echo $document_data->mediumtext_data; ?></td>
+                    <?php elseif( is_numeric($document_data->int_data) ): ?>
+                        <td class="value"><?php echo number_format($document_data->int_data); ?></td>
                     <?php else: ?>
                         <td class="value">&nbsp;</td>
                     <?php endif; ?>

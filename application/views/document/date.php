@@ -39,19 +39,19 @@ contents
                     <th>書類</th>
                     <th class="dl">ダウンロード</th>
                 </tr>
-                <?php $count = count($xbrls);$i = 1; ?>
-                <?php foreach ($xbrls as $xbrl) : ?>
+                <?php $count = count($documents);$i = 1; ?>
+                <?php foreach ($documents as $document) : ?>
                 <tr<?php if($count == $i) echo ' class="last"'; ?>>
-                    <td class="cell02"><?php echo strftime($this->lang->line('setting_date_format'), strtotime($xbrl->date)); ?></td>
-                    <td style="font-size:90%;text-align:left;"><?php echo anchor(sprintf('document/show/'.$xbrl->id), $xbrl->document_name.' - '.$xbrl->presenter_name); ?></td><td>
-                    <?php if($xbrl->xbrl_count > 1): ?>
-                        <?php for ($i=0;$i<$xbrl->xbrl_count;$i++): ?>
-                        <?php echo anchor($xbrl->format_path.'_'.$i.'.csv','<img src="/images/icon/csv_30.png" alt="csv" />'); ?>
+                    <td class="cell02"><?php echo strftime($this->lang->line('setting_date_format'), strtotime($document->date)); ?></td>
+                    <td style="font-size:90%;text-align:left;"><?php echo anchor(sprintf('document/show/'.$document->id), $document->document_name.' - '.$document->presenter_name); ?></td><td>
+                    <?php if($document->xbrl_count > 1): ?>
+                        <?php for ($i=0;$i<$document->xbrl_count;$i++): ?>
+                        <?php echo anchor($document->format_path.'_'.$i.'.csv','<img src="/images/icon/csv_30.png" alt="csv" />'); ?>
                         <?php endfor; ?>
                     <?php else: ?>
-                        <?php echo anchor($xbrl->format_path.'.csv','<img src="/images/icon/csv_30.png" alt="csv" />'); ?>
+                        <?php echo anchor($document->format_path.'.csv','<img src="/images/icon/csv_30.png" alt="csv" />'); ?>
                     <?php endif; ?>
-                    <?php echo anchor($xbrl->format_path.'.xlsx','<img src="/images/icon/excel_30.png" alt="csv" />'); ?>
+                    <?php echo anchor($document->format_path.'.xlsx','<img src="/images/icon/excel_30.png" alt="csv" />'); ?>
                     </td>
                 </tr>
                 <?php $i++; ?>

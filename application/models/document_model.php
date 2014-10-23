@@ -64,10 +64,23 @@ class Document_model extends CI_Model
         return array();
     }
 
+    function getDocumentsByEdinetIdByIsHtml($edinet_id,$is_html = 0)
+    {
+        $query = $this->db->query("SELECT *
+                                    FROM {$this->table_name}
+                                    WHERE {$this->table_name}.edinet_id = ? AND {$this->table_name}.is_html = ?
+                                    ORDER BY {$this->table_name}.date ASC"
+        , array(intval($edinet_id),intval($is_html))
+        );
+        if ($query->num_rows() != 0) return $query->result();
+        return array();
+    }
+
     function getDocumentDataByDocumentId($document_id)
     {
         $query = $this->db->query("SELECT *
                                     FROM document_datas
+                                    LEFT JOIN items ON items.id = document_datas.item_id
                                     WHERE document_datas.document_id = ?"
         , array(intval($document_id))
         );
@@ -147,6 +160,7 @@ class Document_model extends CI_Model
         $offset = $perPageCount * ($page - 1);
         $query = $this->db->query("SELECT SQL_CALC_FOUND_ROWS *
                                     FROM {$this->table_name}
+                                    WHERE {$this->table_name}.document_name = '有価証券報告書'
                                     ORDER BY {$this->table_name}.{$order}
                                     LIMIT {$offset},{$perPageCount}"
         );
@@ -173,7 +187,7 @@ class Document_model extends CI_Model
         $offset = $perPageCount * ($page - 1);
         $query = $this->db->query("SELECT SQL_CALC_FOUND_ROWS *
                                     FROM {$this->table_name}
-                                    WHERE {$this->table_name}.category_id = ?
+                                    WHERE {$this->table_name}.category_id = ? AND {$this->table_name}.document_name = '有価証券報告書'
                                     ORDER BY {$this->table_name}.{$order}
                                     LIMIT {$offset},{$perPageCount}"
         , array(intval($category_id))
@@ -221,15 +235,40 @@ class Document_model extends CI_Model
 
         return $result;
     }
-
-    function getAllDocuments()
+    
+    //tools only
+    function getAllDocuments($offset,$perPageCount)
     {
         $result = array();
-        $query = $this->db->query("SELECT *,{$this->table_name}.id AS id,tab_job_variety._id AS vid
+        $query = $this->db->query("SELECT SQL_CALC_FOUND_ROWS *
                                     FROM {$this->table_name}
-                                    INNER JOIN presenters ON {$this->table_name}.presenter_id = presenters.id
-                                    INNER JOIN securities ON presenters.securities_code = securities.id
-                                    INNER JOIN tab_job_variety ON tab_job_variety.col_name = securities.category_name"
+                                    WHERE {$this->table_name}.document_name = '有価証券報告書'
+                                    LIMIT {$offset},{$perPageCount}"
+        );
+        if ($query->num_rows() != 0) return $query->result();
+        return array();
+    }
+
+    function getAllDocumentDataByItemId($item_id,$offset,$perPageCount,$context_period = '当期末')
+    {
+        $query = $this->db->query("SELECT *
+                                    FROM document_datas
+                                    INNER JOIN documents ON documents.id = document_datas.document_id
+                                    WHERE document_datas.item_id = ? AND document_datas.context_period = ? AND documents.document_name = '有価証券報告書'
+                                    GROUP BY document_datas.document_id
+                                    LIMIT {$offset},{$perPageCount}"
+        , array(intval($item_id),$context_period)
+        );
+        if ($query->num_rows() != 0) return $query->result('flip','document_id');
+        return array();
+    }
+
+    function getDocumentDataByDocumentIdByTarget($document_id,$item_id,$context_period = '当期末',$context_consolidated = '連結')
+    {
+        $query = $this->db->query("SELECT *
+                                    FROM document_datas
+                                    WHERE document_datas.document_id = ? AND document_datas.item_id = ? AND document_datas.context_period = ? AND document_datas.context_consolidated = ?"
+        , array(intval($document_id),intval($item_id),$context_period,$context_consolidated)
         );
         if ($query->num_rows() != 0) return $query->result();
         return array();

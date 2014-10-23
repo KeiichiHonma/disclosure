@@ -18,8 +18,8 @@ var $values = array();
         $this->load->model('Edinet_model');
         $this->load->model('Document_model');
         $this->load->model('Tenmono_model');
-        $this->categories = $this->Category_model->getAllCategories();
-        $this->data = array();
+        $this->data['income_categories'] = $this->Tenmono_model->getAllTenmonoCategories();
+        $this->data['categories'] = $this->Category_model->getAllCategories();
     }
 
     function date($date,$page = 1)
@@ -32,9 +32,9 @@ var $values = array();
         $data['seven_dates'] = $this->Document_model->getDocumentDateGroupByDate();
         $order = "created";
         $orderExpression = "created DESC";//作成新しい
-        $xbrlsResult = $this->Document_model->getDocumentsByDateOrder($date,$orderExpression,$page);
+        $documentsResult = $this->Document_model->getDocumentsByDateOrder($date,$orderExpression,$page);
 
-        $data['xbrls'] = $xbrlsResult['data'];
+        $data['documents'] = $documentsResult['data'];
         $data['page'] = $page;
         $data['order'] = $order;
         
@@ -42,15 +42,13 @@ var $values = array();
         $data['rowCount'] = intval($this->config->item('paging_row_count'));
         $data['columnCount'] = intval($this->config->item('paging_column_count'));
         $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
-        $data['maxPageCount'] = (int) ceil(intval($xbrlsResult['count']) / intval($this->config->item('paging_count_per_page')));
+        $data['maxPageCount'] = (int) ceil(intval($documentsResult['count']) / intval($this->config->item('paging_count_per_page')));
         $data['orderSelects'] = $this->lang->line('order_select');
         
         //set header title
         $data['header_title'] = $this->lang->line('common_header_title');
         $data['header_keywords'] = $this->lang->line('common_header_keywords');
         $data['header_description'] = $this->lang->line('common_header_description');
-        
-        $data['categories'] = $this->categories;
         
         $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
         $this->load->view('document/date', array_merge($this->data,$data));
@@ -71,27 +69,24 @@ var $values = array();
         $category_id = intval($category_id);
         $data['category_id'] = $category_id;
         
-        if(!isset($data['categories'][$category_id])) show_404();
+        if(!isset($this->data['categories'][$category_id])) show_404();
         
         if($category_id == 1){
-            $xbrls =$this->Document_model->getDocumentsOrder($orderExpression,$page);
+            $documents =$this->Document_model->getDocumentsOrder($orderExpression,$page);
         }else{
-            $xbrls =$this->Document_model->getDocumentsByCategoryIdOrder($category_id,$orderExpression,$page);
+            $documents =$this->Document_model->getDocumentsByCategoryIdOrder($category_id,$orderExpression,$page);
         }
         
-        $data['xbrls'] = $xbrls['data'];
-
+        $data['documents'] = $documents['data'];
         $data['page'] = $page;
         $data['pageFormat'] = "document/category/{$category_id}/%d";
         $data['rowCount'] = intval($this->config->item('paging_row_count'));
         $data['columnCount'] = intval($this->config->item('paging_column_count'));
         $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
-        $data['maxPageCount'] = (int) ceil(intval($xbrls['count']) / intval($this->config->item('paging_count_per_page')));
-
-        $data['categories'] = $this->categories;
+        $data['maxPageCount'] = (int) ceil(intval($documents['count']) / intval($this->config->item('paging_count_per_page')));
 
         //set header title
-        $header_string = $data['categories'][$category_id]->name.'カテゴリの有価証券報告書一覧';
+        $header_string = $this->data['categories'][$category_id]->name.'カテゴリの有価証券報告書一覧';
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
@@ -110,9 +105,23 @@ var $values = array();
 
         $data['document'] = $this->Document_model->getDocumentById($document_id);
         if(empty($data['document']))  show_404();
+        
+        //企業情報
+        $data['edinet'] = $this->Edinet_model->getEdinetById($data['document']->edinet_id);
+        
         $data['html_index'] = unserialize($data['document']->html_index_serialize);
 
         $document_htmls = $this->Document_model->getDocumentHtmlByDocumentId($document_id);
+        //htmlがないため、最新の有価証券のHTMLへ飛ばす
+        if(empty($document_htmls)){
+            $is_htmnl_documents = $this->Document_model->getDocumentsByEdinetIdByIsHtml($data['document']->edinet_id);
+            if(!empty($is_htmnl_documents)){
+                redirect("document/show/".reset($is_htmnl_documents)->id);
+            }else{
+                show_404();
+            }
+        }
+
         $data['document_htmls'] = $document_htmls[$target_html_number];
         $data['target_html_number'] = $target_html_number;
         
@@ -122,11 +131,8 @@ var $values = array();
         $data['etc_documents'] = $etc_documents['data'];
         
         //tenmonoデータ
-        $data['edinet'] = $this->Edinet_model->getEdinetById($data['document']->edinet_id);
         if($data['edinet']->security_code > 0) $data['company'] = $this->Tenmono_model->getCompanyBySecurityCode($data['edinet']->security_code);
 
-        $data['categories'] = $this->categories;
-        
         //sns用URL
         $data['sns_url'] = '/document/show/'.$document_id;
         $data['document_download'] = TRUE;
@@ -146,7 +152,7 @@ var $values = array();
     function data($document_id)
     {
         $data['bodyId'] = 'ind';
-        $data['document_side_current'] = 'document_show';
+        $data['document_tab_current'] = 'document_data';
         $order = "created";
         $orderExpression = "created DESC";//作成新しい
         $page = 1;
@@ -163,8 +169,6 @@ var $values = array();
         $data['edinet'] = $this->Edinet_model->getEdinetById($data['document']->edinet_id);
         if($data['edinet']->security_code > 0) $data['company'] = $this->Tenmono_model->getCompanyBySecurityCode($data['edinet']->security_code);
 
-        $data['categories'] = $this->categories;
-        
         //sns用URL
         $data['sns_url'] = '/document/show/'.$document_id;
         $data['document_download'] = TRUE;
@@ -174,7 +178,8 @@ var $values = array();
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
-        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
+
+        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('/css/tab.css')));
         $this->load->view('document/data', array_merge($this->data,$data));
     }
 
@@ -184,13 +189,12 @@ var $values = array();
         if(empty($download_string) || !in_array($download_string,$this->config->item('allowed_download_file_type'))) show_404();
         
         $data['download_string'] = $download_string;
-        $data['document_side_current'] = 'document_dl_'.$download_string;
+        $data['document_tab_current'] = 'document_dl_'.$download_string;
         $order = "created";
         $orderExpression = "created DESC";//作成新しい
         $page = 1;
         $data['document'] = $this->Document_model->getDocumentById($document_id);
         if(empty($data['document']))  show_404();
-        $data['document_datas'] = $this->Document_model->getDocumentDataByDocumentId($document_id);
 
         //その他の文書
         $orderExpression = "created DESC";//作成新しい
@@ -200,8 +204,6 @@ var $values = array();
         //tenmonoデータ
         $data['edinet'] = $this->Edinet_model->getEdinetById($data['document']->edinet_id);
         if($data['edinet']->security_code > 0) $data['company'] = $this->Tenmono_model->getCompanyBySecurityCode($data['edinet']->security_code);
-
-        $data['categories'] = $this->categories;
 
         //sns用URL
         $data['sns_url'] = '/document/show/'.$document_id;
@@ -216,8 +218,44 @@ var $values = array();
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
-        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
+        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('/css/tab.css')));
         $this->load->view('document/download', array_merge($this->data,$data));
+    }
+
+    function company($presenter_name_key = '',$page = 1)
+    {
+        $data['bodyId'] = 'ind';
+        if(empty($presenter_name_key))  show_404();
+        $data['edinet'] = $this->Edinet_model->getEdinetByPresenterNameKey($presenter_name_key);
+        if(empty($data['edinet']))  show_404();
+
+        //文書一覧
+        $order = "created";
+        $orderExpression = "created DESC";//作成新しい
+        $documentsResult = $this->Document_model->getDocumentsByEdinetIdOrder($data['edinet']->id,$orderExpression,$page);
+        $data['documents'] = $documentsResult['data'];
+
+        $data['order'] = $order;
+        $data['pageFormat'] = "document/company/{$presenter_name_key}/{$order}/%d";
+        $data['rowCount'] = intval($this->config->item('paging_row_count'));
+        $data['columnCount'] = intval($this->config->item('paging_column_count'));
+        $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
+        $data['maxPageCount'] = (int) ceil(intval($documentsResult['count']) / intval($this->config->item('paging_count_per_page')));
+        $data['orderSelects'] = $this->lang->line('order_select');
+
+        //tenmonoデータ
+        $data['edinet'] = $this->Edinet_model->getEdinetById($data['edinet']->id);
+        if($data['edinet']->security_code > 0) $data['company'] = $this->Tenmono_model->getCompanyBySecurityCode($data['edinet']->security_code);
+
+        //sns用URL
+        $data['sns_url'] = '/document/company/'.$presenter_name_key;
+
+        $header_string = $data['edinet']->presenter_name.'の有価証券報告書一覧';
+        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
+        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
+        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
+        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
+        $this->load->view('document/company', array_merge($this->data,$data));
     }
 
     function prepare($document_id,$download_string)

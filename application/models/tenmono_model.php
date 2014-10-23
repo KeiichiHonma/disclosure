@@ -8,14 +8,14 @@
 class Tenmono_model extends CI_Model
 {
     var $CI;
-    var $db2;
+    //var $db2;
     private $table_name            = 'documents';
     
     function __construct()
     {
         parent::__construct();
         $this->CI =& get_instance();
-        $this->db2 = $this->load->database('database2', TRUE);
+        //$this->db2 = $this->load->database('database2', TRUE);
     }
 
     function getVarietyByVarietyName($variety_name)

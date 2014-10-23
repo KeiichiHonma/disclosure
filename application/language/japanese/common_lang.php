@@ -9,8 +9,43 @@ $lang['common_header_title'] = '%s｜有価証券報告書・年収情報なら�
 $lang['common_header_keywords'] = '%s,オープンデータ,opendata,有価証券報告書,開示情報,有報';
 $lang['common_header_description'] = '%sのオープンデータ。有価証券報告書や企業年収等のオープンデータをエクセルやCSVファイルでダウンロードできるサイトです';
 
-$lang['holiday_title'] = '次の晴れる連休';
 $lang['search_box_default'] = '企業名検索';
+
+$lang['common_title_home'] = '財務速報';
+$lang['common_title_income'] = '年収速報';
+$lang['common_title_bs'] = '貸借対照表';
+$lang['common_title_pl'] = '損益計算書';
+$lang['common_title_cf'] = 'キャッシュフロー計算書';
+$lang['common_title_issues'] = '銘柄コード一覧';
+
+$lang['finance_title_current_assets'] = '流動資産';
+$lang['finance_title_noncurrent_assets'] = '固定資産';
+$lang['finance_title_assets'] = '資産';
+$lang['finance_title_current_liabilities'] = '流動負債';
+$lang['finance_title_noncurrent_liabilities'] = '固定負債';
+$lang['finance_title_liabilities'] = '負債';
+$lang['finance_title_capital_stock'] = '資本金';
+$lang['finance_title_shareholders_equity'] = '株主資本';
+$lang['finance_title_net_sales'] = '売上高';
+$lang['finance_title_cost_of_sales'] = '売上原価';
+$lang['finance_title_gross_profit'] = '売上総利益';
+$lang['finance_title_operating_income'] = '営業利益';
+$lang['finance_title_ordinary_income'] = '経常利益';
+$lang['finance_title_extraordinary_income'] = '特別利益';
+$lang['finance_title_extraordinary_losses'] = '特別損失';
+$lang['finance_title_net_income'] = '当期純利益';
+$lang['finance_title_depreciation_and_amortization'] = '減価償却費';
+$lang['finance_title_net_cash_provided_by_used_in_operating_activities'] = '営業活動によるキャッシュ・フロー';
+$lang['finance_title_net_cash_provided_by_used_in_investing_activities'] = '投資活動によるキャッシュ・フロー';
+$lang['finance_title_net_cash_provided_by_used_in_financing_activities'] = '財務活動によるキャッシュ・フロー';
+$lang['finance_title_net_increase_decrease_in_cash_and_cash_equivalents'] = 'キャッシュ・フロー';
+
+
+$lang['common_title_company'] = '運営会社';
+$lang['common_title_contact'] = 'お問い合わせ';
+//footer
+$lang['footer_info_check'] = '最新情報をチェック';
+$lang['footer_about'] = 'オープンデータ.companyについてのページ';
 
 //パンくず
 $lang['topicpath_home'] = 'HOME';
@@ -18,60 +53,7 @@ $lang['topicpath_about'] = '会社案内';
 $lang['topicpath_service'] = '提供サービス';
 $lang['topicpath_works'] = '事例紹介';
 $lang['topicpath_contact'] = 'お問い合わせ';
-$lang['gramer_message_1'] = 'グラマーのメンバーは主にWebサービス開発を畑としてきたプログラマーが集まっています。
-開発会社としてはめずらしい集団です。
 
-そのためアプリの制作をグラマー社では一切受け付けていません。
-得意なことを必要とされている場所で発揮する。
-これが魅力的なサービスを提供するシステムを作る大前提だと考えています。
-
-アイディアをインターネット上で形にしたいと思った人はぜひ相談ください。
-作れるエンジニアを探すことは今の時代難しくなってきています。
-エンジニアはこれからもずっと枯渇状態です。
-また、Webサービスを開発したことがあるエンジニアは非常に少なく、
-経験がないエンジニアに依頼することのリスクを是非今一度考えてください。
-グラマー社はあなたのアイディアをお待ちしております。';
-$lang['gramer_message_2'] = 'システム開発を長年に渡って開発していると、そんなに難しくない開発なのに、
-会社や人によって金額がバラバラだということに気付かされます。
-
-グラマー社は、
-細かな開発依頼を最初に決めた “固定“ 価格で進めることを目指している会社です。
-ご要望とご依頼を可能な限り吸収して開発案件を進めます。
-
-お問い合わせフォーム1つからの依頼でも問題ありません。';
-
-$lang['contact_name'] = 'お名前';
-$lang['contact_email'] = 'メールアドレス';
-$lang['contact_url'] = 'サイトURL';
-$lang['contact_type'] = 'お問い合わせ項目';
-$lang['contact_comments'] = 'お問い合わせ詳細';
-$lang['contact_send'] = 'お問い合わせする';
-$lang['contact_thanks'] = 'お問い合わせありがとうございました。';
-$lang['contact_error'] = 'お問い合わせをすることができませんでした。<br />もう一度最初から操作してください。';
-
-$lang['contact_type_values'][] = 'Webサービス開発';
-$lang['contact_type_values'][] = 'お問い合わせフォーム開発';
-$lang['contact_type_values'][] = 'Wordpressカスタマイズ';
-$lang['contact_type_values'][] = 'ECサイト開発';
-$lang['contact_type_values'][] = 'サイト運営';
-$lang['contact_type_values'][] = '保守・メンテナンス管理';
-$lang['contact_type_values'][] = 'その他開発依頼について';
-$lang['contact_type_values'][] = 'その他';
-
-$lang['contact_subject'] = '[%s] お問い合わせ';
-$lang['contact_mail_title'] = 'お問い合わせ';
-$lang['contact_mail_data'] = '以下の内容にてお問い合わせを承りました。
-弊社営業時間内に頂きましたお問い合わせは、当日中にご返信致しますので、
-今しばらくお待ちください。
-
-◆弊社営業時間：平日9時00分～18時（祝日除く）
-
-また、弊社営業時間外に頂きましたお問い合わせは、翌営業日のご返信となります。
-お待たせ致しまして誠に申し訳ございませんが、何卒ご了承ください。';
-$lang['contact_mail_receive_date'] = '受付日時';
-$lang['mail_alert_message'] = '・このメールアドレスは連絡専用ですので、メッセージを返信しないようお願いいたします。
-・本メール内容に身に覚えが無い場合には、恐れ入りますが当メールを破棄してください。';
-$lang['contact_notify_message'] = 'お問い合わせありがとうございました。';
 
 /* End of file setting_lang.php */
 /* Location: ./system/language/japanese/setting_lang.php */

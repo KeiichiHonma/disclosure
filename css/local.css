@@ -77,30 +77,77 @@ font-weight:bold;
     border-radius: 6px;
     -webkit-border-radius: 6px;
     -moz-border-radius: 6px;
-background:url(../images/tbt_m_b.jpg) 0 0 no-repeat;
-border:1px solid #0D72BD;
-line-height:30px;
-height:30px;
-text-align:center;
-color:#fff;
-font-size:100%;
-text-decoration:none;
-padding:0 20px;
-display:inline-block;
-font-weight:bold;
+    background:url(../images/tbt_m_b.jpg) 0 0 no-repeat;
+    border:1px solid #0D72BD;
+    line-height:30px;
+    height:30px;
+    text-align:center;
+    color:#fff;
+    font-size:100%;
+    text-decoration:none;
+    padding:0 20px;
+    display:inline-block;
+    font-weight:bold;
 }
 .pager li a.active {
-background:url(../images/tbt_m_b.jpg) 0 0 no-repeat;
-border:1px solid #0D72BD;
-line-height:30px;
-height:30px;
-text-align:center;
-color:#fff;
-font-size:100%;
-text-decoration:none;
-padding:0 20px;
-display:inline-block;
-font-weight:bold;
+    background:url(../images/tbt_m_b.jpg) 0 0 no-repeat;
+    border:1px solid #0D72BD;
+    line-height:30px;
+    height:30px;
+    text-align:center;
+    color:#fff;
+    font-size:100%;
+    text-decoration:none;
+    padding:0 20px;
+    display:inline-block;
+    font-weight:bold;
+}
+
+.sort ul {
+    width:100%;
+    text-align:center;
+    margin-bottom:20px;
+}
+.sort li {
+    margin:0 2px;
+    display:inline;
+}
+.sort li a:link,
+.sort li a:visited {
+    background:url(../images/tbt_m_w.jpg) 0 0 no-repeat;
+    border:1px solid #d4c89f;
+    line-height:24px;
+    height:24px;
+    text-align:center;
+    color:#9a3d03;
+    font-size:85%;
+    text-decoration:none;
+    padding:0 20px;
+    display:inline-block;
+}
+.sort li a:hover {
+    background:url(../images/tbt_m_b.jpg) 0 0 no-repeat;
+    border:1px solid #cc6626;
+    line-height:24px;
+    height:24px;
+    text-align:center;
+    color:#fff;
+    font-size:85%;
+    text-decoration:none;
+    padding:0 20px;
+    display:inline-block;
+}
+.sort li a.active {
+    background:url(../images/tbt_m_b.jpg) 0 0 no-repeat;
+    border:1px solid #cc6626;
+    line-height:24px;
+    height:24px;
+    text-align:center;
+    color:#fff;
+    font-size:85%;
+    text-decoration:none;
+    padding:0 20px;
+    display:inline-block;
 }
 
 /* header
@@ -423,9 +470,37 @@ table.menuBox td a:hover {
     border-top:1px solid #dbdbdb;
 }
 
+#footer .logo {
+  display: block;
+  float: left;
+  width: 180px;
+}
 
-#footer .boxLeft { float:left;}
-#footer .boxRight { float:right;}
+#footer .about {
+  float: left;
+  width: 120px;
+}
+
+#footer .about li {
+  float: left;
+  width: 120px;
+}
+
+#footer .sec {
+  float: left;
+  width: 480px;
+}
+
+#footer .sec li {
+  float: left;
+  width: 110px;
+}
+
+#footer .boxRight {
+    display: block;
+    clear:both;
+    text-align:right;
+}
 
 #footer .boxRight .copy {
     display:block;
@@ -450,7 +525,6 @@ table.menuBox td a:hover {
 }
 #footer li a{
     display:block;
-    background:url(../images/icon_footer.png) 0 4px no-repeat;
     background-size:6px 9px;
     padding-left:10px;
     color:#515151;
@@ -459,11 +533,25 @@ table.menuBox td a:hover {
 #footer li a:hover{
     font-weight:bold;
 }
-.win.ie8 #footer li a{
-    background:url(../images/icon_footer_ie8.png) 0 4px no-repeat;
+
+.scf {
+    margin:0 auto;
+    padding-top:10px;
 }
 
-
+.scf h4 {
+    width:160px;
+    font-size:130%;
+    font-weight:bold;
+    color:#999;
+    padding-bottom:5px;
+    border-bottom:1px solid #dfdfdf;
+    margin-bottom:20px;
+    }
+.sc_nav li a{
+    padding:0px !important;
+    margin:0px !important;
+}
 
 /* content
 --------------------------------------------------*/
@@ -1253,6 +1341,13 @@ div#side_cat{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3"
     float:left;
     display:block
 }
+#side_cat ul.mokuji li a{
+    padding:5px 5px 5px 20px;
+}
+
+#side_cat ul.mokuji li a.child{
+    padding:5px 10px 5px 30px;
+}
 
 #sidebar li a span.new {
     font-family:Montserrat,sans-serif;
@@ -1452,7 +1547,7 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
     width:100%;
     border-collapse:collapse;
     /* border-top:1px dotted #c4c3c0; */
-    font-size:12px;
+    /*font-size:12px;*/
 }
 
 #document th{
@@ -1503,12 +1598,59 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
 
 #document td.new{ background:#FF904B;color:#fff; }
 
+#document table.finance th{
+    font-size:90%;
+    padding: 5px;
+}
+#document table.finance td{
+    font-size:90%;
+    text-align:right;
+}
+#document table.finance th.l1{
+    text-align:left;
+}
+#document table.finance th.l2{
+    font-weight:normal;
+    text-align:left;
+    padding-left:20px;
+}
 #document #download{
     width:600px;
     margin:10px;
     padding:10px;
     background-color:#f8f8f8;
     border:1px solid #e3e3e3;
+}
+#issues{
+    border-top:1px solid #dfdedb;
+    border-left:1px solid #dfdedb;
+    margin-left:10px;
+    width:970px;
+}
+
+#issues table{
+    width:100%;
+    border-collapse:collapse;
+    /* border-top:1px dotted #c4c3c0; */
+    font-size:12px;
+}
+
+#issues th{
+    border-top:1px solid #dfdedb;
+    border-bottom:1px dotted #c4c3c0;
+    border-right:1px solid #dfdedb;
+    background:#f8f8f8;
+    font-weight:bold;
+    padding: 10px;
+    text-align:center;
+}
+
+#issues td{
+    /*width:110px;*/
+    border-bottom:1px dotted #c4c3c0;
+    border-right:1px solid #dfdedb;
+    padding: 3px;
+    text-align:center;
 }
 
 .chart {
@@ -1560,6 +1702,35 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
     font-size: 12px;
 }
 
+.finance_graph {
+    float:left;
+    position: relative;
+    width: 300px;
+    margin-top:10px;
+}
+.finance_graph .count {
+    position: absolute;
+    top: 0;
+    left:0 ;
+    width: 100%;
+    text-align: right;
+}
+.finance_graph em, 
+.finance_graph span {
+    font-family: Arial;
+    width: 100%;
+    text-align: center;
+}
+.finance_graph em {
+    font-size: 20px;
+    font-weight: bold;
+    font-style: normal;
+    color: #66ccff;
+}
+.finance_graph .caption {
+    color: #ccc;
+    font-size: 12px;
+}
 
 /* iPad用
 ------------------------------------------------------------------*/

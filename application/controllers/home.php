@@ -14,8 +14,7 @@ class Home extends MY_Controller
         $this->load->model('Tenmono_model');
         $this->load->model('Presenter_model');
         $this->load->model('Document_model');
-        $this->categories = $this->Category_model->getAllCategories();
-        $this->data = array();
+        $this->data['categories'] = $this->Category_model->getAllCategories();
     }
 
     /**
@@ -32,7 +31,6 @@ class Home extends MY_Controller
         $xbrls =$this->Document_model->getDocumentsOrder($orderExpression,1);
         $data['xbrls'] = $xbrls['data'];
         
-        $data['categories'] = $this->categories;
         //set header title
         $data['header_title'] = $this->lang->line('header_title');
         $data['header_keywords'] = $this->lang->line('header_keywords');

@@ -87,7 +87,7 @@ var $values = array();
     function show($presenter_name_key = '')
     {
         $data['bodyId'] = 'ind';
-        $data['income_side_current'] = 'income_show';
+        $data['switch_side_current'] = 'income_show';
         if(empty($presenter_name_key))  show_404();
         $data['edinet'] = $this->Edinet_model->getEdinetByPresenterNameKey($presenter_name_key);
         if(empty($data['edinet']))  show_404();
