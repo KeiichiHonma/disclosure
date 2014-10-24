@@ -37,9 +37,11 @@ contents
             <?php endif; ?>
         </div>
         <div id="sidebar">
-            <div id="side_cat">
-                <?php $this->load->view('layout/common/categories'); ?>
-            </div><!-- /side_cat -->
+            <?php $this->load->view('layout/common/switch_side'); ?>
+            <div class="side_list">
+                <?php $this->load->view('layout/common/document_categories'); ?>
+            </div>
+            
             <div class="box_wrap">
                 <div class="box_adx pcdisp">
                     <img src="/images/ad_example1.gif" alt="" />

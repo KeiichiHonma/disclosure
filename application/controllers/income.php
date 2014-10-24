@@ -17,9 +17,8 @@ var $values = array();
         $this->load->model('Category_model');
         $this->load->model('Document_model');
         $this->load->model('Tenmono_model');
-        $this->income_categories = $this->Tenmono_model->getAllTenmonoCategories();
-        $this->categories = $this->Category_model->getAllCategories();
-        $this->data = array();
+        $this->data['income_categories'] = $this->Tenmono_model->getAllTenmonoCategories();
+        $this->data['categories'] = $this->Category_model->getAllCategories();
     }
 
     /**
@@ -33,9 +32,6 @@ var $values = array();
         $orderExpression = "tab_job_cdata.col_disclosure DESC";
         $cdatas = $this->Tenmono_model->getCdataOrderDisclosure($orderExpression,$page);
         $data['cdatas'] = $cdatas['data'];
-        
-        $data['income_categories'] = $this->income_categories;
-        $data['categories'] = $this->categories;
         
         //set header title
         $header_string = '企業年収速報';
@@ -72,11 +68,8 @@ var $values = array();
         $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
         $data['maxPageCount'] = (int) ceil(intval($cdatas['count']) / intval($this->config->item('paging_count_per_page')));
 
-        $data['income_categories'] = $this->income_categories;
-        $data['categories'] = $this->categories;
-
         //set header title
-        $header_string = $data['categories'][$category_id]->name.'カテゴリの企業年収一覧';
+        $header_string = $this->data['income_categories'][$category_id]->col_name.'カテゴリの企業年収一覧';
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
@@ -95,6 +88,8 @@ var $values = array();
         $data['company'] = $this->Tenmono_model->getCompanyBySecurityCode($data['edinet']->security_code);
         if(empty($data['company']))  show_404();
         
+        $data['switch_side_current'] = 'income_show';
+        
         $data['cdatas'] = $this->Tenmono_model->getCdatasByCompanyId($data['company']->_id);
         $first_cdata = reset($data['cdatas']);
 
@@ -110,8 +105,6 @@ var $values = array();
         //文書情報
         $data['documents'] = $this->Document_model->getDocumentsByEdinetId($data['edinet']->id);
 
-        $data['income_categories'] = $this->income_categories;
-        $data['categories'] = $this->categories;
         //sns用URL
         $data['sns_url'] = '/income/show/'.$presenter_name_key;
         $data['cdata_download'] = TRUE;
@@ -147,8 +140,6 @@ var $values = array();
         //文書情報
         $data['documents'] = $this->Document_model->getDocumentsByEdinetId($data['edinet']->id);
 
-        $data['income_categories'] = $this->income_categories;
-        $data['categories'] = $this->categories;
         //sns用URL
         $data['sns_url'] = '/income/show/'.$presenter_name_key;
 

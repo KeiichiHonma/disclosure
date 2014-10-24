@@ -2,14 +2,14 @@
 if(!isset($searchPageFormat)) $searchPageFormat = '';
 ?>
 <?php if ($maxPageCount > 1) : ?>
-
+<div class="pager pt20 pb20">
     <ul>
     <?php if (1 != $page) : ?>
-    <li><a href="<?php echo lang_base_url(sprintf($pageFormat, 1).$searchPageFormat); ?>">≪</a></li>
+    <li><?php echo anchor(sprintf($pageFormat, 1), '<<'); ?></li>
     <?php endif ; ?>
 
     <?php if ($page > 1) : ?>
-    <li><a href="<?php echo lang_base_url(sprintf($pageFormat, $page-1).$searchPageFormat); ?>"><</a></li>
+    <li><?php echo anchor(sprintf($pageFormat, $page-1), '<'); ?></li>
     <?php endif ; ?>
 
     <?php
@@ -43,15 +43,19 @@ if(!isset($searchPageFormat)) $searchPageFormat = '';
     ?>
 
     <?php for($index = $start ; $index <= $end; $index++) : ?>
-    <li><a rel="next"  class="<?php if($index == $page) echo 'active'; ?>" href="<?php echo lang_base_url(sprintf($pageFormat, $index).$searchPageFormat); ?>"><?php echo $index; ?></a></li>
+    <li><?php echo anchor(sprintf($pageFormat, $index), $index, $index == $page ? "class='active'" : ''); ?></li>
+    
+    
+    
     <?php endfor; ?>
 
     <?php if ($page + 1 <= $maxPageCount) : ?>
-    <li><a href="<?php echo lang_base_url(sprintf($pageFormat, $page+1).$searchPageFormat); ?>">></a></li>
+    <li><?php echo anchor(sprintf($pageFormat, $page+1), '>'); ?></li>
     <?php endif ; ?>
     
     <?php if ($maxPageCount != $page) : ?>
-    <li><a href="<?php echo lang_base_url(sprintf($pageFormat, $maxPageCount).$searchPageFormat); ?>">≫</a></li>
+    <li><?php echo anchor(sprintf($pageFormat, $maxPageCount), '>>'); ?></li>
     <?php endif ; ?>
     </ul>
+</div>
 <?php endif ; ?>

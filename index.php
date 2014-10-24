@@ -17,7 +17,7 @@
  * NOTE: If you change these, also change the error_reporting() code below
  *
  */
-	define('ENVIRONMENT', 'development');
+	define('ENVIRONMENT', 'localhost');
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING
@@ -35,7 +35,10 @@ if (defined('ENVIRONMENT'))
 			error_reporting(E_ALL);
             define('DOMAIN','gramer.apollon.corp.813.co.jp');
 		break;
-
+		case 'localhost':
+			error_reporting(E_ALL);
+            define('DOMAIN','disclosure.localhost.813.co.jp');
+		break;
 		case 'testing':
             if (!ini_get('display_errors')) {
                 ini_set('display_errors', '1');

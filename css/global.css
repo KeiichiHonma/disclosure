@@ -220,14 +220,15 @@ body, td, th {
 }
 /* A */
 a {
-	/*color: #555555;*/
-	text-decoration: none;
+	color: #0066CC;
 }
 a:hover {
-	/*color: #888888;*/
     color: #666666;
 }
 
+a:visited {
+    color: #0066CC;
+}
 
 
 

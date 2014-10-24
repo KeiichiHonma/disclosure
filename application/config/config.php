@@ -394,7 +394,7 @@ $config['stylesheets'][] = 'css/jquery.sidr.dark.css';
 $config['stylesheets'][] = 'css/jquery-ui-1.10.3.custom.css';
 $config['stylesheets'][] = 'css/main.css';
 $config['stylesheets'][] = 'css/side.css';
-$config['stylesheets'][] = 'css/font-awesome.min.css';
+$config['stylesheets'][] = ENVIRONMENT == 'localhost' ? 'http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css' : 'css/font-awesome.min.css';
 
 $config['javascripts'][] = 'js/jquery-1.8.3.js';//slideでも使用
 $config['javascripts'][] = 'js/jquery.sidr.min.js';//scroll
@@ -463,7 +463,7 @@ $config['paging_count_per_page'] = $config['paging_row_count'] * $config['paging
 
 $config['cdata_page_link_number'] = 5;
 $config['cdata_paging_row_count'] = 1;
-$config['cdata_paging_column_count'] = 10;
+$config['cdata_paging_column_count'] = 50;
 $config['cdata_paging_count_per_page'] = $config['cdata_paging_row_count'] * $config['cdata_paging_column_count'];
 
 $config['paging_count_per_index_page'] = 1 * 20;

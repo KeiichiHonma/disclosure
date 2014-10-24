@@ -116,7 +116,19 @@ contents
             <?php endif; ?>
         </div>
         <div id="sidebar">
-            <?php $this->load->view('layout/common/income_side'); ?>
+            <?php $this->load->view('layout/common/switch_side'); ?>
+            <div class="side_list">
+                <?php $this->load->view('layout/common/finance_category'); ?>
+            </div>
+            
+            <div class="box_wrap">
+                <div class="box_adx pcdisp">
+                    <img src="/images/ad_example1.gif" alt="" />
+                </div>
+                <div class="box_adx spdisp">
+                    <img src="/images/ad_example_sp1.jpg" alt="" />
+                </div>
+            </div>
         </div>
         <span class="cf" />
     </div>

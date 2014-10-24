@@ -292,7 +292,7 @@ class Finance extends MY_Controller
                 $orderExpression = "net_cash_provided_by_used_in_investing_activities DESC";//投資活動によるキャッシュ・フロー
             } else if ($order == "net-cash-provided-by-used-in-investing-activitiesRev") {
                 $orderExpression = "net_cash_provided_by_used_in_investing_activities ASC";
-            } else if ($order == "net-cash-provided-by-used-in-financing-activitiesRev") {
+            } else if ($order == "net-cash-provided-by-used-in-financing-activities") {
                 $orderExpression = "net_cash_provided_by_used_in_financing_activities DESC";//財務活動によるキャッシュ・フロー
             } else if ($order == "net-cash-provided-by-used-in-financing-activitiesRevRev") {
                 $orderExpression = "net_cash_provided_by_used_in_financing_activities ASC";

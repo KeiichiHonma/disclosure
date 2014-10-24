@@ -11,7 +11,6 @@ contents
         <h1 class="l1"><?php echo $categories[$category_id]->name; ?>カテゴリの有価証券報告書</h1>
         <div id="document">
             <?php if(!empty($documents)): ?>
-
             <?php $this->load->view('common/pager'); ?>
             <table>
                 <tr>
@@ -34,17 +33,12 @@ contents
                 <?php endforeach; ?>
             </table>
             <?php else: ?>
-            <div class="blank"><?php echo $categories[$category_id]->name; ?>カテゴリの開示情報はありません。</div>
+            <div class="blank">指定の情報はありません。</div>
             <?php endif; ?>
         </div>
         <div id="sidebar">
             <div id="side_cat">
-                <h1 class="side_title">業界カテゴリ</h1>
-                <ul>
-                <?php foreach ($categories as $category) : ?>
-                <li<?php if($category->id == $category_id): ?> class="current"<?php endif; ?>><a href="<?php echo '/document/category/'.$category->id; ?>"><span><?php echo $category->name; ?></span></a></li>
-                <?php endforeach; ?>
-                </ul>
+                <?php $this->load->view('layout/common/document_categories'); ?>
             </div><!-- /side_cat -->
             <div class="box_wrap">
                 <div class="box_adx pcdisp">

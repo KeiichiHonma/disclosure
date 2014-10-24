@@ -92,7 +92,7 @@ class Tenmono_model extends CI_Model
     function getCdataOrderDisclosure($orderExpression,$page)
     {
         $result = array();
-        $perPageCount = $this->CI->config->item('cdata_paging_count_per_page');
+        $perPageCount = $this->CI->config->item('paging_count_per_page');
 
         $offset = $perPageCount * ($page - 1);
         $query = $this->db->query("SELECT SQL_CALC_FOUND_ROWS *
@@ -122,7 +122,7 @@ class Tenmono_model extends CI_Model
     function getCdataByCategoryIdOrderDisclosure($category_id,$orderExpression, $page)
     {
         $result = array();
-        $perPageCount = $this->CI->config->item('cdata_paging_count_per_page');
+        $perPageCount = $this->CI->config->item('paging_count_per_page');
 
         $offset = $perPageCount * ($page - 1);
         $query = $this->db->query("SELECT SQL_CALC_FOUND_ROWS *
@@ -165,36 +165,6 @@ class Tenmono_model extends CI_Model
         if ($query->num_rows() != 0) return $query->result('flip','col_cid');
         return array();
     }
-
-/*
-    function getCdataOrderDisclosure($page)
-    {
-        $result = array();
-        $perPageCount = $this->CI->config->item('cdata_paging_count_per_page');
-
-        $offset = $perPageCount * ($page - 1);
-        $query = $this->db2->query("SELECT SQL_CALC_FOUND_ROWS *
-                                    FROM tab_job_cdata
-                                    INNER JOIN tab_job_company ON tab_job_company._id = tab_job_cdata.col_cid
-                                    ORDER BY tab_job_cdata.col_disclosure DESC
-                                    LIMIT {$offset},{$perPageCount}"
-        );
-
-        if ($query->num_rows() != 0) {
-            $result['data'] = $query->result();
-            $query = $this->db2->query("SELECT FOUND_ROWS() as count");
-            if($query->num_rows() == 1) {
-                foreach ($query->result() as $row)
-                $result['count'] = $row->count;
-            }
-        } else {
-            $result['data'] = array();
-            $result['count'] = 0;
-        }
-
-        return $result;
-    }
-*/
 
 }
 

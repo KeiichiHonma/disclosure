@@ -10,37 +10,42 @@ contents
     <div id ="contentsInner">
         <h1 class="l1"><?php echo $categories[$category_id]->name; ?>カテゴリの年収速報</h1>
         <div id="document">
-            <table>
-                <tr>
-                    <th class="cell01 date">提出日</th>
-                    <th class="code undisp">証券コード</th>
-                    <th>企業名</th>
-                    <th class="income">年収</th>
-                    <th class="trend undisp">前年比</th>
-                </tr>
-                <?php $count = count($cdatas);$i = 1; ?>
-                <?php foreach ($cdatas as $cdata) : ?>
-                <tr<?php if($count == $i) echo ' class="last"'; ?>>
-                    <td class="cell02"><span class="undisp"><?php echo strftime("%Y年", $cdata->col_disclosure); ?></span><?php echo strftime("%m月%d日", $cdata->col_disclosure); ?></td>
-                    <td class="undisp"><?php echo $cdata->col_code; ?></td>
-                    <td style="font-size:90%;text-align:left;"><?php echo anchor('income/show/'.$cdata->presenter_name_key, $cdata->col_name); ?></td>
-                    <td><?php echo $cdata->col_income; ?>万円</td>
-                    <?php
-                    if($cdata->col_income_trend == 1){
-                        $trend_image = 'up.gif';
-                    }elseif($cdata->col_income_trend == 2){
-                        $trend_image = 'down.gif';
-                    }elseif($cdata->col_income_trend == 0){
-                        $trend_image = 'new.gif';
-                    }elseif($cdata->col_income_trend == 3){
-                        $trend_image = 'stay.gif';
-                    }
-                    ?>
-                    <td class="undisp"><img src="/images/income/<?php echo $trend_image; ?>" /></td>
-                </tr>
-                <?php $i++; ?>
-                <?php endforeach; ?>
-            </table>
+            <?php if(!empty($cdatas)): ?>
+                <?php $this->load->view('layout/common/pager'); ?>
+                <table>
+                    <tr>
+                        <th class="cell01 date">提出日</th>
+                        <th class="code undisp">証券コード</th>
+                        <th>企業名</th>
+                        <th class="income">年収</th>
+                        <th class="trend undisp">前年比</th>
+                    </tr>
+                    <?php $count = count($cdatas);$i = 1; ?>
+                    <?php foreach ($cdatas as $cdata) : ?>
+                    <tr<?php if($count == $i) echo ' class="last"'; ?>>
+                        <td class="cell02"><span class="undisp"><?php echo strftime("%Y年", $cdata->col_disclosure); ?></span><?php echo strftime("%m月%d日", $cdata->col_disclosure); ?></td>
+                        <td class="undisp"><?php echo $cdata->col_code; ?></td>
+                        <td style="font-size:90%;text-align:left;"><?php echo anchor('income/show/'.$cdata->presenter_name_key, $cdata->col_name); ?></td>
+                        <td><?php echo $cdata->col_income; ?>万円</td>
+                        <?php
+                        if($cdata->col_income_trend == 1){
+                            $trend_image = 'up.gif';
+                        }elseif($cdata->col_income_trend == 2){
+                            $trend_image = 'down.gif';
+                        }elseif($cdata->col_income_trend == 0){
+                            $trend_image = 'new.gif';
+                        }elseif($cdata->col_income_trend == 3){
+                            $trend_image = 'stay.gif';
+                        }
+                        ?>
+                        <td class="undisp"><img src="/images/income/<?php echo $trend_image; ?>" /></td>
+                    </tr>
+                    <?php $i++; ?>
+                    <?php endforeach; ?>
+                </table>
+            <?php else: ?>
+                <div class="blank">指定の年収情報がありません。</div>
+            <?php endif; ?>
         </div>
         <div id="sidebar">
             <div id="side_cat">

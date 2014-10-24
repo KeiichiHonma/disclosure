@@ -56,6 +56,13 @@ switch (ENVIRONMENT)
         $db['default']['database'] = 'disclosure';
     break;
 
+    case 'localhost':
+        $db['default']['hostname'] = 'localhost';
+        $db['default']['username'] = 'db_balloooooon';
+        $db['default']['password'] = 'kyeoisihcihoi';
+        $db['default']['database'] = 'disclosure';
+    break;
+
     case 'testing':
         $db['default']['hostname'] = 'mysql465.db.sakura.ne.jp';
         $db['default']['username'] = 'db_mirai_tenki';

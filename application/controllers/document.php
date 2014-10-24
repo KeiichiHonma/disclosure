@@ -106,9 +106,10 @@ var $values = array();
         $data['document'] = $this->Document_model->getDocumentById($document_id);
         if(empty($data['document']))  show_404();
         
+        $data['switch_side_current'] = 'document_company';
+        
         //企業情報
         $data['edinet'] = $this->Edinet_model->getEdinetById($data['document']->edinet_id);
-        
         $data['html_index'] = unserialize($data['document']->html_index_serialize);
 
         $document_htmls = $this->Document_model->getDocumentHtmlByDocumentId($document_id);
@@ -124,11 +125,6 @@ var $values = array();
 
         $data['document_htmls'] = $document_htmls[$target_html_number];
         $data['target_html_number'] = $target_html_number;
-        
-        //その他の文書
-        $orderExpression = "created DESC";//作成新しい
-        $etc_documents = $this->Document_model->getDocumentsByEdinetIdOrder($data['document']->edinet_id,$orderExpression,1);
-        $data['etc_documents'] = $etc_documents['data'];
         
         //tenmonoデータ
         if($data['edinet']->security_code > 0) $data['company'] = $this->Tenmono_model->getCompanyBySecurityCode($data['edinet']->security_code);
@@ -158,12 +154,10 @@ var $values = array();
         $page = 1;
         $data['document'] = $this->Document_model->getDocumentById($document_id);
         if(empty($data['document']))  show_404();
+        
+        $data['switch_side_current'] = 'document_company';
+        
         $data['document_datas'] = $this->Document_model->getDocumentDataByDocumentId($document_id);
-
-        //その他の文書
-        $orderExpression = "created DESC";//作成新しい
-        $etc_documents = $this->Document_model->getDocumentsByEdinetIdOrder($data['document']->edinet_id,$orderExpression,1);
-        $data['etc_documents'] = $etc_documents['data'];
         
         //tenmonoデータ
         $data['edinet'] = $this->Edinet_model->getEdinetById($data['document']->edinet_id);
@@ -195,11 +189,8 @@ var $values = array();
         $page = 1;
         $data['document'] = $this->Document_model->getDocumentById($document_id);
         if(empty($data['document']))  show_404();
-
-        //その他の文書
-        $orderExpression = "created DESC";//作成新しい
-        $etc_documents = $this->Document_model->getDocumentsByEdinetIdOrder($data['document']->edinet_id,$orderExpression,1);
-        $data['etc_documents'] = $etc_documents['data'];
+        
+        $data['switch_side_current'] = 'document_company';
         
         //tenmonoデータ
         $data['edinet'] = $this->Edinet_model->getEdinetById($data['document']->edinet_id);
@@ -228,7 +219,9 @@ var $values = array();
         if(empty($presenter_name_key))  show_404();
         $data['edinet'] = $this->Edinet_model->getEdinetByPresenterNameKey($presenter_name_key);
         if(empty($data['edinet']))  show_404();
-
+        
+        $data['switch_side_current'] = 'document_company';
+        
         //文書一覧
         $order = "created";
         $orderExpression = "created DESC";//作成新しい
