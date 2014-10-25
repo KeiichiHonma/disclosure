@@ -30,9 +30,11 @@ footer
 
             <div class="sec">
                   <ul class="clearfix mb05">
-                    <?php foreach ($categories as $category) : ?>
-                    <?php if($category->id > 1): ?><li><a href="<?php echo '/income/category/'.$category->id; ?>"><span><?php echo $category->name; ?></span></a></li><?php endif; ?>
-                    <?php endforeach; ?>
+                    <li><a href="/income/"><?php echo $this->lang->line('common_title_income'); ?></a></li>
+                    <li><a href="/finance/ranking/pl/2009"><?php echo $this->lang->line('common_title_pl'); ?></a></li>
+                    <li><a href="/finance/ranking/bs/2009"><?php echo $this->lang->line('common_title_bs'); ?></a></li>
+                    <li><a href="/finance/ranking/cf/2009"><?php echo $this->lang->line('common_title_cf'); ?></a></li>
+                    <li><a href="/site/issues"><?php echo $this->lang->line('common_title_issues'); ?></a></li>
                   </ul>
             </div>
 

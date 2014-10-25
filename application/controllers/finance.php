@@ -40,14 +40,14 @@ class Finance extends MY_Controller
         }
 
         $data['type'] = $type;
-        $data['year'] = $year;
+        $data['year'] = is_null($year) ? date("Y",time()) : intval($year);
         $financesResult = $this->Finance_model->getFinancesOrder($data['year'], $orderExpression, $page);
 
         $data['finances'] = $financesResult['data'];
 
         $data['page'] = $page;
         $data['order'] = $order;
-        $data['pageFormat'] = "finance/ranking/{$type}/{$year}/{$order}/%d";
+        $data['pageFormat'] = "finance/ranking/{$type}/{$data['year']}/{$order}/%d";
         $data['rowCount'] = intval($this->config->item('paging_row_count'));
         $data['columnCount'] = intval($this->config->item('paging_column_count'));
         $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >

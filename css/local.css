@@ -470,32 +470,6 @@ table.menuBox td a:hover {
     border-top:1px solid #dbdbdb;
 }
 
-#footer .logo {
-  display: block;
-  float: left;
-  width: 180px;
-}
-
-#footer .about {
-  float: left;
-  width: 120px;
-}
-
-#footer .about li {
-  float: left;
-  width: 120px;
-}
-
-#footer .sec {
-  float: left;
-  width: 480px;
-}
-
-#footer .sec li {
-  float: left;
-  width: 110px;
-}
-
 #footer .boxRight {
     display: block;
     clear:both;
@@ -517,22 +491,47 @@ table.menuBox td a:hover {
 #footer ul {
     display:block;
 }
-#footer li {
+
+#footer li a{
+    display:block;
+    color:#515151;
+}
+#footer li a:hover{
+    font-weight:bold;
+}
+
+#footer .logo {
+  display: block;
+  float: left;
+  width: 180px;
+}
+
+#footer .logo li {
     display:block;
     float:left;
     margin-right:18px;
     margin-bottom:4px;
 }
-#footer li a{
-    display:block;
-    background-size:6px 9px;
-    padding-left:10px;
-    color:#515151;
-    font-weight:normal;
+
+#footer .about {
+  float: left;
+  width: 120px;
 }
-#footer li a:hover{
-    font-weight:bold;
+
+#footer .about li {
+  float: left;
+  width: 120px;
 }
+
+#footer .sec {
+  float: left;
+
+}
+
+#footer .sec li {
+  width: 110px;
+}
+
 
 .scf {
     margin:0 auto;
@@ -563,7 +562,7 @@ table.menuBox td a:hover {
     width:1000px;
     background:#fff;
     margin:0 auto;
-    padding:27px 0 60px 0px;
+    padding:27px 0 20px 0px;
 }
 #contents h2{
     color:#444;
@@ -1600,9 +1599,8 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
     text-align:left;
     padding-left:20px;
 }
-#document table.finance td.txt{
-    font-size:90%;
-    text-align:center;
+#document table.finance th.date{
+    width:60px;
 }
 #document table.finance th.code{
     width:60px;
@@ -1615,6 +1613,10 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
 }
 #document table.finance th.data{
     width:50px;
+}
+#document table.finance td.txt{
+    font-size:90%;
+    text-align:center;
 }
 #document #download{
     width:600px;
@@ -1732,6 +1734,14 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
 .finance_graph .caption {
     color: #ccc;
     font-size: 12px;
+}
+
+/*-- adsense -------------*/
+#adsense_bottom span {
+  text-align: center;
+  display: block;
+  vertical-align: bottom;
+  padding: 5px 0 5px;
 }
 
 /* iPad用

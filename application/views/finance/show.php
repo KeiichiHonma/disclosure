@@ -8,9 +8,10 @@ contents
 -->
 <div id="contents">
     <div id ="contentsInner">
-        <h1 class="l1"><?php echo $company->col_name; ?>の<?php echo $this->lang->line('common_title_bs'); ?></h1>
+        <h3 class="l1"><?php echo $edinet->presenter_name; ?>の<?php echo $this->lang->line('common_title_bs'); ?></h3>
         <?php $this->load->view('layout/common/finance_tab'); ?>
         <div id="document">
+            <?php if(!empty($finances)): ?>
             <?php $this->load->view('layout/common/document_sns'); ?>
             <?php
                 $count=count($finances);
@@ -54,7 +55,7 @@ contents
                 <tr><th class="l2">キャッシュフロー</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->net_increase_decrease_in_cash_and_cash_equivalents); ?></td><?php endfor; ?></tr>
                 <?php endif; ?>
             </table>
-            <?php if($type != "top"): ?>
+            <?php if($type != "top" && $count > 1): ?>
                 <?php foreach ($graphs[$type] as $key => $target) : ?>
                     <?php
                         $values_string = implode(',',$target_values[$target]);
@@ -114,6 +115,9 @@ contents
                     </script>
                 <?php endforeach; ?>
             <?php endif; ?>
+            <?php else: ?>
+                <div class="blank">指定のファイナンス情報がありません。</div>
+            <?php endif; ?>
         </div>
         <div id="sidebar">
             <?php $this->load->view('layout/common/switch_side'); ?>
@@ -125,12 +129,10 @@ contents
                 <div class="box_adx pcdisp">
                     <img src="/images/ad_example1.gif" alt="" />
                 </div>
-                <div class="box_adx spdisp">
-                    <img src="/images/ad_example_sp1.jpg" alt="" />
-                </div>
             </div>
         </div>
         <span class="cf" />
+        <?php $this->load->view('common/ads/adsense_bottom'); ?>
     </div>
 </div>
 

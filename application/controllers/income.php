@@ -15,10 +15,12 @@ var $values = array();
         $this->load->database();
         $this->load->model('Edinet_model');
         $this->load->model('Category_model');
+        $this->load->model('Market_model');
         $this->load->model('Document_model');
         $this->load->model('Tenmono_model');
         $this->data['income_categories'] = $this->Tenmono_model->getAllTenmonoCategories();
         $this->data['categories'] = $this->Category_model->getAllCategories();
+        $this->data['markets'] = $this->Market_model->getAllMarkets();
     }
 
     /**
@@ -27,52 +29,59 @@ var $values = array();
      */
     function index($page = 1)
     {
-        
         $data['bodyId'] = 'ind';
-        $orderExpression = "tab_job_cdata.col_disclosure DESC";
-        $cdatas = $this->Tenmono_model->getCdataOrderDisclosure($orderExpression,$page);
+        $order = "disclosure";
+        $orderExpression = "col_disclosure DESC";//公開日
+        $data['year'] = date("Y",time());
+        $cdatas = $this->Tenmono_model->getCdataOrder($data['year'],$orderExpression,$page);
         $data['cdatas'] = $cdatas['data'];
-        
+        $data['is_index'] = TRUE;
         //set header title
-        $header_string = '企業年収速報';
-        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
-        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
-        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
+        $data['page_title'] = '企業年収速報';
+        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
+        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
+        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
         
-        $this->load->view('income/index', array_merge($this->data,$data));
+        $this->load->view('income/category', array_merge($this->data,$data));
     }
 
     /**
      * search category action
      *
      */
-    function category($category_id,$page = 1)
+    function category($category_id, $year = null, $order = null, $page = 1)
     {
         $data['bodyId'] = 'ind';
-        $orderExpression = "tab_job_cdata.col_disclosure DESC";
-        $category_id = intval($category_id);
-        $data['category_id'] = $category_id;
+        $data['category_id'] = intval($category_id);
         
-        if($category_id == 1){
-            $cdatas =$this->Tenmono_model->getCdataOrderDisclosure($orderExpression,$page);
+        if(is_null($year) && is_null($order)){
+            $order = "disclosure";
+            $orderExpression = "col_disclosure DESC";//公開日
         }else{
-            $cdatas =$this->Tenmono_model->getCdataByCategoryIdOrderDisclosure($category_id,$orderExpression,$page);
+            list($order,$orderExpression) = $this->_set_order($order);
+        }
+        $data['year'] = is_null($year) ? date("Y",time()) : intval($year);
+        
+        if($category_id == 1){//全体
+            $cdatas =$this->Tenmono_model->getCdataOrder($data['year'],$orderExpression,$page);
+        }else{
+            $cdatas =$this->Tenmono_model->getCdataByCategoryIdOrderDisclosure($category_id,$data['year'],$orderExpression,$page);
         }
         
         $data['cdatas'] = $cdatas['data'];
-
         $data['page'] = $page;
-        $data['pageFormat'] = "income/category/{$category_id}/%d";
+        $data['order'] = $order;
+        $data['pageFormat'] = "income/category/{$category_id}/{$data['year']}/{$order}/%d";
         $data['rowCount'] = intval($this->config->item('paging_row_count'));
         $data['columnCount'] = intval($this->config->item('paging_column_count'));
         $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
         $data['maxPageCount'] = (int) ceil(intval($cdatas['count']) / intval($this->config->item('paging_count_per_page')));
 
         //set header title
-        $header_string = $this->data['income_categories'][$category_id]->col_name.'カテゴリの企業年収一覧';
-        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
-        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
-        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
+        $data['page_title'] = $category_id != 1 ? $data['year'].'年 '.$this->data['income_categories'][$category_id]->col_name.'業界の企業年収' : $data['year'].'年の企業年収';
+        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
+        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
+        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
         
         $this->load->view('income/category', array_merge($this->data,$data));
     }
@@ -205,6 +214,21 @@ var $values = array();
         }else{
             show_404();
         }
+    }
+    function _set_order($order){
+        if ($order == "disclosure") {
+            $orderExpression = "col_disclosure DESC";//公開日
+        } else if ($order == "disclosureRev") {
+            $orderExpression = "col_disclosure ASC";
+        } else if ($order == "income") {//年収
+            $orderExpression = "col_income ASC";
+        } else if ($order == "incomeRev") {//年収
+            $orderExpression = "col_income ASC";
+        }else{
+            $order = "disclosure";
+            $orderExpression = "col_disclosure DESC";//公開日
+        }
+        return array($order,$orderExpression);
     }
 }
 

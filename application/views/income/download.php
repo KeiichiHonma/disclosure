@@ -32,6 +32,7 @@ contents
             <?php $this->load->view('layout/common/income_side'); ?>
         </div>
         <span class="cf" />
+        <?php $this->load->view('common/ads/adsense_bottom'); ?>
     </div>
 </div>
 

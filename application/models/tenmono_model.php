@@ -89,9 +89,11 @@ class Tenmono_model extends CI_Model
         return array();
     }
 
-    function getCdataOrderDisclosure($orderExpression,$page)
+    function getCdataOrder($year,$orderExpression,$page)
     {
         $result = array();
+        $from_time = mktime(0,0,0,1,1,$year);
+        $to_time = mktime(23,59,59,12,31,$year);
         $perPageCount = $this->CI->config->item('paging_count_per_page');
 
         $offset = $perPageCount * ($page - 1);
@@ -99,9 +101,10 @@ class Tenmono_model extends CI_Model
                                     FROM tab_job_cdata
                                     INNER JOIN tab_job_company ON tab_job_company._id = tab_job_cdata.col_cid
                                     INNER JOIN edinets ON edinets.security_code = tab_job_company.col_code
-                                    WHERE tab_job_cdata.col_edition = 1
+                                    WHERE tab_job_cdata.col_disclosure >= ? AND tab_job_cdata.col_disclosure <= ?
                                     ORDER BY {$orderExpression}
                                     LIMIT {$offset},{$perPageCount}"
+        ,array(intval($from_time),intval($to_time))
         );
 
         if ($query->num_rows() != 0) {
@@ -119,20 +122,21 @@ class Tenmono_model extends CI_Model
         return $result;
     }
 
-    function getCdataByCategoryIdOrderDisclosure($category_id,$orderExpression, $page)
+    function getCdataByCategoryIdOrderDisclosure($category_id,$year,$orderExpression, $page)
     {
         $result = array();
+        $from_time = mktime(0,0,0,1,1,$year);
+        $to_time = mktime(23,59,59,12,31,$year);
         $perPageCount = $this->CI->config->item('paging_count_per_page');
-
         $offset = $perPageCount * ($page - 1);
         $query = $this->db->query("SELECT SQL_CALC_FOUND_ROWS *
                                     FROM tab_job_cdata
                                     INNER JOIN tab_job_company ON tab_job_company._id = tab_job_cdata.col_cid
                                     INNER JOIN edinets ON edinets.security_code = tab_job_company.col_code
-                                    WHERE edinets.category_id = ? AND tab_job_cdata.col_edition = 1
+                                    WHERE edinets.category_id = ? AND tab_job_cdata.col_disclosure >= ? AND tab_job_cdata.col_disclosure <= ?
                                     ORDER BY {$orderExpression}
                                     LIMIT {$offset},{$perPageCount}"
-        , array(intval($category_id))
+        , array(intval($category_id),intval($from_time),intval($to_time))
         );
 
         if ($query->num_rows() != 0) {

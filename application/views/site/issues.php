@@ -28,7 +28,7 @@ contents
                     <?php foreach ($edinets as $edinet) : ?>
                     <td>
 <strong><?php echo anchor('finance/show/'.$edinet->presenter_name_key,$edinet->security_code.'<br />'.$edinet->presenter_name); ?></strong><br />
-<span style="font-size:90%;"><?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/pl','P/L'); ?>&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/bs','BS'); ?>&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/cf','CF'); ?><br />
+<span style="font-size:90%;"><?php echo anchor('income/show/'.$edinet->presenter_name_key,'年収'); ?>&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/pl','P/L'); ?>&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/bs','BS'); ?>&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/cf','CF'); ?><br />
 <?php echo anchor('finance/category/'.$edinet->category_id.'/pl',$edinet->category_name); ?>
 <?php if(isset($markets[$edinet->market_id])): ?><br /><?php echo anchor('finance/market/'.$edinet->market_id.'/pl',$markets[$edinet->market_id]->name); ?><?php endif; ?></span>
 
@@ -39,6 +39,7 @@ contents
                 <?php endforeach; ?>
             </table>
             </div>
+            <?php $this->load->view('common/ads/adsense_bottom'); ?>
     </div>
 </div>
 

@@ -81,6 +81,7 @@ contents
             </div>
         </div>
         <span class="cf" />
+        <?php $this->load->view('common/ads/adsense_bottom'); ?>
     </div>
 </div>
 

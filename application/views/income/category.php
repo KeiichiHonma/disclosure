@@ -8,25 +8,47 @@ contents
 -->
 <div id="contents">
     <div id ="contentsInner">
-        <h1 class="l1"><?php echo $categories[$category_id]->name; ?>カテゴリの年収速報</h1>
+        <?php if(isset($is_index)): ?>
+        <div id="document_navi"><h3 class="center_dot"><span>企業年収速報</span></h3></div>
+        <?php else: ?>
+        <h3 class="l1"><?php echo $page_title; ?></h3>
+        <?php endif; ?>
+        
+        
         <div id="document">
             <?php if(!empty($cdatas)): ?>
-                <?php $this->load->view('layout/common/pager'); ?>
-                <table>
+                <?php if(!isset($is_index)) $this->load->view('layout/common/pager'); ?>
+                <table class="finance">
                     <tr>
-                        <th class="cell01 date">提出日</th>
-                        <th class="code undisp">証券コード</th>
-                        <th>企業名</th>
-                        <th class="income">年収</th>
-                        <th class="trend undisp">前年比</th>
+                        <th class="date">
+                        <?php if(isset($is_index)): ?>
+                        提出日
+                        <?php else: ?>
+                        <?php echo anchor('income/category/'.$category_id.'/'.$year.'/'.($order == 'disclosure' ? 'disclosureRev' : 'disclosure').'/'.$page,'提出日'.($order == 'disclosure' ? '<i class="fa fa-long-arrow-up"></i>' : ($order == 'disclosureRev' ? '<i class="fa fa-long-arrow-down"></i>' : ''))); ?>
+                        <?php endif; ?>
+                        </th>
+                        <th class="code">証券<br />コード</th>
+                        <th class="company_name">企業名</th>
+                        <th class="income">
+                        <?php if(isset($is_index)): ?>
+                        年収
+                        <?php else: ?>
+                        <?php echo anchor('income/category/'.$category_id.'/'.$year.'/'.($order == 'income' ? 'incomeRev' : 'income').'/'.$page,'年収'.($order == 'income' ? '<i class="fa fa-long-arrow-up"></i>' : ($order == 'incomeRev' ? '<i class="fa fa-long-arrow-down"></i>' : ''))); ?>
+                        <?php endif; ?>
+                        </th>
+                        <th class="trend">前年比</th>
+                        <th class="market">市場<br />業種</th>
                     </tr>
                     <?php $count = count($cdatas);$i = 1; ?>
                     <?php foreach ($cdatas as $cdata) : ?>
                     <tr<?php if($count == $i) echo ' class="last"'; ?>>
-                        <td class="cell02"><span class="undisp"><?php echo strftime("%Y年", $cdata->col_disclosure); ?></span><?php echo strftime("%m月%d日", $cdata->col_disclosure); ?></td>
-                        <td class="undisp"><?php echo $cdata->col_code; ?></td>
-                        <td style="font-size:90%;text-align:left;"><?php echo anchor('income/show/'.$cdata->presenter_name_key, $cdata->col_name); ?></td>
-                        <td><?php echo $cdata->col_income; ?>万円</td>
+                        <td class="txt"><?php echo strftime("%y/%m/%d", $cdata->col_disclosure); ?></td>
+                        <td class="txt"><?php echo anchor('income/show/'.$cdata->presenter_name_key, $cdata->col_code); ?></td>
+                        <td class="txt">
+                        <?php echo anchor('income/show/'.$cdata->presenter_name_key, $cdata->col_name); ?><br />
+                        <?php echo anchor('finance/show/'.$cdata->presenter_name_key.'/pl','P/L'); ?>&nbsp;&nbsp;<?php echo anchor('finance/show/'.$cdata->presenter_name_key.'/bs','BS'); ?>&nbsp;&nbsp;<?php echo anchor('finance/show/'.$cdata->presenter_name_key.'/cf','CF'); ?>
+                        </td>
+                        <td class="data"><?php echo $cdata->col_income; ?>万円</td>
                         <?php
                         if($cdata->col_income_trend == 1){
                             $trend_image = 'up.gif';
@@ -38,23 +60,23 @@ contents
                             $trend_image = 'stay.gif';
                         }
                         ?>
-                        <td class="undisp"><img src="/images/income/<?php echo $trend_image; ?>" /></td>
+                        <td class="txt"><img src="/images/income/<?php echo $trend_image; ?>" /></td>
+                        <td class="txt">
+                        <?php echo anchor('income/category/'.$cdata->category_id.'/'.$year,$cdata->category_name); ?>
+                        <?php if(isset($markets[$cdata->market_id])): ?><br /><?php echo anchor('income/market/'.$cdata->market_id.'/'.$year,$markets[$cdata->market_id]->name); ?><?php endif; ?>
+                        </td>
                     </tr>
                     <?php $i++; ?>
                     <?php endforeach; ?>
                 </table>
+                <?php if(!isset($is_index)) $this->load->view('layout/common/pager'); ?>
             <?php else: ?>
                 <div class="blank">指定の年収情報がありません。</div>
             <?php endif; ?>
         </div>
         <div id="sidebar">
             <div id="side_cat">
-                <h1 class="side_title">業界カテゴリ</h1>
-                <ul>
-                <?php foreach ($income_categories as $income_category) : ?>
-                <li<?php if($income_category->_id == $category_id): ?> class="current"<?php endif; ?>><a href="<?php echo '/income/category/'.$income_category->_id; ?>"><span><?php echo $income_category->col_name; ?></span><span class="new">平均    <?php echo $income_category->col_income_average; ?>万円</span></a></li>
-                <?php endforeach; ?>
-                </ul>
+                <?php $this->load->view('layout/common/income_category'); ?>
             </div><!-- /side_cat -->
             <div class="box_wrap">
                 <div class="box_adx pcdisp">
@@ -66,6 +88,7 @@ contents
             </div>
         </div>
         <span class="cf" />
+        <?php $this->load->view('common/ads/adsense_bottom'); ?>
     </div>
 </div>
 <?php $this->load->view('layout/footer/footer'); ?>
