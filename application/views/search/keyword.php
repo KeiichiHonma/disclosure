@@ -10,43 +10,45 @@ contents
     <div id ="contentsInner">
         <h1 class="l1"><?php echo $search_keywords; ?>の検索</h1>
         <div id="document">
-            <table>
+            <table class="finance">
                 <tr>
-                    <th class="code undisp">証券コード</th>
-                    <th>企業名</th>
-                    <th>&nbsp;</th>
+                    <th class="code">証券<br />コード</th>
+                    <th class="company_name">企業名</th>
+                    <th class="market">市場</th>
+                    <th class="market">業種</th>
                 </tr>
                 <?php $count = count($edinets);$i = 1; ?>
                 <?php foreach ($edinets as $edinet) : ?>
                 <tr<?php if($count == $i) echo ' class="last"'; ?>>
-                    <td><?php echo $edinet->security_code; ?></td>
-                    <td style="font-size:90%;text-align:left;"><?php echo anchor('document/company/'.$edinet->presenter_name_key, $edinet->presenter_name); ?></td>
-                    <td><?php echo anchor('document/company/'.$edinet->presenter_name_key, '開示情報一覧'); ?>&nbsp;|&nbsp;<?php echo anchor('income/show/'.$edinet->presenter_name_key, '企業年収'); ?></td>
+                    <td class="txt"><?php echo $edinet->security_code; ?></td>
+                    <td class="txt">
+                    <?php echo $edinet->presenter_name; ?><br />
+                    <?php echo anchor('document/show/'.$edinet->presenter_name_key, '有報'); ?>&nbsp;&nbsp;<?php echo anchor('income/show/'.$edinet->presenter_name_key, '年収'); ?>&nbsp;&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/pl','P/L'); ?>&nbsp;&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/bs','BS'); ?>&nbsp;&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/cf','CF'); ?>
+                    </td>
+                    <td class="txt">
+                    <?php if(isset($markets[$edinet->market_id])): ?>
+                    <?php echo $markets[$edinet->market_id]->name; ?><br />
+                    <?php echo anchor('document/market/'.$edinet->market_id, '有報'); ?>&nbsp;&nbsp;<?php echo anchor('income/market/'.$edinet->market_id, '年収'); ?>&nbsp;&nbsp;<?php echo anchor('finance/market/'.$edinet->market_id.'/pl','P/L'); ?>&nbsp;&nbsp;<?php echo anchor('finance/market/'.$edinet->market_id.'/bs','BS'); ?>&nbsp;&nbsp;<?php echo anchor('finance/market/'.$edinet->market_id.'/cf','CF'); ?>
+                    <?php endif; ?>
+                    </td>
+                    <td class="txt">
+                    <?php echo $edinet->category_name; ?><br />
+                    <?php echo anchor('document/category/'.$edinet->category_id, '有報'); ?>&nbsp;&nbsp;<?php echo anchor('income/category/'.$edinet->category_id, '年収'); ?>&nbsp;&nbsp;<?php echo anchor('finance/category/'.$edinet->category_id.'/pl','P/L'); ?>&nbsp;&nbsp;<?php echo anchor('finance/category/'.$edinet->category_id.'/bs','BS'); ?>&nbsp;&nbsp;<?php echo anchor('finance/category/'.$edinet->category_id.'/cf','CF'); ?>
+                    </td>
                 </tr>
                 <?php $i++; ?>
                 <?php endforeach; ?>
             </table>
         </div>
         <div id="sidebar">
+            <?php $this->load->view('layout/common/ads/adsense_side'); ?>
             <div id="side_cat">
-                <h1 class="side_title">業界カテゴリ</h1>
-                <ul>
-                <?php foreach ($categories as $category) : ?>
-                <li><a href="<?php echo '/document/category/'.$category->id; ?>"><span><?php echo $category->name; ?></span></a></li>
-                <?php endforeach; ?>
-                </ul>
+                <?php $this->load->view('layout/common/categories'); ?>
             </div><!-- /side_cat -->
-            <div class="box_wrap">
-                <div class="box_adx pcdisp">
-                    <img src="/images/ad_example1.gif" alt="" />
-                </div>
-                <div class="box_adx spdisp">
-                    <img src="/images/ad_example_sp1.jpg" alt="" />
-                </div>
-            </div>
+            <?php $this->load->view('layout/common/ads/adsense_side'); ?>
         </div>
         <span class="cf" />
-        <?php $this->load->view('common/ads/adsense_bottom'); ?>
+        <?php $this->load->view('layout/common/ads/adsense_bottom'); ?>
     </div>
 </div>
 <?php $this->load->view('layout/footer/footer'); ?>

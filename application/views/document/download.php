@@ -48,18 +48,9 @@ contents
             <div class="side_list">
                 <?php $this->load->view('layout/common/document_categories'); ?>
             </div>
-            
-            <div class="box_wrap">
-                <div class="box_adx pcdisp">
-                    <img src="/images/ad_example1.gif" alt="" />
-                </div>
-                <div class="box_adx spdisp">
-                    <img src="/images/ad_example_sp1.jpg" alt="" />
-                </div>
-            </div>
         </div>
         <span class="cf" />
-        <?php $this->load->view('common/ads/adsense_bottom'); ?>
+        <?php $this->load->view('layout/common/ads/adsense_bottom'); ?>
     </div>
 </div>
 

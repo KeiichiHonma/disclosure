@@ -22,7 +22,7 @@ $('#page h1').corner("6px");
                         <!--/c_wrapper-->
                         <div class="c_wrapper">
                             <div class="pager">
-                                <?php $this->load->view('common/pager'); ?>
+                                <?php $this->load->view('layout/common/pager'); ?>
                             </div>
                         </div>
                         <!--/c_wrapper-->

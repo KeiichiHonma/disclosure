@@ -25,10 +25,11 @@ class Home extends MY_Controller
     {
         $data['bodyId'] = 'ind';
         $data['new_categories'] = $this->Document_model->getDocumentsCategoryByDateGroupByCategory(date("Y-m-d H:i:s",strtotime("-7 day")));
-
+        //$year = date("Y",time());
+        $year = 2009;
         $order = "date";
         $orderExpression = "date DESC";//作成新しい
-        $xbrls =$this->Document_model->getDocumentsOrder($orderExpression,1);
+        $xbrls =$this->Document_model->getDocumentsOrder($year,$orderExpression,1);
         $data['xbrls'] = $xbrls['data'];
         
         //set header title

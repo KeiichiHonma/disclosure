@@ -8,10 +8,19 @@ contents
 -->
 <div id="contents">
     <div id ="contentsInner">
-        <h1 class="l1"><?php echo $categories[$category_id]->name; ?>カテゴリの有価証券報告書</h1>
+        <h1 class="l1"><?php echo $page_title; ?></h1>
         <div id="document">
             <?php if(!empty($documents)): ?>
-            <?php $this->load->view('common/pager'); ?>
+            <div class="sort pager pt20">
+                <ul class="clearfix">
+                    <?php $now_year = date("Y",time()); ?>
+                    <?php for ($i=$now_year;$i>=2009;$i--): ?>
+                    <?php $year_string = $i == $now_year ? '' : '/'.$i; ?>
+                    <li><?php echo anchor('document/'.$page_name.'/'.$object_id.$year_string, $i.'年',($year == $i ? 'class="active"' : '')); ?></li>
+                    <?php endfor; ?>
+                </ul>
+            </div>
+            <?php $this->load->view('layout/common/pager'); ?>
             <table>
                 <tr>
                     <th class="cell01 date">提出日</th>
@@ -37,20 +46,20 @@ contents
             <?php endif; ?>
         </div>
         <div id="sidebar">
+            <?php $this->load->view('layout/common/ads/adsense_side'); ?>
             <div id="side_cat">
+                <?php if(isset($market_id)): ?>
+                <?php $this->load->view('layout/common/document_markets'); ?>
                 <?php $this->load->view('layout/common/document_categories'); ?>
+                <?php else: ?>
+                <?php $this->load->view('layout/common/document_categories'); ?>
+                <?php $this->load->view('layout/common/document_markets'); ?>
+                <?php endif; ?>
             </div><!-- /side_cat -->
-            <div class="box_wrap">
-                <div class="box_adx pcdisp">
-                    <img src="/images/ad_example1.gif" alt="" />
-                </div>
-                <div class="box_adx spdisp">
-                    <img src="/images/ad_example_sp1.jpg" alt="" />
-                </div>
-            </div>
+            <?php $this->load->view('layout/common/ads/adsense_side'); ?>
         </div>
         <span class="cf" />
-        <?php $this->load->view('common/ads/adsense_bottom'); ?>
+        <?php $this->load->view('layout/common/ads/adsense_bottom'); ?>
     </div>
 </div>
 <?php $this->load->view('layout/footer/footer'); ?>

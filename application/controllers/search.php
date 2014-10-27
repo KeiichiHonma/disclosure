@@ -12,10 +12,12 @@ class Search extends MY_Controller
         $this->load->database();
         $this->load->model('Edinet_model');
         $this->load->model('Category_model');
+        $this->load->model('Market_model');
         $this->load->model('Document_model');
         $this->load->model('Tenmono_model');
         $this->data['income_categories'] = $this->Tenmono_model->getAllTenmonoCategories();
         $this->data['categories'] = $this->Category_model->getAllCategories();
+        $this->data['markets'] = $this->Market_model->getAllMarkets();
     }
 
     /**

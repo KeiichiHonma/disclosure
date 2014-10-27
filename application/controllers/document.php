@@ -15,55 +15,27 @@ var $values = array();
         $this->load->database();
         $this->load->model('Item_model');
         $this->load->model('Category_model');
+        $this->load->model('Market_model');
         $this->load->model('Edinet_model');
         $this->load->model('Document_model');
         $this->load->model('Tenmono_model');
-        $this->data['income_categories'] = $this->Tenmono_model->getAllTenmonoCategories();
+        //$this->data['income_categories'] = $this->Tenmono_model->getAllTenmonoCategories();
         $this->data['categories'] = $this->Category_model->getAllCategories();
-    }
-
-    function date($date,$page = 1)
-    {
-        //書式：2012-01-01
-        if(0 === preg_match('/^([1-9][0-9]{3})\-(0[1-9]{1}|1[0-2]{1})\-(0[1-9]{1}|[1-2]{1}[0-9]{1}|3[0-1]{1})$/', $date)) show_404();
-        
-        $data['bodyId'] = 'ind';
-        $data['date'] = $date;
-        $data['seven_dates'] = $this->Document_model->getDocumentDateGroupByDate();
-        $order = "created";
-        $orderExpression = "created DESC";//作成新しい
-        $documentsResult = $this->Document_model->getDocumentsByDateOrder($date,$orderExpression,$page);
-
-        $data['documents'] = $documentsResult['data'];
-        $data['page'] = $page;
-        $data['order'] = $order;
-        
-        $data['pageFormat'] = "date/{$date}/{$order}/%d";
-        $data['rowCount'] = intval($this->config->item('paging_row_count'));
-        $data['columnCount'] = intval($this->config->item('paging_column_count'));
-        $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
-        $data['maxPageCount'] = (int) ceil(intval($documentsResult['count']) / intval($this->config->item('paging_count_per_page')));
-        $data['orderSelects'] = $this->lang->line('order_select');
-        
-        //set header title
-        $data['header_title'] = $this->lang->line('common_header_title');
-        $data['header_keywords'] = $this->lang->line('common_header_keywords');
-        $data['header_description'] = $this->lang->line('common_header_description');
-        
-        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
-        $this->load->view('document/date', array_merge($this->data,$data));
+        $this->data['markets'] = $this->Market_model->getAllMarkets();
     }
 
     /**
      * search category action
      *
      */
-    function category($category_id,$page = 1)
+    function category($category_id, $year = null, $page = 1)
     {
         $data['bodyId'] = 'ind';
-        $data['new_categories'] = $this->Document_model->getDocumentsCategoryByDateGroupByCategory(date("Y-m-d H:i:s",strtotime("-7 day")));
-
-
+        $data['category_id'] = $category_id;
+        $data['page_name'] = 'category';
+        $data['object_id'] = $category_id;
+        
+        //$data['new_categories'] = $this->Document_model->getDocumentsCategoryByDateGroupByCategory(date("Y-m-d H:i:s",strtotime("-7 day")));
         $order = "date";
         $orderExpression = "date DESC";//作成新しい
         $category_id = intval($category_id);
@@ -71,28 +43,62 @@ var $values = array();
         
         if(!isset($this->data['categories'][$category_id])) show_404();
         
+        //$data['year'] = is_null($year) ? date("Y",time()) : intval($year);
+        $data['year'] = 2009;
         if($category_id == 1){
-            $documents =$this->Document_model->getDocumentsOrder($orderExpression,$page);
+            $documents =$this->Document_model->getDocumentsOrder($data['year'], $orderExpression,$page);
         }else{
-            $documents =$this->Document_model->getDocumentsByCategoryIdOrder($category_id,$orderExpression,$page);
+            $documents =$this->Document_model->getDocumentsByCategoryIdOrder($category_id,$data['year'],$orderExpression,$page);
         }
         
         $data['documents'] = $documents['data'];
         $data['page'] = $page;
-        $data['pageFormat'] = "document/category/{$category_id}/%d";
+        $data['pageFormat'] = "document/category/{$category_id}/{$data['year']}/%d";
         $data['rowCount'] = intval($this->config->item('paging_row_count'));
         $data['columnCount'] = intval($this->config->item('paging_column_count'));
         $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
         $data['maxPageCount'] = (int) ceil(intval($documents['count']) / intval($this->config->item('paging_count_per_page')));
 
         //set header title
-        $header_string = $this->data['categories'][$category_id]->name.'カテゴリの有価証券報告書一覧';
-        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
-        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
-        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
+        $data['page_title'] = $this->data['categories'][$category_id]->name.'カテゴリの有価証券報告書一覧';
+        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
+        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
+        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
         $this->load->view('document/category', array_merge($this->data,$data));
     }
 
+    /**
+     * search market action
+     *
+     */
+    function market($market_id, $year = null, $page = 1)
+    {
+        $data['bodyId'] = 'ind';
+        //$data['new_categories'] = $this->Document_model->getDocumentsCategoryByDateGroupByCategory(date("Y-m-d H:i:s",strtotime("-7 day")));
+        $order = "date";
+        $orderExpression = "date DESC";//作成新しい
+        $market_id = intval($market_id);
+        $data['market_id'] = $market_id;
+        if(!isset($this->data['markets'][$market_id])) show_404();
+        
+        $data['year'] = 2009;
+        $documents =$this->Document_model->getDocumentsByMarketIdOrder($market_id,$data['year'],$orderExpression,$page);
+        
+        $data['documents'] = $documents['data'];
+        $data['page'] = $page;
+        $data['pageFormat'] = "document/market/{$market_id}/{$data['year']}/%d";
+        $data['rowCount'] = intval($this->config->item('paging_row_count'));
+        $data['columnCount'] = intval($this->config->item('paging_column_count'));
+        $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
+        $data['maxPageCount'] = (int) ceil(intval($documents['count']) / intval($this->config->item('paging_count_per_page')));
+
+        //set header title
+        $data['page_title'] = $this->data['markets'][$market_id]->name.'の有価証券報告書一覧';
+        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
+        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
+        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
+        $this->load->view('document/category', array_merge($this->data,$data));
+    }
 
     function show($document_id,$target_html_number = 0)//1から
     {
@@ -274,6 +280,38 @@ var $values = array();
         
         $this->load->helper('download');
         force_download(end(explode('/',$document->format_path)).".".$download_string, $data);
+    }
+
+    function _date($date,$page = 1)
+    {
+        //書式：2012-01-01
+        if(0 === preg_match('/^([1-9][0-9]{3})\-(0[1-9]{1}|1[0-2]{1})\-(0[1-9]{1}|[1-2]{1}[0-9]{1}|3[0-1]{1})$/', $date)) show_404();
+        
+        $data['bodyId'] = 'ind';
+        $data['date'] = $date;
+        $data['seven_dates'] = $this->Document_model->getDocumentDateGroupByDate();
+        $order = "created";
+        $orderExpression = "created DESC";//作成新しい
+        $documentsResult = $this->Document_model->getDocumentsByDateOrder($date,$orderExpression,$page);
+
+        $data['documents'] = $documentsResult['data'];
+        $data['page'] = $page;
+        $data['order'] = $order;
+        
+        $data['pageFormat'] = "date/{$date}/{$order}/%d";
+        $data['rowCount'] = intval($this->config->item('paging_row_count'));
+        $data['columnCount'] = intval($this->config->item('paging_column_count'));
+        $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
+        $data['maxPageCount'] = (int) ceil(intval($documentsResult['count']) / intval($this->config->item('paging_count_per_page')));
+        $data['orderSelects'] = $this->lang->line('order_select');
+        
+        //set header title
+        $data['header_title'] = $this->lang->line('common_header_title');
+        $data['header_keywords'] = $this->lang->line('common_header_keywords');
+        $data['header_description'] = $this->lang->line('common_header_description');
+        
+        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
+        $this->load->view('document/date', array_merge($this->data,$data));
     }
 }
 

@@ -17,7 +17,7 @@ class Finance extends MY_Controller
         $this->load->model('Document_model');
         $this->load->model('Tenmono_model');
         $this->load->model('Finance_model');
-        $this->data['income_categories'] = $this->Tenmono_model->getAllTenmonoCategories();
+        //$this->data['income_categories'] = $this->Tenmono_model->getAllTenmonoCategories();
         $this->data['categories'] = $this->Category_model->getAllCategories();
         $this->data['markets'] = $this->Market_model->getAllMarkets();
     }
@@ -133,7 +133,7 @@ class Finance extends MY_Controller
             $order = "modified";
             $orderExpression = "date DESC";//作成新しい
         }
-        $data['category_id'] = $category_id;
+        $data['market_id'] = $market_id;
         $data['type'] = $type;
         $data['year'] = $year;
         $financesResult = $this->Finance_model->getFinancesOrderByMarketId($market_id,$data['year'], $orderExpression, $page);

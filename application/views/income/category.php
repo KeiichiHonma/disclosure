@@ -24,7 +24,7 @@ contents
                         <?php if(isset($is_index)): ?>
                         提出日
                         <?php else: ?>
-                        <?php echo anchor('income/category/'.$category_id.'/'.$year.'/'.($order == 'disclosure' ? 'disclosureRev' : 'disclosure').'/'.$page,'提出日'.($order == 'disclosure' ? '<i class="fa fa-long-arrow-up"></i>' : ($order == 'disclosureRev' ? '<i class="fa fa-long-arrow-down"></i>' : ''))); ?>
+                        <?php echo anchor('income/'.$page_name.'/'.$object_id.'/'.$year.'/'.($order == 'disclosure' ? 'disclosureRev' : 'disclosure').'/'.$page,'提出日'.($order == 'disclosure' ? '<i class="fa fa-long-arrow-up"></i>' : ($order == 'disclosureRev' ? '<i class="fa fa-long-arrow-down"></i>' : ''))); ?>
                         <?php endif; ?>
                         </th>
                         <th class="code">証券<br />コード</th>
@@ -33,7 +33,7 @@ contents
                         <?php if(isset($is_index)): ?>
                         年収
                         <?php else: ?>
-                        <?php echo anchor('income/category/'.$category_id.'/'.$year.'/'.($order == 'income' ? 'incomeRev' : 'income').'/'.$page,'年収'.($order == 'income' ? '<i class="fa fa-long-arrow-up"></i>' : ($order == 'incomeRev' ? '<i class="fa fa-long-arrow-down"></i>' : ''))); ?>
+                        <?php echo anchor('income/'.$page_name.'/'.$object_id.'/'.$year.'/'.($order == 'income' ? 'incomeRev' : 'income').'/'.$page,'年収'.($order == 'income' ? '<i class="fa fa-long-arrow-up"></i>' : ($order == 'incomeRev' ? '<i class="fa fa-long-arrow-down"></i>' : ''))); ?>
                         <?php endif; ?>
                         </th>
                         <th class="trend">前年比</th>
@@ -62,8 +62,8 @@ contents
                         ?>
                         <td class="txt"><img src="/images/income/<?php echo $trend_image; ?>" /></td>
                         <td class="txt">
-                        <?php echo anchor('income/category/'.$cdata->category_id.'/'.$year,$cdata->category_name); ?>
-                        <?php if(isset($markets[$cdata->market_id])): ?><br /><?php echo anchor('income/market/'.$cdata->market_id.'/'.$year,$markets[$cdata->market_id]->name); ?><?php endif; ?>
+                        <?php echo anchor('income/category/'.$cdata->category_id,$cdata->category_name); ?>
+                        <?php if(isset($markets[$cdata->market_id])): ?><br /><?php echo anchor('income/market/'.$cdata->market_id,$markets[$cdata->market_id]->name); ?><?php endif; ?>
                         </td>
                     </tr>
                     <?php $i++; ?>
@@ -75,20 +75,14 @@ contents
             <?php endif; ?>
         </div>
         <div id="sidebar">
+            <?php $this->load->view('layout/common/ads/adsense_side'); ?>
             <div id="side_cat">
                 <?php $this->load->view('layout/common/income_category'); ?>
             </div><!-- /side_cat -->
-            <div class="box_wrap">
-                <div class="box_adx pcdisp">
-                    <img src="/images/ad_example1.gif" alt="" />
-                </div>
-                <div class="box_adx spdisp">
-                    <img src="/images/ad_example_sp1.jpg" alt="" />
-                </div>
-            </div>
+            <?php $this->load->view('layout/common/ads/adsense_side'); ?>
         </div>
         <span class="cf" />
-        <?php $this->load->view('common/ads/adsense_bottom'); ?>
+        <?php $this->load->view('layout/common/ads/adsense_bottom'); ?>
     </div>
 </div>
 <?php $this->load->view('layout/footer/footer'); ?>

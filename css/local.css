@@ -341,11 +341,10 @@ div#breadcrumb .searchBox {
     padding-top:7px !important;
 }
 div#breadcrumb .searchBox .focus{
-    width:320px !important;
+    width:220px !important;
     height:16px !important;
     padding:2px !important;
     margin-right:8px !important;
-    color:#a0a09f !important;
 }
 
 .ie div#breadcrumb .searchBox .focus{ height:20px !important;}
@@ -1481,7 +1480,15 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
     border-top:#e8e8e8 1px solid;
     background: #fff;
     margin-left: 170px;
-    padding:10px 20px;
+    padding:10px 15px;
+}
+
+#side_cat dl.all dt,.side_list dl.all dt{
+    width: 120px;
+}
+#side_cat dl.all dd,.side_list dl.all dd{
+    margin-left: 120px;
+
 }
 
 /* document

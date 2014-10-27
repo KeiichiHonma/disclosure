@@ -130,7 +130,7 @@ class Edinet_model extends CI_Model
 
         $queryString = "SELECT SQL_CALC_FOUND_ROWS *,{$this->table_name}.id AS id
                                     FROM {$this->table_name}
-                                    INNER JOIN documents ON {$this->table_name}.id = documents.edinet_id
+                                    INNER JOIN documents ON {$this->table_name}.id = documents.edinet_id AND documents.document_name = '有価証券報告書'
                                     INNER JOIN tab_job_company ON {$this->table_name}.security_code = tab_job_company.col_code
                                     INNER JOIN tab_job_cdata ON ( tab_job_company._id = tab_job_cdata.col_cid AND tab_job_cdata.col_edition = 1 )
                                     WHERE (";

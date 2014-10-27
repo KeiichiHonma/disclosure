@@ -154,6 +154,38 @@ class Tenmono_model extends CI_Model
         return $result;
     }
 
+    function getCdataByMarketIdOrderDisclosure($market_id,$year,$orderExpression, $page)
+    {
+        $result = array();
+        $from_time = mktime(0,0,0,1,1,$year);
+        $to_time = mktime(23,59,59,12,31,$year);
+        $perPageCount = $this->CI->config->item('paging_count_per_page');
+        $offset = $perPageCount * ($page - 1);
+        $query = $this->db->query("SELECT SQL_CALC_FOUND_ROWS *
+                                    FROM tab_job_cdata
+                                    INNER JOIN tab_job_company ON tab_job_company._id = tab_job_cdata.col_cid
+                                    INNER JOIN edinets ON edinets.security_code = tab_job_company.col_code
+                                    WHERE edinets.market_id = ? AND tab_job_cdata.col_disclosure >= ? AND tab_job_cdata.col_disclosure <= ?
+                                    ORDER BY {$orderExpression}
+                                    LIMIT {$offset},{$perPageCount}"
+        , array(intval($market_id),intval($from_time),intval($to_time))
+        );
+
+        if ($query->num_rows() != 0) {
+            $result['data'] = $query->result();
+            $query = $this->db->query("SELECT FOUND_ROWS() as count");
+            if($query->num_rows() == 1) {
+                foreach ($query->result() as $row)
+                $result['count'] = $row->count;
+            }
+        } else {
+            $result['data'] = array();
+            $result['count'] = 0;
+        }
+
+        return $result;
+    }
+
     function getCdatasNotInCompanyIdHighAndLowIncomeByVarietyid($company_id,$income,$vid,$sign = '>=',$order = 'ASC')
     {
         $query = $this->db->query("SELECT *

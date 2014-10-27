@@ -11,7 +11,7 @@ contents
         <h1 class="l1"><?php echo $edinet->presenter_name; ?>の有価証券報告書一覧</h1>
         <div id="document">
             <?php if(!empty($documents)): ?>
-            <?php $this->load->view('common/pager'); ?>
+            <?php $this->load->view('layout/common/pager'); ?>
             <table>
                 <tr>
                     <th class="cell01 date">提出日</th>
@@ -38,21 +38,14 @@ contents
         </div>
         <div id="sidebar">
             <?php $this->load->view('layout/common/switch_side'); ?>
+            <?php $this->load->view('layout/common/ads/adsense_side'); ?>
             <div class="side_list">
                 <?php $this->load->view('layout/common/document_categories'); ?>
             </div>
-            
-            <div class="box_wrap">
-                <div class="box_adx pcdisp">
-                    <img src="/images/ad_example1.gif" alt="" />
-                </div>
-                <div class="box_adx spdisp">
-                    <img src="/images/ad_example_sp1.jpg" alt="" />
-                </div>
-            </div>
+            <?php $this->load->view('layout/common/ads/adsense_side'); ?>
         </div>
         <span class="cf" />
-        <?php $this->load->view('common/ads/adsense_bottom'); ?>
+        <?php $this->load->view('layout/common/ads/adsense_bottom'); ?>
     </div>
 </div>
 <?php $this->load->view('layout/footer/footer'); ?>

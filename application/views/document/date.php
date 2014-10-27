@@ -29,7 +29,7 @@ contents
             <?php $this->load->view('layout/common/date_navi'); ?>
             <h3 class="center_dot"><span><?php echo strftime($this->lang->line('setting_date_format'), strtotime($date)); ?>の開示情報</span></h3>
             <div class="pager mb10">
-                <?php $this->load->view('common/pager'); ?>
+                <?php $this->load->view('layout/common/pager'); ?>
             </div>
         </div>
         <div id="document">
@@ -76,7 +76,7 @@ contents
             </div>
         </div>
         <span class="cf" />
-        <?php $this->load->view('common/ads/adsense_bottom'); ?>
+        <?php $this->load->view('layout/common/ads/adsense_bottom'); ?>
     </div>
 </div>
 <?php $this->load->view('layout/footer/footer'); ?>

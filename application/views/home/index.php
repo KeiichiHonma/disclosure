@@ -39,22 +39,22 @@ contents
                     <ul>
                         <li>
                             <a href="/articles/-/44758" class="link-box">
-                    <span class="column-ttl">エクセル、CSV、txtファイルでダウンロードできる</span><br /><span class="column-main-ttl">開示書類をわかりやすいフォーマットで提供</span><span class="more sprite">MORE</span>
+                                <span class="column-ttl">有価証券報告書を速報でお届け</span><br /><span class="column-main-ttl">エクセルフォーマットでダウンロード！</span><span class="more sprite">MORE</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/articles/-/44770" class="link-box">
-                    <span class="column-ttl">年収情報を速報でお届け</span><br /><span class="column-main-ttl">企業の年収情報をいち早く確認できる</span><span class="more sprite">MORE</span>
+                            <a href="/income/" class="link-box">
+                                <span class="column-ttl">年収情報を速報でお届け</span><br /><span class="column-main-ttl">企業の年収情報をいち早く確認できる</span><span class="more sprite">MORE</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/articles/-/44494" class="link-box">
-                    <span class="column-ttl">今一番転職すべき企業を速報でお届け</span><br /><span class="column-main-ttl">Coming Soon</span><span class="more sprite">MORE</span>
+                            <a href="/finance/ranking/pl" class="link-box">
+                                <span class="column-ttl">各企業のP/L,BS,CFを速報でお届け</span><br /><span class="column-main-ttl">企業の財務状況を把握。財務ランキングも！</span><span class="more sprite">MORE</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/articles/-/44494" class="link-box">
-                    <span class="column-ttl">今一番転職すべき企業を速報でお届け</span><br /><span class="column-main-ttl">Coming Soon</span><span class="more sprite">MORE</span>
+                            <a href="javascript:void;" class="link-box">
+                                <span class="column-ttl">財務数値でのスクリーニングを提供</span><br /><span class="column-main-ttl">Coming Soon</span><span class="more sprite">MORE</span>
                             </a>
                         </li>
                     </ul>
@@ -95,13 +95,10 @@ contents
                 <div class="box_adx pcdisp">
                     <img src="/images/ad_example1.gif" alt="" />
                 </div>
-                <div class="box_adx spdisp">
-                    <img src="/images/ad_example_sp1.jpg" alt="" />
-                </div>
             </div>
         </div>
         <span class="cf" />
-        <?php $this->load->view('common/ads/adsense_bottom'); ?>
+        <?php $this->load->view('layout/common/ads/adsense_bottom'); ?>
     </div>
 </div>
 

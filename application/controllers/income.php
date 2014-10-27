@@ -51,8 +51,12 @@ var $values = array();
      */
     function category($category_id, $year = null, $order = null, $page = 1)
     {
+        $category_id = intval($category_id);
+        if(!isset($this->data['categories'][$category_id])) show_404();
         $data['bodyId'] = 'ind';
-        $data['category_id'] = intval($category_id);
+        $data['category_id'] = $category_id;
+        $data['page_name'] = 'category';
+        $data['object_id'] = $category_id;
         
         if(is_null($year) && is_null($order)){
             $order = "disclosure";
@@ -79,6 +83,46 @@ var $values = array();
 
         //set header title
         $data['page_title'] = $category_id != 1 ? $data['year'].'年 '.$this->data['income_categories'][$category_id]->col_name.'業界の企業年収' : $data['year'].'年の企業年収';
+        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
+        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
+        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
+        
+        $this->load->view('income/category', array_merge($this->data,$data));
+    }
+
+    /**
+     * search market action
+     *
+     */
+    function market($market_id, $year = null, $order = null, $page = 1)
+    {
+        $market_id = intval($market_id);
+        if(!isset($this->data['markets'][$market_id])) show_404();
+        $data['bodyId'] = 'ind';
+        $data['market_id'] = $market_id;
+        $data['page_name'] = 'market';
+        $data['object_id'] = $data['market_id'];
+        
+        if(is_null($year) && is_null($order)){
+            $order = "disclosure";
+            $orderExpression = "col_disclosure DESC";//公開日
+        }else{
+            list($order,$orderExpression) = $this->_set_order($order);
+        }
+        $data['year'] = is_null($year) ? date("Y",time()) : intval($year);
+        $cdatas =$this->Tenmono_model->getCdataByMarketIdOrderDisclosure($market_id,$data['year'],$orderExpression,$page);
+        
+        $data['cdatas'] = $cdatas['data'];
+        $data['page'] = $page;
+        $data['order'] = $order;
+        $data['pageFormat'] = "income/market/{$market_id}/{$data['year']}/{$order}/%d";
+        $data['rowCount'] = intval($this->config->item('paging_row_count'));
+        $data['columnCount'] = intval($this->config->item('paging_column_count'));
+        $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
+        $data['maxPageCount'] = (int) ceil(intval($cdatas['count']) / intval($this->config->item('paging_count_per_page')));
+
+        //set header title
+        $data['page_title'] = $market_id != 1 ? $data['year'].'年 '.$this->data['markets'][$market_id]->name.'の企業年収' : $data['year'].'年の企業年収';
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
