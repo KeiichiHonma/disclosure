@@ -13,9 +13,9 @@ header
         <div id="breadcrumbInner" class="cf">
             <span><a href="/"><?php echo $this->lang->line('common_title_home'); ?></a></span>
             <span><a href="/income/"><?php echo $this->lang->line('common_title_income'); ?></a></span>
-            <span><a href="/finance/ranking/pl/2009"><?php echo $this->lang->line('common_title_pl'); ?></a></span>
-            <span><a href="/finance/ranking/bs/2009"><?php echo $this->lang->line('common_title_bs'); ?></a></span>
-            <span><a href="/finance/ranking/cf/2009"><?php echo $this->lang->line('common_title_cf'); ?></a></span>
+            <span><a href="/finance/category/1/pl"><?php echo $this->lang->line('common_title_pl'); ?></a></span>
+            <span><a href="/finance/category/1/bs"><?php echo $this->lang->line('common_title_bs'); ?></a></span>
+            <span><a href="/finance/category/1/cf"><?php echo $this->lang->line('common_title_cf'); ?></a></span>
             <span><a href="/site/issues"><?php echo $this->lang->line('common_title_issues'); ?></a></span>
             
     <?php if(!isset($isIndex)) : ?>

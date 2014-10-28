@@ -9,6 +9,7 @@ class Site extends MY_Controller
         $this->load->helper(array('form', 'url'));
         $this->load->helper('image');
         $this->lang->load('setting');
+        $this->load->config('tank_auth', TRUE);
         $this->load->database();
         $this->load->model('Category_model');
         $this->load->model('Market_model');
@@ -20,6 +21,32 @@ class Site extends MY_Controller
         $this->data['markets'] = $this->Market_model->getAllMarkets();
     }
 
+    function contact()
+    {
+        if(strcasecmp($_SERVER['REQUEST_METHOD'],'POST') === 0){
+            $contactData['contact'] = $this->input->post('contact');
+            if($contactData['contact'] != ''){
+                $this->_send_email('contact', $contactData);
+                $this->session->set_flashdata('notify', $this->lang->line('contact_message'));
+            }
+        }
+        redirect($_SERVER['HTTP_REFERER']);
+    }
+
+    /**
+     * ad page
+     *
+     */
+    function ad()
+    {
+        $data['bodyId'] = 'area';
+        //set header title
+        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $this->lang->line('common_title_ad'));
+        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $this->lang->line('common_title_ad'));
+        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $this->lang->line('common_title_ad'));
+
+        $this->load->view('site/ad', array_merge($this->data,$data));
+    }
 
     /**
      * about page
@@ -79,6 +106,22 @@ class Site extends MY_Controller
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), '404 error', $this->lang->line('header_website_name'));
         $this->output->set_status_header('404');
         $this->load->view('site/error_404', array_merge($this->data,$data));
+    }
+    function _send_email($type, &$data)
+    {
+        $data['site_name'] = $this->config->item('website_name', 'tank_auth');
+        $config = array(
+            'charset' => 'utf-8',
+            'mailtype' => 'text'
+        );
+        $this->load->library('email',$config);
+        $this->load->library('email');
+        $this->email->from($this->config->item('webmaster_email', 'tank_auth'), $this->config->item('website_name', 'tank_auth'));
+        $this->email->reply_to($this->config->item('webmaster_email', 'tank_auth'), $this->config->item('website_name', 'tank_auth'));
+        $this->email->to($this->config->item('webmaster_email', 'tank_auth'));
+        $this->email->subject('opendataご意見');
+        $this->email->message($this->load->view('email/'.$type.'-txt', $data, TRUE));
+        $this->email->send();
     }
 }
 

@@ -23,7 +23,9 @@ footer
 
             <div class="about">
                 <ul>
-                    <li><?php echo force_anchor('site/company',  $this->lang->line('common_title_company')); ?></li>
+                    <li><a href="http://gramer.co.jp/" target="_blank"><?php echo $this->lang->line('common_title_company'); ?></a></li>
+                    <li><?php echo force_anchor('site/ad',  $this->lang->line('common_title_ad'),FALSE); ?></li>
+                    <li><?php echo force_anchor('site/asp',  $this->lang->line('common_title_asp'),FALSE); ?></li>
                     <li class="last"><?php echo force_anchor('site/contact',  $this->lang->line('common_title_contact'),TRUE); ?></li>
                 </ul>
             </div>
@@ -36,6 +38,12 @@ footer
                     <li><a href="/finance/ranking/cf/2009"><?php echo $this->lang->line('common_title_cf'); ?></a></li>
                     <li><a href="/site/issues"><?php echo $this->lang->line('common_title_issues'); ?></a></li>
                   </ul>
+            </div>
+            <div class="sec ft_contact">
+                <?php echo form_open('site/contact'); ?>
+                    <textarea class="textarea" name="contact" id="contact"></textarea>
+                    <p><input name="ft_send" id="ft_send" type="submit" value="意見を送る" /></p>
+                <?php echo form_close(); ?>
             </div>
 
             <div class="boxRight"><span class="copy">copyrights &#169 Gramer</span></div>

@@ -26,6 +26,7 @@ class Finance extends MY_Controller
      * ranking action
      *
      */
+/*
     function ranking($type='bs', $year = null, $order = null, $page = 1)
     {
         if(!in_array($type,$this->types)) show_404();
@@ -62,34 +63,38 @@ class Finance extends MY_Controller
 
         $this->load->view('finance/ranking', array_merge($this->data,$data));
     }
-
+*/
     /**
-     * ranking action
+     * category action
      *
      */
     function category($category_id,$type='bs', $year = null, $order = "date", $page = 1)
     {
         if(!in_array($type,$this->types)) show_404();
         $data['bodyId'] = 'ind';
+        $data['category_id'] = $category_id;
+        $data['page_name'] = 'category';
+        $data['object_id'] = $category_id;
+        
         $page = intval($page);
-        if ($order == "date") {
+        if(is_null($year) && is_null($order)){
             $order = "date";
             $orderExpression = "date DESC";//作成新しい
-        } else if ($order == "modifiedRev") {
-            $orderExpression = "modified ASC";
-        } else if ($order == "created") {
-            $orderExpression = "created DESC";
-        } else if ($order == "createdRev") {
-            $orderExpression = "created ASC";
-        } else {
-            $order = "modified";
-            $orderExpression = "date DESC";//作成新しい
+        }else{
+            list($order,$orderExpression) = $this->_set_order($type,$order);
         }
         
         $data['category_id'] = $category_id;
         $data['type'] = $type;
-        $data['year'] = $year;
-        $financesResult = $this->Finance_model->getFinancesOrderByCategoryId($category_id,$data['year'], $orderExpression, $page);
+        $now_year = date("Y",time());
+        $data['year'] = is_null($year) ? $now_year : intval($year);
+        $data['year'] = 2009;
+        if($category_id == 1){
+            $financesResult = $this->Finance_model->getFinancesOrder($data['year'], $orderExpression, $page);
+        }else{
+            $financesResult = $this->Finance_model->getFinancesOrderByCategoryId($category_id,$data['year'], $orderExpression, $page);
+        }
+        
 
         $data['finances'] = $financesResult['data'];
 
@@ -103,12 +108,12 @@ class Finance extends MY_Controller
         $data['orderSelects'] = $this->lang->line('order_select');
 
         //set header title
-        $data['page_title'] = $this->data['categories'][$category_id]->name.' - '.$data['year'].'年'.$this->lang->line('common_title_'.$type);
+        $data['page_title'] = ( $category_id == 1 ? '' : $this->data['categories'][$category_id]->name.' - ' ).$data['year'].'年'.$this->lang->line('common_title_'.$type);
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
 
-        $this->load->view('finance/ranking', array_merge($this->data,$data));
+        $this->load->view('finance/list', array_merge($this->data,$data));
     }
 
     /**
@@ -119,27 +124,26 @@ class Finance extends MY_Controller
     {
         if(!in_array($type,$this->types)) show_404();
         $data['bodyId'] = 'ind';
+        $data['market_id'] = $market_id;
+        $data['page_name'] = 'market';
+        $data['object_id'] = $market_id;
+        
         $page = intval($page);
-        if ($order == "date") {
+        if(is_null($year) && is_null($order)){
             $order = "date";
             $orderExpression = "date DESC";//作成新しい
-        } else if ($order == "modifiedRev") {
-            $orderExpression = "modified ASC";
-        } else if ($order == "created") {
-            $orderExpression = "created DESC";
-        } else if ($order == "createdRev") {
-            $orderExpression = "created ASC";
-        } else {
-            $order = "modified";
-            $orderExpression = "date DESC";//作成新しい
+        }else{
+            list($order,$orderExpression) = $this->_set_order($type,$order);
         }
+        
         $data['market_id'] = $market_id;
         $data['type'] = $type;
-        $data['year'] = $year;
+        $now_year = date("Y",time());
+        $data['year'] = is_null($year) ? $now_year : intval($year);
+        $data['year'] = 2009;
         $financesResult = $this->Finance_model->getFinancesOrderByMarketId($market_id,$data['year'], $orderExpression, $page);
 
         $data['finances'] = $financesResult['data'];
-
         $data['page'] = $page;
         $data['order'] = $order;
         $data['pageFormat'] = "finance/market/{$market_id}/{$type}/{$year}/{$order}/%d";
@@ -155,7 +159,7 @@ class Finance extends MY_Controller
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
 
-        $this->load->view('finance/ranking', array_merge($this->data,$data));
+        $this->load->view('finance/list', array_merge($this->data,$data));
     }
 
     function show($presenter_name_key = '',$type='top')

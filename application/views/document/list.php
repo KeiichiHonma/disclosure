@@ -11,15 +11,7 @@ contents
         <h1 class="l1"><?php echo $page_title; ?></h1>
         <div id="document">
             <?php if(!empty($documents)): ?>
-            <div class="sort pager pt20">
-                <ul class="clearfix">
-                    <?php $now_year = date("Y",time()); ?>
-                    <?php for ($i=$now_year;$i>=2009;$i--): ?>
-                    <?php $year_string = $i == $now_year ? '' : '/'.$i; ?>
-                    <li><?php echo anchor('document/'.$page_name.'/'.$object_id.$year_string, $i.'年',($year == $i ? 'class="active"' : '')); ?></li>
-                    <?php endfor; ?>
-                </ul>
-            </div>
+            <?php $this->load->view('layout/common/select_year'); ?>
             <?php $this->load->view('layout/common/pager'); ?>
             <table>
                 <tr>
@@ -49,11 +41,11 @@ contents
             <?php $this->load->view('layout/common/ads/adsense_side'); ?>
             <div id="side_cat">
                 <?php if(isset($market_id)): ?>
-                <?php $this->load->view('layout/common/document_markets'); ?>
-                <?php $this->load->view('layout/common/document_categories'); ?>
+                    <?php $this->load->view('layout/common/document_markets'); ?>
+                    <?php $this->load->view('layout/common/document_categories'); ?>
                 <?php else: ?>
-                <?php $this->load->view('layout/common/document_categories'); ?>
-                <?php $this->load->view('layout/common/document_markets'); ?>
+                    <?php $this->load->view('layout/common/document_categories'); ?>
+                    <?php $this->load->view('layout/common/document_markets'); ?>
                 <?php endif; ?>
             </div><!-- /side_cat -->
             <?php $this->load->view('layout/common/ads/adsense_side'); ?>

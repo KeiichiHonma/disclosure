@@ -70,6 +70,7 @@ contents
             <?php $this->load->view('layout/common/ads/adsense_side'); ?>
             <div class="side_list">
                 <?php $this->load->view('layout/common/document_categories'); ?>
+                <?php $this->load->view('layout/common/document_markets'); ?>
             </div>
             <?php $this->load->view('layout/common/ads/adsense_side'); ?>
         </div>

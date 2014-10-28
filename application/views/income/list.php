@@ -17,6 +17,7 @@ contents
         
         <div id="document">
             <?php if(!empty($cdatas)): ?>
+                <?php if(!isset($is_index)) $this->load->view('layout/common/select_year'); ?>
                 <?php if(!isset($is_index)) $this->load->view('layout/common/pager'); ?>
                 <table class="finance">
                     <tr>
@@ -77,7 +78,14 @@ contents
         <div id="sidebar">
             <?php $this->load->view('layout/common/ads/adsense_side'); ?>
             <div id="side_cat">
-                <?php $this->load->view('layout/common/income_category'); ?>
+                <?php if(isset($market_id)): ?>
+                    <?php $this->load->view('layout/common/income_markets'); ?>
+                    <?php $this->load->view('layout/common/income_category'); ?>
+                <?php else: ?>
+                    <?php $this->load->view('layout/common/income_category'); ?>
+                    <?php $this->load->view('layout/common/income_markets'); ?>
+                <?php endif; ?>
+                
             </div><!-- /side_cat -->
             <?php $this->load->view('layout/common/ads/adsense_side'); ?>
         </div>

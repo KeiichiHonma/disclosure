@@ -91,7 +91,7 @@ font-weight:bold;
 }
 .pager li a.active {
     background:url(../images/tbt_m_b.jpg) 0 0 no-repeat;
-    border:1px solid #0D72BD;
+    /*border:1px solid #0D72BD;*/
     line-height:30px;
     height:30px;
     text-align:center;
@@ -139,7 +139,7 @@ font-weight:bold;
 }
 .sort li a.active {
     background:url(../images/tbt_m_b.jpg) 0 0 no-repeat;
-    border:1px solid #cc6626;
+    /*border:1px solid #cc6626;*/
     line-height:24px;
     height:24px;
     text-align:center;
@@ -531,6 +531,54 @@ table.menuBox td a:hover {
   width: 110px;
 }
 
+#footer .ft_contact {
+  width: 360px;
+  height: 150px;
+  float: right;
+}
+#footer .ft_contact p.ft {
+  text-align: center;
+  font-size: 11px;
+  margin-bottom: 0;
+  margin-top: -4px;
+  line-height: 130%;
+}
+#footer .ft_contact_posted {
+  border: solid 1px #ddd;
+  padding: 12px 0;
+  height: auto;
+}
+#footer .ft_contact_posted p {
+  padding: 0 18px;
+}
+#footer .ft_contact p.ft_posted {
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 130%;
+}
+#footer .ft_contact textarea {
+  border: solid 1px #ddd;
+  width: 94%;
+  height: 88px;
+  padding: 10px;
+  font-size: 14px;
+  vertical-align:bottom;
+  margin-bottom: 5px;
+}
+#footer .ft_contact input {
+  background: #eee;
+  border: 1px solid #ddd;
+  padding: 8px 0 6px;
+  width: 100%;
+  color: #666;
+  font-weight: bold;
+}
+#footer .ft_contact input:hover {
+  background: #ddd;
+  color: #999;
+  cursor:pointer;
+  text-decoration: none;
+}
 
 .scf {
     margin:0 auto;

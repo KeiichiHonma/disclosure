@@ -171,7 +171,12 @@ contents
 
         </div>
         <div id="sidebar">
-            <?php $this->load->view('layout/common/income_side'); ?>
+            <?php $this->load->view('layout/common/switch_side'); ?>
+            <div class="side_list">
+                <?php $this->load->view('layout/common/income_categories'); ?>
+                <?php $this->load->view('layout/common/income_markets'); ?>
+            </div>
+            <?php $this->load->view('layout/common/ads/adsense_side'); ?>
         </div>
         <span class="cf" />
         <?php $this->load->view('layout/common/ads/adsense_bottom'); ?>

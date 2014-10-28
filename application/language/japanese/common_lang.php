@@ -41,11 +41,15 @@ $lang['finance_title_net_cash_provided_by_used_in_financing_activities'] = '財�
 $lang['finance_title_net_increase_decrease_in_cash_and_cash_equivalents'] = 'キャッシュ・フロー';
 
 
-$lang['common_title_company'] = '運営会社';
-$lang['common_title_contact'] = 'お問い合わせ';
 //footer
+$lang['common_title_company'] = '運営会社';
+$lang['common_title_ad'] = '広告掲載について';
+$lang['common_title_asp'] = 'データ提供ASP';
+
+$lang['common_title_contact'] = 'お問い合わせ';
 $lang['footer_info_check'] = '最新情報をチェック';
 $lang['footer_about'] = 'オープンデータ.companyについてのページ';
+$lang['contact_message'] = 'ご意見ありがとうございました。';
 
 //パンくず
 $lang['topicpath_home'] = 'HOME';

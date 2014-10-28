@@ -38,17 +38,17 @@ contents
                     <div class="top-news1-list">
                     <ul>
                         <li>
-                            <a href="/articles/-/44758" class="link-box">
+                            <a href="/document/category/1" class="link-box">
                                 <span class="column-ttl">有価証券報告書を速報でお届け</span><br /><span class="column-main-ttl">エクセルフォーマットでダウンロード！</span><span class="more sprite">MORE</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/income/" class="link-box">
+                            <a href="/income/category/1" class="link-box">
                                 <span class="column-ttl">年収情報を速報でお届け</span><br /><span class="column-main-ttl">企業の年収情報をいち早く確認できる</span><span class="more sprite">MORE</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/finance/ranking/pl" class="link-box">
+                            <a href="/finance/category/1/pl" class="link-box">
                                 <span class="column-ttl">各企業のP/L,BS,CFを速報でお届け</span><br /><span class="column-main-ttl">企業の財務状況を把握。財務ランキングも！</span><span class="more sprite">MORE</span>
                             </a>
                         </li>

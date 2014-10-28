@@ -42,7 +42,7 @@ var $values = array();
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
         
-        $this->load->view('income/category', array_merge($this->data,$data));
+        $this->load->view('income/list', array_merge($this->data,$data));
     }
 
     /**
@@ -87,7 +87,7 @@ var $values = array();
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
         
-        $this->load->view('income/category', array_merge($this->data,$data));
+        $this->load->view('income/list', array_merge($this->data,$data));
     }
 
     /**
@@ -127,7 +127,7 @@ var $values = array();
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
         
-        $this->load->view('income/category', array_merge($this->data,$data));
+        $this->load->view('income/list', array_merge($this->data,$data));
     }
 
     function show($presenter_name_key = '')

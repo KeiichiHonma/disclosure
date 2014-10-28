@@ -123,7 +123,8 @@ contents
             <?php $this->load->view('layout/common/switch_side'); ?>
             <?php $this->load->view('layout/common/ads/adsense_side'); ?>
             <div class="side_list">
-                <?php $this->load->view('layout/common/finance_category'); ?>
+                <?php $this->load->view('layout/common/finance_categories'); ?>
+                <?php $this->load->view('layout/common/finance_markets'); ?>
             </div>
             <?php $this->load->view('layout/common/ads/adsense_side'); ?>
         </div>

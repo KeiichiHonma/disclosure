@@ -117,3 +117,16 @@ function s_confirm () {
 
 </head>
 <body id="<?php echo $bodyId; ?>">
+<?php if($notify = $this->session->flashdata('notify')): ?>
+<script type="text/javascript">
+$(function() {
+    $.notifyBar({
+        html: "<?php echo $notify; ?>",
+        cssClass: "success",
+        opacity:0.9,
+        delay:4000,
+        animationSpeed:400
+    });
+});
+</script>
+<?php endif; ?>

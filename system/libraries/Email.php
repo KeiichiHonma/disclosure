@@ -142,7 +142,16 @@ class CI_Email {
 
 	   // store in table $this->_recipients, $this->_subject, $this->_finalbody, $this->_header_str
 	  }
-	
+
+	public function add_custom_base64_header($header,$content)
+	  {
+		$this->_set_header($header,'=?iso-2022-jp?B?'.base64_encode($content).'?=');
+
+		return $this;
+
+	   // store in table $this->_recipients, $this->_subject, $this->_finalbody, $this->_header_str
+	  }
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -996,7 +1005,8 @@ class CI_Email {
 
 			if ($val != "")
 			{
-				$this->_header_str .= $key.": ".$val.$this->newline;
+                $this->_header_str .= $key.": ".$val.$this->newline;
+				
 			}
 		}
 
@@ -1383,7 +1393,6 @@ class CI_Email {
 		}
 
 		$this->_build_message();
-
 		if ( ! $this->_spool_email())
 		{
 			return FALSE;
@@ -1494,9 +1503,9 @@ class CI_Email {
 	private function _spool_email()
 	{
 		$this->_unwrap_specials();
-
 		switch ($this->_get_protocol())
 		{
+
 			case 'mail'	:
 
 					if ( ! $this->_send_with_mail())
@@ -1523,7 +1532,6 @@ class CI_Email {
 			break;
 
 		}
-
 		$this->_set_error_message('email_sent', $this->_get_protocol());
 		return TRUE;
 	}
@@ -1660,7 +1668,7 @@ class CI_Email {
 
 		$reply = $this->_get_smtp_data();
 
-		$this->_set_error_message($reply);
+		//$this->_set_error_message($reply);
 
 		if (strncmp($reply, '250', 3) != 0)
 		{
@@ -1695,7 +1703,8 @@ class CI_Email {
 			return FALSE;
 		}
 
-		$this->_set_error_message($this->_get_smtp_data());
+		//$this->_set_error_message($this->_get_smtp_data());
+        $this->_get_smtp_data();
 		return $this->_send_command('hello');
 	}
 

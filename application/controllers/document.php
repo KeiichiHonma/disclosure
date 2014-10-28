@@ -43,7 +43,7 @@ var $values = array();
         
         if(!isset($this->data['categories'][$category_id])) show_404();
         
-        //$data['year'] = is_null($year) ? date("Y",time()) : intval($year);
+        $data['year'] = is_null($year) ? date("Y",time()) : intval($year);
         $data['year'] = 2009;
         if($category_id == 1){
             $documents =$this->Document_model->getDocumentsOrder($data['year'], $orderExpression,$page);
@@ -64,7 +64,7 @@ var $values = array();
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
-        $this->load->view('document/category', array_merge($this->data,$data));
+        $this->load->view('document/list', array_merge($this->data,$data));
     }
 
     /**
@@ -74,7 +74,10 @@ var $values = array();
     function market($market_id, $year = null, $page = 1)
     {
         $data['bodyId'] = 'ind';
-        //$data['new_categories'] = $this->Document_model->getDocumentsCategoryByDateGroupByCategory(date("Y-m-d H:i:s",strtotime("-7 day")));
+        $data['market_id'] = $market_id;
+        $data['page_name'] = 'market';
+        $data['object_id'] = $data['market_id'];
+
         $order = "date";
         $orderExpression = "date DESC";//作成新しい
         $market_id = intval($market_id);
@@ -97,7 +100,7 @@ var $values = array();
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
-        $this->load->view('document/category', array_merge($this->data,$data));
+        $this->load->view('document/list', array_merge($this->data,$data));
     }
 
     function show($document_id,$target_html_number = 0)//1から

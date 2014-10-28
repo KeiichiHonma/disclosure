@@ -7,7 +7,7 @@
 | These details are used in emails sent by authentication library.
 |--------------------------------------------------------------------------
 */
-$config['website_name'] = 'Gramer';
+$config['website_name'] = 'Open DATA';
 $config['info_email'] = 'keiichi-honma@gramer.co.jp';
 $config['webmaster_email'] = ENVIRONMENT == 'development' ? 'honma@zeus.corp.813.co.jp' : 'keiichi-honma@gramer.co.jp';
 

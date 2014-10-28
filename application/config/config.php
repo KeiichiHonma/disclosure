@@ -395,11 +395,13 @@ $config['stylesheets'][] = 'css/jquery-ui-1.10.3.custom.css';
 $config['stylesheets'][] = 'css/main.css';
 $config['stylesheets'][] = 'css/side.css';
 $config['stylesheets'][] = ENVIRONMENT == 'localhost' ? 'http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css' : 'css/font-awesome.min.css';
+$config['stylesheets'][] = 'css/jquery.notifyBar.css';
 
 $config['javascripts'][] = 'js/jquery-1.8.3.js';//slideでも使用
 $config['javascripts'][] = 'js/jquery.sidr.min.js';//scroll
 $config['javascripts'][] = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js';//scroll
 $config['javascripts'][] = 'js/scrolltop.js';//scroll
+$config['javascripts'][] = 'js/jquery.notifyBar.js';
 
 /*
 |--------------------------------------------------------------------------
