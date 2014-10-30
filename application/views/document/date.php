@@ -24,7 +24,7 @@ contents
 //////////////////////////////////////////////////////////////////////////////
 -->
 <div id="contents">
-    <div id ="contentsInner">
+    <div id ="contentsInner"><?php $this->load->view('layout/common/topicpath'); ?>
         <div id="document_navi">
             <?php $this->load->view('layout/common/date_navi'); ?>
             <h3 class="center_dot"><span><?php echo strftime($this->lang->line('setting_date_format'), strtotime($date)); ?>の開示情報</span></h3>
@@ -51,7 +51,7 @@ contents
                     <?php else: ?>
                         <?php echo anchor($document->format_path.'.csv','<img src="/images/icon/csv_30.png" alt="csv" />'); ?>
                     <?php endif; ?>
-                    <?php echo anchor($document->format_path.'.xlsx','<img src="/images/icon/excel_30.png" alt="csv" />'); ?>
+                    <?php echo anchor($document->format_path.'.xlsx','<img src="/images/icon/excel_30.png" alt="xlsx" />'); ?>
                     </td>
                 </tr>
                 <?php $i++; ?>

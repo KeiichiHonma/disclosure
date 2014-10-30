@@ -7,7 +7,7 @@ class Tools extends CI_Controller {
     var $VAL = "_value";
     var $log_echo = FALSE;
     var $is_parse = TRUE;
-    var $is_tenmono = TRUE;
+    var $is_tenmono = FALSE;
     var $is_tenmono_cdata_all = FALSE;
     var $xbrls_informations;
     var $xbrl_files;
@@ -451,7 +451,7 @@ class Tools extends CI_Controller {
                 if(!in_array($xbrl_dir_id,$analyze_list[$unzip_dir_name]) ) continue;
                 $xbrl_paths_count = count($xbrl_paths);
                 $xbrl_path_loop_number = 0;
-                $excel_map = array();
+                //$excel_map = array();
                 $xbrl_path_arr = array();
                 foreach ($xbrl_paths as $xbrl_number => $xbrl_path){//xbrlが複数ある場合があります
                     //文書提出日時
@@ -536,14 +536,17 @@ class Tools extends CI_Controller {
                     
                     $xbrl_path_arr[] = $xbrl_path;//複数の可能性あり
                     
+                    //excel csvを都度書き出しに変更したため、必要なくなった
+
                     if($this->is_parse){
                         $xbrl_datas = $this->xbrl_lib->_parseXml($xbrl_path);
                         $csv_datas[$xbrl_count] = $this->xbrl_lib->_makeCsvSqlData($xbrl_datas,$xbrl_path,$insert_data['document_data'][$xbrl_dir_id][$xbrl_number],$edinet_code,$tenmono_datas);
-                        $csv_paths[$xbrl_count] = $xbrl_number > 0 ? $format_path.'_'.$xbrl_number.'.csv' : $format_path.'.csv';
-                        $excel_map[$xbrl_count]  = $xbrl_path_loop_number;
-                        $excel_sheet_name[$xbrl_dir_id][$xbrl_path_loop_number] = end($new_format_arr).'_'.$xbrl_path_loop_number;
+                        //$csv_paths[$xbrl_count] = $xbrl_number > 0 ? $format_path.'_'.$xbrl_number.'.csv' : $format_path.'.csv';
+                        //$excel_map[$xbrl_count]  = $xbrl_path_loop_number;
+                        //$excel_sheet_name[$xbrl_dir_id][$xbrl_path_loop_number] = end($new_format_arr).'_'.$xbrl_path_loop_number;
                         $xbrl_count++;
                     }
+
                     $xbrl_path_loop_number++;
                 }
 
@@ -635,6 +638,7 @@ class Tools extends CI_Controller {
                     //return $coupon_id;
                 }
             }
+            unset($this->xbrls_informations[$unzip_dir_name]);//memory unset
         }
         if($this->is_parse){
             //csv書き出し
@@ -734,8 +738,7 @@ class Tools extends CI_Controller {
                         $tenmono_datas['cdatas'][$edinet_code]['col_pace'] = round($tenmono_datas['cdatas'][$edinet_code]['col_income'] / $tenmono_datas['cdatas'][$edinet_code]['col_age'],1);
                         $tenmono_datas['cdatas'][$edinet_code]['col_income_trend'] = $trend;
                         $tenmono_datas['cdatas'][$edinet_code]['col_income_lifetime'] = $this->_getIncomeLifetime($tenmono_datas['cdatas'][$edinet_code]['col_income'],$tenmono_datas['cdatas'][$edinet_code]['col_age']);
-var_dump($tenmono_datas);
-die();
+
                         if(!empty($cdata)){
                             $this->db->where('col_code', $code);
                             $this->db->update('tab_job_cdata', $tenmono_datas['cdatas'][$edinet_code]);

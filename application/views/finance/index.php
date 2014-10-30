@@ -8,14 +8,15 @@ contents
 -->
 <div id="contents">
     <div id ="contentsInner"><?php $this->load->view('layout/common/topicpath'); ?>
-
         <div id="document_navi">
             <h3 class="center_dot"><span><?php echo $page_title; ?></span></h3>
         </div>
-
-        <div id="document" class="pt10">
-            <?php $this->load->view('layout/common/select_year'); ?>
-            <?php $this->load->view('layout/common/pager'); ?>
+        <ul class="tabrow">
+            <li<?php if($finance_tab_current == 'pl'): ?> class="selected"<?php endif; ?>><?php echo anchor('finance/', $this->lang->line('common_title_finance').' - '.$this->lang->line('common_title_finance_pl')); ?></li>
+            <li<?php if($finance_tab_current == 'bs'): ?> class="selected"<?php endif; ?>><?php echo anchor('finance/index/bs', $this->lang->line('common_title_finance').' - '.$this->lang->line('common_title_finance_bs')); ?></li>
+            <li<?php if($finance_tab_current == 'cf'): ?> class="selected"<?php endif; ?>><?php echo anchor('finance/index/cf', $this->lang->line('common_title_finance').' - '.$this->lang->line('common_title_finance_cf')); ?></li>
+        </ul>
+        <div id="document">
             <table class="finance">
                 <tr>
                     <?php $this->load->view('layout/common/finance_list_header'); ?>
@@ -58,7 +59,6 @@ contents
                 <?php $i++; ?>
                 <?php endforeach; ?>
             </table>
-            <?php $this->load->view('layout/common/pager'); ?>
         </div>
         <div id="sidebar">
             <?php $this->load->view('layout/common/ads/adsense_side'); ?>

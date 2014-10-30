@@ -393,7 +393,6 @@ $config['stylesheets'][] = 'css/master.css';
 $config['stylesheets'][] = 'css/jquery.sidr.dark.css';
 $config['stylesheets'][] = 'css/jquery-ui-1.10.3.custom.css';
 $config['stylesheets'][] = 'css/main.css';
-$config['stylesheets'][] = 'css/side.css';
 $config['stylesheets'][] = ENVIRONMENT == 'localhost' ? 'http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css' : 'css/font-awesome.min.css';
 $config['stylesheets'][] = 'css/jquery.notifyBar.css';
 

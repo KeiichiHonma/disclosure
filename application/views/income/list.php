@@ -7,15 +7,15 @@ contents
 //////////////////////////////////////////////////////////////////////////////
 -->
 <div id="contents">
-    <div id ="contentsInner">
+    <div id ="contentsInner"><?php $this->load->view('layout/common/topicpath'); ?>
         <?php if(isset($is_index)): ?>
-        <div id="document_navi"><h3 class="center_dot"><span>企業年収速報</span></h3></div>
+        <div id="document_navi"><h3 class="center_dot"><span><?php echo $page_title; ?></span></h3></div>
         <?php else: ?>
         <h3 class="l1"><?php echo $page_title; ?></h3>
         <?php endif; ?>
         
         
-        <div id="document">
+        <div id="document"<?php if(!isset($is_index)) echo ' class="pt10"'; ?>>
             <?php if(!empty($cdatas)): ?>
                 <?php if(!isset($is_index)) $this->load->view('layout/common/select_year'); ?>
                 <?php if(!isset($is_index)) $this->load->view('layout/common/pager'); ?>
@@ -25,7 +25,7 @@ contents
                         <?php if(isset($is_index)): ?>
                         提出日
                         <?php else: ?>
-                        <?php echo anchor('income/'.$page_name.'/'.$object_id.'/'.$year.'/'.($order == 'disclosure' ? 'disclosureRev' : 'disclosure').'/'.$page,'提出日'.($order == 'disclosure' ? '<i class="fa fa-long-arrow-up"></i>' : ($order == 'disclosureRev' ? '<i class="fa fa-long-arrow-down"></i>' : ''))); ?>
+                        <?php echo anchor('income/'.$function_name.'/'.$object_id.'/'.$year.'/'.($order == 'disclosure' ? 'disclosureRev' : 'disclosure').'/'.$page,'提出日'.($order == 'disclosure' ? '<i class="fa fa-long-arrow-up"></i>' : ($order == 'disclosureRev' ? '<i class="fa fa-long-arrow-down"></i>' : ''))); ?>
                         <?php endif; ?>
                         </th>
                         <th class="code">証券<br />コード</th>
@@ -34,7 +34,7 @@ contents
                         <?php if(isset($is_index)): ?>
                         年収
                         <?php else: ?>
-                        <?php echo anchor('income/'.$page_name.'/'.$object_id.'/'.$year.'/'.($order == 'income' ? 'incomeRev' : 'income').'/'.$page,'年収'.($order == 'income' ? '<i class="fa fa-long-arrow-up"></i>' : ($order == 'incomeRev' ? '<i class="fa fa-long-arrow-down"></i>' : ''))); ?>
+                        <?php echo anchor('income/'.$function_name.'/'.$object_id.'/'.$year.'/'.($order == 'income' ? 'incomeRev' : 'income').'/'.$page,'年収'.($order == 'income' ? '<i class="fa fa-long-arrow-up"></i>' : ($order == 'incomeRev' ? '<i class="fa fa-long-arrow-down"></i>' : ''))); ?>
                         <?php endif; ?>
                         </th>
                         <th class="trend">前年比</th>
@@ -80,9 +80,9 @@ contents
             <div id="side_cat">
                 <?php if(isset($market_id)): ?>
                     <?php $this->load->view('layout/common/income_markets'); ?>
-                    <?php $this->load->view('layout/common/income_category'); ?>
+                    <?php $this->load->view('layout/common/income_categories'); ?>
                 <?php else: ?>
-                    <?php $this->load->view('layout/common/income_category'); ?>
+                    <?php $this->load->view('layout/common/income_categories'); ?>
                     <?php $this->load->view('layout/common/income_markets'); ?>
                 <?php endif; ?>
                 

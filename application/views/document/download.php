@@ -7,8 +7,8 @@ contents
 //////////////////////////////////////////////////////////////////////////////
 -->
 <div id="contents">
-    <div id ="contentsInner">
-        <h1 class="l1"><?php echo $document->presenter_name.' : '.strftime($this->lang->line('setting_date_format'), strtotime($document->date)).'提出 - '.$document->document_name; ?>の<?php echo $download_string; ?>ファイルダウンロード</h1>
+    <div id ="contentsInner"><?php $this->load->view('layout/common/topicpath'); ?>
+        <h3 class="l1"><?php echo $page_title; ?></h3>
         
         <?php $this->load->view('layout/common/document_tab'); ?>
         <div id="document">

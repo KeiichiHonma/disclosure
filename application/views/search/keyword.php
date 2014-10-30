@@ -7,9 +7,10 @@ contents
 //////////////////////////////////////////////////////////////////////////////
 -->
 <div id="contents">
-    <div id ="contentsInner">
-        <h1 class="l1"><?php echo $search_keywords; ?>の検索</h1>
+    <div id ="contentsInner"><?php $this->load->view('layout/common/topicpath'); ?>
+        <h3 class="l1"><?php echo $search_keywords; ?>の検索</h3>
         <div id="document">
+            <?php if(!empty($edinets)): ?>
             <table class="finance">
                 <tr>
                     <th class="code">証券<br />コード</th>
@@ -39,6 +40,17 @@ contents
                 <?php $i++; ?>
                 <?php endforeach; ?>
             </table>
+            <?php else: ?>
+            <div class="blank">
+<b><?php echo $search_keywords; ?></b>に一致する情報は見つかりませんでした。<br />
+検索のヒント:<br />
+キーワードに誤字・脱字がないか確認します。<br />
+別のキーワードを試してみます。<br />
+もっと一般的なキーワードに変えてみます。<br />
+キーワードの数を減らしてみます。<br />
+            </div>
+            <?php endif; ?>
+
         </div>
         <div id="sidebar">
             <?php $this->load->view('layout/common/ads/adsense_side'); ?>

@@ -7,8 +7,8 @@ contents
 //////////////////////////////////////////////////////////////////////////////
 -->
 <div id="contents">
-    <div id ="contentsInner">
-        <h1 class="l1"><?php echo $company->col_name; ?>のダウンロード</h1>
+    <div id ="contentsInner"><?php $this->load->view('layout/common/topicpath'); ?>
+        <h3 class="l1"><?php echo $page_title; ?></h3>
         <div id="document">
             <?php $this->load->view('layout/common/document_sns'); ?>
                 <img src="/images/ad_example1.gif" alt="ad" class="ml10"/><img src="/images/ad_example1.gif" alt="ad" class="mr10 fr" />
@@ -29,7 +29,12 @@ contents
             </div>
         </div>
         <div id="sidebar">
-            <?php $this->load->view('layout/common/income_side'); ?>
+            <?php $this->load->view('layout/common/switch_side'); ?>
+            <div class="side_list">
+                <?php $this->load->view('layout/common/income_categories'); ?>
+                <?php $this->load->view('layout/common/income_markets'); ?>
+            </div>
+            <?php $this->load->view('layout/common/ads/adsense_side'); ?>
         </div>
         <span class="cf" />
         <?php $this->load->view('layout/common/ads/adsense_bottom'); ?>

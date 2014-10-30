@@ -39,13 +39,36 @@ class Site extends MY_Controller
      */
     function ad()
     {
-        $data['bodyId'] = 'area';
+        $data['bodyId'] = 'ind';
+
+        $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
+        $data['topicpaths'][] = array('/site/ad',$this->lang->line('common_title_ad'));
+
         //set header title
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $this->lang->line('common_title_ad'));
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $this->lang->line('common_title_ad'));
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $this->lang->line('common_title_ad'));
 
         $this->load->view('site/ad', array_merge($this->data,$data));
+    }
+
+    /**
+     * asp page
+     *
+     */
+    function api()
+    {
+        $data['bodyId'] = 'ind';
+
+        $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
+        $data['topicpaths'][] = array('/site/ad',$this->lang->line('common_title_api'));
+
+        //set header title
+        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $this->lang->line('common_title_api'));
+        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $this->lang->line('common_title_api'));
+        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $this->lang->line('common_title_api'));
+
+        $this->load->view('site/api', array_merge($this->data,$data));
     }
 
     /**
@@ -87,7 +110,10 @@ class Site extends MY_Controller
         $data['columnCount'] = intval($this->config->item('paging_column_count'));
         $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
         $data['maxPageCount'] = (int) ceil(intval($edinetsResult['count']) / intval($this->config->item('paging_count_per_page')));
-        
+
+        $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
+        $data['topicpaths'][] = array('/site/ad',$this->lang->line('common_title_issues'));
+
         //set header title
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $this->lang->line('common_title_issues'), $this->lang->line('header_website_name'));
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $this->lang->line('common_title_issues'));
@@ -101,6 +127,9 @@ class Site extends MY_Controller
         $data['bodyId'] = 'ind';
         //set header title
         $data['header_title'] = sprintf('%s [%s]', $this->lang->line('common_title_404_error'), $this->lang->line('header_title'));
+
+        $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
+        $data['topicpaths'][] = array('/',$this->lang->line('common_title_404'));
 
         //set header title
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), '404 error', $this->lang->line('header_website_name'));

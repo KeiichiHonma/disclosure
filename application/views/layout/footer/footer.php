@@ -25,17 +25,19 @@ footer
                 <ul>
                     <li><a href="http://gramer.co.jp/" target="_blank"><?php echo $this->lang->line('common_title_company'); ?></a></li>
                     <li><?php echo force_anchor('site/ad',  $this->lang->line('common_title_ad'),FALSE); ?></li>
-                    <li><?php echo force_anchor('site/asp',  $this->lang->line('common_title_asp'),FALSE); ?></li>
+                    <li><?php echo force_anchor('site/api',  $this->lang->line('common_title_api'),FALSE); ?></li>
                     <li class="last"><?php echo force_anchor('site/contact',  $this->lang->line('common_title_contact'),TRUE); ?></li>
                 </ul>
             </div>
 
             <div class="sec">
                   <ul class="clearfix mb05">
+                    <li><a href="/"><?php echo $this->lang->line('common_title_home'); ?></a></li>
                     <li><a href="/income/"><?php echo $this->lang->line('common_title_income'); ?></a></li>
-                    <li><a href="/finance/ranking/pl/2009"><?php echo $this->lang->line('common_title_pl'); ?></a></li>
-                    <li><a href="/finance/ranking/bs/2009"><?php echo $this->lang->line('common_title_bs'); ?></a></li>
-                    <li><a href="/finance/ranking/cf/2009"><?php echo $this->lang->line('common_title_cf'); ?></a></li>
+                    <li><a href="/finance/"><?php echo $this->lang->line('common_title_finance'); ?></a></li>
+                    <li><a href="/finance/ranking/pl/2009"><?php echo $this->lang->line('common_title_finance_pl'); ?></a></li>
+                    <li><a href="/finance/ranking/bs/2009"><?php echo $this->lang->line('common_title_finance_bs'); ?></a></li>
+                    <li><a href="/finance/ranking/cf/2009"><?php echo $this->lang->line('common_title_finance_cf'); ?></a></li>
                     <li><a href="/site/issues"><?php echo $this->lang->line('common_title_issues'); ?></a></li>
                   </ul>
             </div>

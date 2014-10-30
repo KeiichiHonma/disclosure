@@ -10,8 +10,8 @@ contents
 //////////////////////////////////////////////////////////////////////////////
 -->
 <div id="contents">
-    <div id ="contentsInner">
-        <h1 class="l1"><?php echo $document->presenter_name.' - '.strftime($this->lang->line('setting_date_format'), strtotime($document->date)).' '.$document->document_name; ?></h1>
+    <div id ="contentsInner"><?php $this->load->view('layout/common/topicpath'); ?>
+        <h3 class="l1"><?php echo $page_title; ?></h3>
         <div class="box_adx mb20 spdisp">
             <img src="/images/ad_example_sp1.jpg" alt="" />
         </div>

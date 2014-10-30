@@ -7,8 +7,8 @@ contents
 //////////////////////////////////////////////////////////////////////////////
 -->
 <div id="contents">
-    <div id ="contentsInner">
-        <h1 class="l1"><?php echo $edinet->presenter_name; ?>の有価証券報告書一覧</h1>
+    <div id ="contentsInner"><?php $this->load->view('layout/common/topicpath'); ?>
+        <h3 class="l1"><?php echo $page_title; ?></h3>
         <div id="document">
             <?php if(!empty($documents)): ?>
             <?php $this->load->view('layout/common/pager'); ?>

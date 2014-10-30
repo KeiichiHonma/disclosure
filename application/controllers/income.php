@@ -18,7 +18,7 @@ var $values = array();
         $this->load->model('Market_model');
         $this->load->model('Document_model');
         $this->load->model('Tenmono_model');
-        $this->data['income_categories'] = $this->Tenmono_model->getAllTenmonoCategories();
+        $this->data['income_categories'] = $this->Tenmono_model->getAllTenmonoCategories();//平均値が必要なため
         $this->data['categories'] = $this->Category_model->getAllCategories();
         $this->data['markets'] = $this->Market_model->getAllMarkets();
     }
@@ -36,8 +36,12 @@ var $values = array();
         $cdatas = $this->Tenmono_model->getCdataOrder($data['year'],$orderExpression,$page);
         $data['cdatas'] = $cdatas['data'];
         $data['is_index'] = TRUE;
+
+        $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
+        $data['topicpaths'][] = array('/income/',$this->lang->line('common_title_income'));
+
         //set header title
-        $data['page_title'] = '企業年収速報';
+        $data['page_title'] = $this->lang->line('common_title_income');
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
@@ -55,7 +59,8 @@ var $values = array();
         if(!isset($this->data['categories'][$category_id])) show_404();
         $data['bodyId'] = 'ind';
         $data['category_id'] = $category_id;
-        $data['page_name'] = 'category';
+        $data['class_name'] = 'income';
+        $data['function_name'] = 'category';
         $data['object_id'] = $category_id;
         
         if(is_null($year) && is_null($order)){
@@ -68,8 +73,10 @@ var $values = array();
         
         if($category_id == 1){//全体
             $cdatas =$this->Tenmono_model->getCdataOrder($data['year'],$orderExpression,$page);
+            $data['page_title'] = $data['year'].'年-'.$this->lang->line('common_title_income_list');
         }else{
             $cdatas =$this->Tenmono_model->getCdataByCategoryIdOrderDisclosure($category_id,$data['year'],$orderExpression,$page);
+            $data['page_title'] = $data['year'].'年-'.$this->data['income_categories'][$category_id]->col_name.'の'.$this->lang->line('common_title_income_list');
         }
         
         $data['cdatas'] = $cdatas['data'];
@@ -80,9 +87,13 @@ var $values = array();
         $data['columnCount'] = intval($this->config->item('paging_column_count'));
         $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
         $data['maxPageCount'] = (int) ceil(intval($cdatas['count']) / intval($this->config->item('paging_count_per_page')));
+        
+        $now_year = date("Y",time());
+        $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
+        $data['topicpaths'][] = array('/income/',$this->lang->line('common_title_income'));
+        $data['topicpaths'][] = array('/income/category/'.$category_id.( $now_year != $data['year'] ? '/'.$data['year'] : '' ),$data['page_title']);
 
         //set header title
-        $data['page_title'] = $category_id != 1 ? $data['year'].'年 '.$this->data['income_categories'][$category_id]->col_name.'業界の企業年収' : $data['year'].'年の企業年収';
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
@@ -100,7 +111,8 @@ var $values = array();
         if(!isset($this->data['markets'][$market_id])) show_404();
         $data['bodyId'] = 'ind';
         $data['market_id'] = $market_id;
-        $data['page_name'] = 'market';
+        $data['class_name'] = 'income';
+        $data['function_name'] = 'market';
         $data['object_id'] = $data['market_id'];
         
         if(is_null($year) && is_null($order)){
@@ -120,9 +132,15 @@ var $values = array();
         $data['columnCount'] = intval($this->config->item('paging_column_count'));
         $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
         $data['maxPageCount'] = (int) ceil(intval($cdatas['count']) / intval($this->config->item('paging_count_per_page')));
-
+        
+        $data['page_title'] = $data['year'].'年-'.$this->data['markets'][$market_id]->name.'の'.$this->lang->line('common_title_income_list');
+        
+        $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
+        $data['topicpaths'][] = array('/income/',$this->lang->line('common_title_income'));
+        $data['topicpaths'][] = array('/income/market/'.$market_id,$data['page_title']);
+        
         //set header title
-        $data['page_title'] = $market_id != 1 ? $data['year'].'年 '.$this->data['markets'][$market_id]->name.'の企業年収' : $data['year'].'年の企業年収';
+        
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
@@ -162,11 +180,19 @@ var $values = array();
         $data['sns_url'] = '/income/show/'.$presenter_name_key;
         $data['cdata_download'] = TRUE;
         
+        $data['page_title'] = strftime($this->lang->line('setting_date_format'), $first_cdata->col_disclosure).'提出の ' .$data['edinet']->presenter_name.'の年収情報';
+        $year = date("Y",$first_cdata->col_disclosure);
+        $now_year = date("Y",time());
+        
+        $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
+        $data['topicpaths'][] = array('/income/',$this->lang->line('common_title_income'));
+        $data['topicpaths'][] = array('/income/category/'.$data['edinet']->category_id.( $now_year != $year ? '/'.$year : '' ),$year.'年-'.$this->data['income_categories'][$data['edinet']->category_id]->col_name.'の'.$this->lang->line('common_title_income_list'));
+        $data['topicpaths'][] = array('/income/show/'.$presenter_name_key,$data['page_title']);
+
         //set header title
-        $header_string = strftime($this->lang->line('setting_date_format'), $first_cdata->col_disclosure).'公開 ' .$data['edinet']->presenter_name.'の年収';
-        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
-        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
-        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
+        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
+        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
+        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
         $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/Chart.js')));
         $this->load->view('income/show', array_merge($this->data,$data));
     }
@@ -202,10 +228,21 @@ var $values = array();
         }elseif($download_string == 'csv'){
             $download_name = 'CSVファイル';
         }
-        $header_string = strftime($this->lang->line('setting_date_format'), $first_cdata->col_disclosure).'提出 ' .$data['edinet']->presenter_name.'の年収'.$download_name.'をダウンロード';
-        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
-        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
-        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
+
+        $show_page_title = strftime($this->lang->line('setting_date_format'), $first_cdata->col_disclosure).'提出の ' .$data['edinet']->presenter_name.'の年収情報';
+        $data['page_title'] = $show_page_title.$download_name.'をダウンロード';
+        $year = date("Y",$first_cdata->col_disclosure);
+        $now_year = date("Y",time());
+        
+        $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
+        $data['topicpaths'][] = array('/income/',$this->lang->line('common_title_income'));
+        $data['topicpaths'][] = array('/income/category/'.$data['edinet']->category_id.( $now_year != $year ? '/'.$year : '' ),$year.'年-'.$this->data['income_categories'][$data['edinet']->category_id]->col_name.'の'.$this->lang->line('common_title_income_list'));
+        $data['topicpaths'][] = array('/income/show/'.$presenter_name_key,$show_page_title);
+        $data['topicpaths'][] = array('/income/download/'.$presenter_name_key.'/'.$download_string,$download_name.'をダウンロード');
+
+        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
+        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
+        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
         $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/start/jquery-ui-1.9.2.custom.css','/css/tabulous.css')));
         $this->load->view('income/download', array_merge($this->data,$data));
     }
@@ -241,10 +278,11 @@ var $values = array();
         }elseif($download_string == 'xlsx'){
             //format合わせ
             $excel_map[0] = 0;
-            $csv_datas[0][] = array('公開日','年収','従業員数','平均年齢','平均勤続年数');
+            $csv_datas[] = array('公開日','年収','従業員数','平均年齢','平均勤続年数');
             foreach ($cdatas as $cdata){
-                $csv_datas[0][] = array(strftime($this->lang->line('setting_date_format'), $cdata->col_disclosure),$cdata->col_income,$cdata->col_person,$cdata->col_age,$cdata->col_employ);
+                $csv_datas[] = array(strftime($this->lang->line('setting_date_format'), $cdata->col_disclosure),$cdata->col_income,$cdata->col_person,$cdata->col_age,$cdata->col_employ);
             }
+            $this->load->library('Xbrl_lib');
             $objWriter = $this->xbrl_lib->put_excel(null,$csv_datas,$filename,$excel_map);
             header("Pragma: public");
             header("Expires: 0");

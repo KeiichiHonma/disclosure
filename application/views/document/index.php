@@ -26,13 +26,13 @@ contents
         </div>
         <div id="document_navi">
 
-            <div id="top-news1" class="cf undisp">
+            <div id="top-news1" class="cf">
                 <div id="top-news1-inner" class="cf">
                     <div id="photo-wrapper">
-                        <div class="top-news1-photo"><a href="/articles/-/44758"><img src="/images/yuuka.jpg" /></a></div>
+                        <div class="top-news1-photo"><a href="/document/category/1"><img src="/images/yuuka.jpg" /></a></div>
                         <div class="top-news1-photo"><a href="/income/"><img src="/images/logos.jpg" /></a></div>
-                        <div class="top-news1-photo"><a href="/articles/-/44494"><img src="/images/change.jpg" /></a></div>
-                        <div class="top-news1-photo"><a href="/articles/-/44494"><img src="/images/change.jpg" /></a></div>
+                        <div class="top-news1-photo"><a href="/finance/"><img src="/images/zaimu.jpg" /></a></div>
+                        <div class="top-news1-photo"><a href="/articles/-/44494"><img src="/images/screening.jpg" /></a></div>
                     </div><!-- /photo-wrapper -->
 
                     <div class="top-news1-list">
@@ -48,7 +48,7 @@ contents
                             </a>
                         </li>
                         <li>
-                            <a href="/finance/category/1/pl" class="link-box">
+                            <a href="/finance/" class="link-box">
                                 <span class="column-ttl">各企業のP/L,BS,CFを速報でお届け</span><br /><span class="column-main-ttl">企業の財務状況を把握。財務ランキングも！</span><span class="more sprite">MORE</span>
                             </a>
                         </li>
@@ -61,7 +61,7 @@ contents
                     </div><!-- /top-news1-list -->
                 </div><!-- /top-news1-inner -->
             </div>
-            <h3 class="center_dot"><span>最新の開示情報</span></h3>
+            <h3 class="center_dot"><span><?php echo $this->lang->line('common_title_home'); ?></span></h3>
         </div>
         <div id="document_navi_ad" class="undisp">
             <img src="/images/ad_example1.gif" alt="csv" />

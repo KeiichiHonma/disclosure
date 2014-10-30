@@ -7,9 +7,9 @@ contents
 //////////////////////////////////////////////////////////////////////////////
 -->
 <div id="contents">
-    <div id ="contentsInner">
-        <h1 class="l1"><?php echo $page_title; ?></h1>
-        <div id="document">
+    <div id ="contentsInner"><?php $this->load->view('layout/common/topicpath'); ?>
+        <h3 class="l1"><?php echo $page_title; ?></h3>
+        <div id="document" class="pt10">
             <?php if(!empty($documents)): ?>
             <?php $this->load->view('layout/common/select_year'); ?>
             <?php $this->load->view('layout/common/pager'); ?>

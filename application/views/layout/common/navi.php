@@ -8,16 +8,15 @@ header
         <h1><a href="/">オープンデータ.company</a></h1>
         <h2>企業情報のオープンデータ活用サービス</h2>
     </div>
-    <!-- パンクズ -->
-    <div id="breadcrumb"<?php if(!isset($pageId) || $pageId != 'document_show'): ?><?php echo ' class="scrolltop"'; ?><?php endif; ?>>
-        <div id="breadcrumbInner" class="cf">
+    <div id="gnavicrumb"<?php if(!isset($pageId) || $pageId != 'document_show'): ?><?php echo ' class="scrolltop"'; ?><?php endif; ?>>
+        <div id="gnavicrumbInner" class="cf">
             <span><a href="/"><?php echo $this->lang->line('common_title_home'); ?></a></span>
             <span><a href="/income/"><?php echo $this->lang->line('common_title_income'); ?></a></span>
-            <span><a href="/finance/category/1/pl"><?php echo $this->lang->line('common_title_pl'); ?></a></span>
-            <span><a href="/finance/category/1/bs"><?php echo $this->lang->line('common_title_bs'); ?></a></span>
-            <span><a href="/finance/category/1/cf"><?php echo $this->lang->line('common_title_cf'); ?></a></span>
+            <span><a href="/finance/"><?php echo $this->lang->line('common_title_finance'); ?></a></span>
             <span><a href="/site/issues"><?php echo $this->lang->line('common_title_issues'); ?></a></span>
-            
+            <span><a href="/finance/category/1/pl"><?php echo $this->lang->line('common_title_finance_pl'); ?></a></span>
+            <span><a href="/finance/category/1/bs"><?php echo $this->lang->line('common_title_finance_bs'); ?></a></span>
+            <span><a href="/finance/category/1/cf"><?php echo $this->lang->line('common_title_finance_cf'); ?></a></span>
     <?php if(!isset($isIndex)) : ?>
             <div class="searchBox undisp">
                 <div class="searchBoxInner">

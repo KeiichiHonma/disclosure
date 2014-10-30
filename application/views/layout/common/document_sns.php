@@ -1,4 +1,4 @@
-            <ul class="box_upper cf undisp">
+            <ul class="box_upper cf">
                 <li class="fb">
                     <div id="fb-root"></div>
                     <script>(function(d, s, id) {

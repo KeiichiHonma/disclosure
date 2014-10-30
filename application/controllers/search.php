@@ -48,6 +48,9 @@ class Search extends MY_Controller
         $data['maxPageCount'] = (int) ceil(intval($edinetsResult['count']) / intval($this->config->item('paging_count_per_page')));
         $data['orderSelects'] = $this->lang->line('order_select');
 
+        $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
+        $data['topicpaths'][] = array(null,$this->lang->line('search_box_default'));
+
         //set header title
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['search_keywords']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['search_keywords']);

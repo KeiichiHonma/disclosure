@@ -78,7 +78,7 @@ class Document_model extends CI_Model
 
     function getDocumentDataByDocumentId($document_id)
     {
-        $query = $this->db->query("SELECT *
+        $query = $this->db->query("SELECT *,document_datas.element_name AS element_name
                                     FROM document_datas
                                     LEFT JOIN items ON items.id = document_datas.item_id
                                     WHERE document_datas.document_id = ?"

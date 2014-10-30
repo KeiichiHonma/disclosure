@@ -11,16 +11,15 @@ body {
 }
 
 .l1 {
-    border:1px solid #e9e7e7;
-    background:url(/images/tt_h1_bg.jpg) 0 center no-repeat;
-    padding: 12px 15px 12px 66px;
-    font-size:120%;
-    font-weight:bold;
-    margin:0px 20px 10px 10px;
-
-    border-radius: 3px;
-    -webkit-border-radius: 3px;  
-    -moz-border-radius: 3px;
+    border:1px solid #e9e7e7 !important;
+    background:url(/images/tt_h1_bg.jpg) 0 center no-repeat !important;
+    padding: 12px 15px 12px 66px !important;
+    font-size:120% !important;
+    font-weight:bold !important;
+    margin:0px 20px 10px 10px !important;
+    border-radius: 3px !important;
+    -webkit-border-radius: 3px !important;  
+    -moz-border-radius: 3px !important;
 }
 .l2 {
     font-size:116%;
@@ -106,7 +105,6 @@ font-weight:bold;
 .sort ul {
     width:100%;
     text-align:center;
-    margin-bottom:20px;
 }
 .sort li {
     margin:0 2px;
@@ -167,7 +165,7 @@ font-weight:bold;
     letter-spacing: normal !important;
 }
 
-div#headerInner,div#breadcrumbInner { font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "ＭＳ ゴシック", "Osaka", sans-serif !important;}
+div#headerInner,div#gnavicrumbInner { font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "ＭＳ ゴシック", "Osaka", sans-serif !important;}
 
 div#header {
     width:100% !important;
@@ -283,7 +281,7 @@ div#header .navPc li ul.menuBox {
 }
 
 /* xbrl 内部CSS対応 */
-#breadcrumb div,#breadcrumb span,#breadcrumb a {
+#gnavicrumb div,#gnavicrumb span,#gnavicrumb a {
     margin: 0 !important;
     padding: 0 !important;
     border: 0 !important;
@@ -294,7 +292,7 @@ div#header .navPc li ul.menuBox {
     list-style-type: none !important;
 }
 
-div#breadcrumb {
+div#gnavicrumb {
     width:100% !important;
     background:url(../images/bg_breadcrumb.png) 0 0 repeat-x !important;
     float:none !important;
@@ -302,54 +300,54 @@ div#breadcrumb {
     z-index:2000 !important;
 }
 
-div#breadcrumbInner {
+div#gnavicrumbInner {
     width:997px !important;
     height:40px !important;
     margin:0 auto !important;
     border-left:1px solid #c6c6c6 !important;
 }
-div#breadcrumbInner span {
+div#gnavicrumbInner span {
     display:block !important;
     border-right:1px solid #c6c6c6 !important;
     height:40px !important;
     float:left !important;
 }
 
-div#breadcrumbInner span.news {
+div#gnavicrumbInner span.news {
     border-right:none !important;
 }
 
-div#breadcrumbInner span a{
+div#gnavicrumbInner span a{
     display:block !important;
     height:40px !important;
     color:#000 !important;
     padding:10px 9px 0 !important;
 }
 
-div#breadcrumbInner span a:hover{
+div#gnavicrumbInner span a:hover{
     background:url(../images/bg_breadcrumb_on.png) 0 0 repeat-x !important;
 }
-div#breadcrumbInner span.news p{
+div#gnavicrumbInner span.news p{
     display:block !important;
     height:40px !important;
     color:#fff !important;
     font-weight:bold !important;
     padding:10px 5px 0 !important;
 }
-div#breadcrumb .searchBox {
+div#gnavicrumb .searchBox {
     float:right !important;
     padding-top:7px !important;
 }
-div#breadcrumb .searchBox .focus{
+div#gnavicrumb .searchBox .focus{
     width:220px !important;
     height:16px !important;
     padding:2px !important;
     margin-right:8px !important;
 }
 
-.ie div#breadcrumb .searchBox .focus{ height:20px !important;}
+.ie div#gnavicrumb .searchBox .focus{ height:20px !important;}
 
-div#breadcrumb .searchBox #datepicker {
+div#gnavicrumb .searchBox #datepicker {
     width:90px !important;
     height:16px !important;
     padding:2px 5px !important;
@@ -357,11 +355,43 @@ div#breadcrumb .searchBox #datepicker {
     color:#a0a09f !important;
     background:url(../images/icon_calendar.png) 79px 3px no-repeat #fff !important;
 }
-.win.ie8 div#breadcrumb .searchBox #datepicker{ line-height:240% !important;}
+.win.ie8 div#gnavicrumb .searchBox #datepicker{ line-height:240% !important;}
 
-div#breadcrumb .searchBox .btnSearch {
+div#gnavicrumb .searchBox .btnSearch {
     width:56px !important;
     height:26px !important;
+}
+
+.topicpath {
+    width:976px;
+    margin:5px auto;
+}
+.topicpath:after{
+    content : ''; display : block; clear : both;
+}
+.topicpath ul li {
+    display:inline;
+    font-size:85%;
+    padding-top:1px;
+}
+.topicpath ul li i{
+    padding-right:5px;
+}
+.topicpath ul li.home {
+    display:inline;
+    font-size:85%;
+    background:none;
+    padding-left:0px;
+    padding-top:1px;
+}
+.topicpath ul li a:link,
+.topicpath ul li a:visited {
+    color:#282727;
+    text-decoration:none;
+}
+.topicpath ul li a:hover {
+    color:#0066CC;
+    text-decoration:none;
 }
 
 ul.menuBox div {
@@ -528,7 +558,7 @@ table.menuBox td a:hover {
 }
 
 #footer .sec li {
-  width: 110px;
+  width: 170px;
 }
 
 #footer .ft_contact {
@@ -609,7 +639,7 @@ table.menuBox td a:hover {
     width:1000px;
     background:#fff;
     margin:0 auto;
-    padding:27px 0 20px 0px;
+    padding:10px 0 20px 0px;
 }
 #contents h2{
     color:#444;
@@ -821,22 +851,6 @@ table.menuBox td a:hover {
     padding-left:3px;
     padding-right:3px;
     height:1em;
-}
-
-#download table{
-    width:100%;
-    border-collapse:collapse;
-    border:none;
-}
-
-#download th{
-    border:none;
-    text-align:center;
-}
-
-#download td{
-    border:none;
-    text-align:left;
 }
 
 /* top page
@@ -1553,16 +1567,7 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
     margin:0px 0px 0px 30px;
     float:left;
 }
-#document_html {
-    width:660px;
-    margin-bottom:40px;
-    margin-left:10px;
-    float:left;
-    color:#000;
-    -webkit-box-shadow:0 0 10px 0 rgba(0,0,0,.2);
-    -moz-box-shadow:0 0 10px 0 rgba(0,0,0,.2);
-    box-shadow:0 0 10px 0 rgba(0,0,0,.2);
-}
+
 #document {
     /*width:640px;*/
     width:660px;
@@ -1575,9 +1580,19 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
     -moz-box-shadow:0 0 10px 0 rgba(0,0,0,.2);
     box-shadow:0 0 10px 0 rgba(0,0,0,.2);
 }
+#document_html {
+    width:660px;
+    margin-bottom:40px;
+    margin-left:10px;
+    float:left;
+    color:#000;
+    -webkit-box-shadow:0 0 10px 0 rgba(0,0,0,.2);
+    -moz-box-shadow:0 0 10px 0 rgba(0,0,0,.2);
+    box-shadow:0 0 10px 0 rgba(0,0,0,.2);
+}
 #document .blank {
     padding:60px 30px;
-    text-align:center;
+    text-align:left;
 }
 
 #document table{
@@ -1646,10 +1661,10 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
     font-size:90%;
     text-align:right;
 }
-#document table.finance th.l1{
+#document table.finance th.tree1{
     text-align:left;
 }
-#document table.finance th.l2{
+#document table.finance th.tree2{
     font-weight:normal;
     text-align:left;
     padding-left:20px;
@@ -1674,11 +1689,21 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
     text-align:center;
 }
 #document #download{
-    width:600px;
+    width:620px;
     margin:10px;
     padding:10px;
     background-color:#f8f8f8;
     border:1px solid #e3e3e3;
+}
+#download table{
+    width:100%;
+    border-collapse:collapse;
+    border:none;
+}
+
+#download td{
+    border:none;
+    text-align:left;
 }
 #issues{
     border-top:1px solid #dfdedb;
@@ -1791,6 +1816,37 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
     font-size: 12px;
 }
 
+/*-- site/page -------------*/
+#site {
+    width:620px;
+    margin-bottom:40px;
+    margin-left:10px;
+    padding:20px;
+    float:left;
+    color:#000;
+    -webkit-box-shadow:0 0 10px 0 rgba(0,0,0,.2);
+    -moz-box-shadow:0 0 10px 0 rgba(0,0,0,.2);
+    box-shadow:0 0 10px 0 rgba(0,0,0,.2);
+}
+#site .api{
+	border: 1px #A8A8A8 solid;
+    border-collapse: collapse;
+	}
+#site .api td{
+
+	border: 1px #A8A8A8 solid;	
+    border-collapse: collapse;
+	border-bottom:none;
+	border-left:none;
+	}
+#site .api .price {
+	color: #0099CC;
+}
+#site .caution {
+	font-size: 12px;
+	padding-top: 7px;
+	line-height: 16px;
+}
 /*-- adsense -------------*/
 #adsense_bottom span {
   text-align: center;
@@ -1806,10 +1862,10 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
 #header{width:100% !important;}    
 #headerInner{width:100%;}
 #contentsInner { width:95%; }
-#breadcrumbInner { width:100%; }
+#gnavicrumbInner { width:100%; }
 #contentsInner:not([width]) { zoom: 0.74; }
-#breadcrumb { width:100%; }
-#breadcrumbInner { width:95%; margin-left:5px;}
+#gnavicrumb { width:100%; }
+#gnavicrumbInner { width:95%; margin-left:5px;}
 #contentsInner:not([width]) { zoom: 0.75; }
 #cloud {right:10px; }
 #header h1{ left:8px; }

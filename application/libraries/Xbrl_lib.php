@@ -656,10 +656,6 @@ class Xbrl_lib
             unset($objWriter);
             unset($objPHPExcel);
         }
-
-        // Excel2007.phpを利用する場合
-        //$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-        //$objWriter->save("sample2.xlsx");
     }
     function put_excel_bak($excel_path,$csv_datas,$excel_sheet_name,$excel_map) {
         $objPHPExcel = null;
@@ -715,9 +711,6 @@ class Xbrl_lib
             }
             
         }
-        // Excel2007.phpを利用する場合
-        //$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
-        //$objWriter->save("sample2.xlsx");
     }
 
     function _mb_str_split($str, $split_len = 1) {

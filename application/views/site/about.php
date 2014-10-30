@@ -27,7 +27,7 @@ contents
 //////////////////////////////////////////////////////////////////////////////
 -->
 <div id="contents">
-    <div id ="contentsInner">
+    <div id ="contentsInner"><?php $this->load->view('layout/common/topicpath'); ?>
         <div id="boxLeisureDetail">
             <h3>ハレコの予測について</h3>
             <p>

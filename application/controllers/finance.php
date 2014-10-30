@@ -22,58 +22,49 @@ class Finance extends MY_Controller
         $this->data['markets'] = $this->Market_model->getAllMarkets();
     }
     private $types = array('pl','bs','cf');
+
     /**
-     * ranking action
+     * index action
      *
      */
-/*
-    function ranking($type='bs', $year = null, $order = null, $page = 1)
+    function index($type='pl')
     {
         if(!in_array($type,$this->types)) show_404();
         $data['bodyId'] = 'ind';
-        $page = intval($page);
-        
-        if(is_null($year) && is_null($order)){
-            $order = "date";
-            $orderExpression = "date DESC";//作成新しい
-        }else{
-            list($order,$orderExpression) = $this->_set_order($type,$order);
-        }
-
         $data['type'] = $type;
-        $data['year'] = is_null($year) ? date("Y",time()) : intval($year);
-        $financesResult = $this->Finance_model->getFinancesOrder($data['year'], $orderExpression, $page);
-
+        $now_year = date("Y",time());
+        $data['year'] = $now_year;
+        $data['year'] = 2009;
+        $data['finance_tab_current'] = $type;
+        $data['finance_index'] = TRUE;
+        $financesResult = $this->Finance_model->getFinancesOrder($data['year'], "date DESC", 1);
+        
         $data['finances'] = $financesResult['data'];
 
-        $data['page'] = $page;
-        $data['order'] = $order;
-        $data['pageFormat'] = "finance/ranking/{$type}/{$data['year']}/{$order}/%d";
-        $data['rowCount'] = intval($this->config->item('paging_row_count'));
-        $data['columnCount'] = intval($this->config->item('paging_column_count'));
-        $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >
-        $data['maxPageCount'] = (int) ceil(intval($financesResult['count']) / intval($this->config->item('paging_count_per_page')));
-        $data['orderSelects'] = $this->lang->line('order_select');
+        $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
+        $data['topicpaths'][] = array('/finance/',$this->lang->line('common_title_finance'));
 
         //set header title
-        $data['page_title'] = $data['year'].'年'.$this->lang->line('common_title_'.$type);
+        $data['page_title'] = $this->lang->line('common_title_finance').' - '.$this->lang->line('common_title_'.$type);
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
-
-        $this->load->view('finance/ranking', array_merge($this->data,$data));
+        $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('/css/tab.css')));
+        
+        $this->load->view('finance/index', array_merge($this->data,$data));
     }
-*/
+
     /**
      * category action
      *
      */
-    function category($category_id,$type='bs', $year = null, $order = "date", $page = 1)
+    function category($category_id,$type='pl', $year = null, $order = "date", $page = 1)
     {
         if(!in_array($type,$this->types)) show_404();
         $data['bodyId'] = 'ind';
         $data['category_id'] = $category_id;
-        $data['page_name'] = 'category';
+        $data['class_name'] = 'document';
+        $data['function_name'] = 'category';
         $data['object_id'] = $category_id;
         
         $page = intval($page);
@@ -107,6 +98,10 @@ class Finance extends MY_Controller
         $data['maxPageCount'] = (int) ceil(intval($financesResult['count']) / intval($this->config->item('paging_count_per_page')));
         $data['orderSelects'] = $this->lang->line('order_select');
 
+        $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
+        $data['topicpaths'][] = array('/finance/',$this->lang->line('common_title_finance'));
+        $data['topicpaths'][] = array('/finance/category/'.$category_id,$this->data['categories'][$category_id]->name.'の'.$this->lang->line('common_title_finance_top'));
+
         //set header title
         $data['page_title'] = ( $category_id == 1 ? '' : $this->data['categories'][$category_id]->name.' - ' ).$data['year'].'年'.$this->lang->line('common_title_'.$type);
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
@@ -125,7 +120,8 @@ class Finance extends MY_Controller
         if(!in_array($type,$this->types)) show_404();
         $data['bodyId'] = 'ind';
         $data['market_id'] = $market_id;
-        $data['page_name'] = 'market';
+        $data['class_name'] = 'document';
+        $data['function_name'] = 'market';
         $data['object_id'] = $market_id;
         
         $page = intval($page);
@@ -153,6 +149,10 @@ class Finance extends MY_Controller
         $data['maxPageCount'] = (int) ceil(intval($financesResult['count']) / intval($this->config->item('paging_count_per_page')));
         $data['orderSelects'] = $this->lang->line('order_select');
 
+        $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
+        $data['topicpaths'][] = array('/finance/',$this->lang->line('common_title_finance'));
+        $data['topicpaths'][] = array('/finance/market/'.$market_id,$this->data['markets'][$market_id]->name.'の'.$this->lang->line('common_title_finance_top'));
+
         //set header title
         $data['page_title'] = $this->data['markets'][$market_id]->name.' - '.$data['year'].'年'.$this->lang->line('common_title_'.$type);
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
@@ -164,6 +164,7 @@ class Finance extends MY_Controller
 
     function show($presenter_name_key = '',$type='top')
     {
+        if($type != 'top' && !in_array($type,$this->types)) show_404();
         $data['bodyId'] = 'ind';
         $data['switch_side_current'] = 'finance_show';
         $data['finance_tab_current'] = $type;
@@ -207,6 +208,10 @@ class Finance extends MY_Controller
             }
         }
 
+        $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
+        $data['topicpaths'][] = array('/finance/',$this->lang->line('common_title_finance'));
+        $data['topicpaths'][] = array('/finance/category/'.$data['edinet']->category_id,$this->data['categories'][$data['edinet']->category_id]->name.'の'.$this->lang->line('common_title_finance_top'));
+        $data['topicpaths'][] = array('/finance/show/'.$presenter_name_key,$data['edinet']->presenter_name.'の'.$this->lang->line('common_title_finance_'.$type));
 
         //set header title
         $header_string = $data['edinet']->presenter_name.'のファイナンス情報';

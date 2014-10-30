@@ -6,9 +6,9 @@ contents
 //////////////////////////////////////////////////////////////////////////////
 -->
 <div id="contents">
-    <div id ="contentsInner">
-        <h1 class="l1"><?php echo $this->lang->line('common_title_issues'); ?></h1>
-            <div class="sort pager">
+    <div id ="contentsInner"><?php $this->load->view('layout/common/topicpath'); ?>
+        <h3 class="l1"><?php echo $this->lang->line('common_title_issues'); ?></h3>
+            <div class="sort pager pb10">
                 <ul class="clearfix">
                     <li><?php echo anchor('site/issues/1', '1000番台',($page == 1 ? 'class="active"' : '')); ?></li>
                     <li><?php echo anchor('site/issues/2', '2000番台',($page == 2 ? 'class="active"' : '')); ?></li>

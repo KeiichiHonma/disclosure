@@ -4,7 +4,7 @@ contents
 //////////////////////////////////////////////////////////////////////////////
 -->
 <div id="contents">
-    <div id ="contentsInner">
+    <div id ="contentsInner"><?php $this->load->view('layout/common/topicpath'); ?>
 <?php if(isset($jalan_h_id)) : ?>
         <h2><?php echo $display_date.'-'.$hotel['HotelName']; ?></h2>
         <div id="boxLeisure">

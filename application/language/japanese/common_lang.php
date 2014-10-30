@@ -9,13 +9,21 @@ $lang['common_header_title'] = '%s｜有価証券報告書・年収情報なら�
 $lang['common_header_keywords'] = '%s,オープンデータ,opendata,有価証券報告書,開示情報,有報';
 $lang['common_header_description'] = '%sのオープンデータ。有価証券報告書や企業年収等のオープンデータをエクセルやCSVファイルでダウンロードできるサイトです';
 
-$lang['search_box_default'] = '企業名検索';
+$lang['search_box_default'] = '企業検索';
 
-$lang['common_title_home'] = '財務速報';
+$lang['common_title_home'] = '有価証券報告書速報';
+$lang['common_topicpath_home'] = 'Home';
+$lang['common_title_document'] = '有価証券報告書';
+$lang['common_title_documents'] = '有価証券報告書一覧';
 $lang['common_title_income'] = '年収速報';
-$lang['common_title_bs'] = '貸借対照表';
-$lang['common_title_pl'] = '損益計算書';
-$lang['common_title_cf'] = 'キャッシュフロー計算書';
+$lang['common_title_income_list'] = '年収一覧';
+$lang['common_title_search'] = '有価証券報告書速報';
+
+$lang['common_title_finance'] = '財務速報';
+$lang['common_title_finance_top'] = '財務情報';
+$lang['common_title_finance_pl'] = '損益計算書';
+$lang['common_title_finance_bs'] = '貸借対照表';
+$lang['common_title_finance_cf'] = 'キャッシュフロー計算書';
 $lang['common_title_issues'] = '銘柄コード一覧';
 
 $lang['finance_title_current_assets'] = '流動資産';
@@ -44,7 +52,7 @@ $lang['finance_title_net_increase_decrease_in_cash_and_cash_equivalents'] = 'キ
 //footer
 $lang['common_title_company'] = '運営会社';
 $lang['common_title_ad'] = '広告掲載について';
-$lang['common_title_asp'] = 'データ提供ASP';
+$lang['common_title_api'] = 'データ提供API';
 
 $lang['common_title_contact'] = 'お問い合わせ';
 $lang['footer_info_check'] = '最新情報をチェック';
@@ -58,6 +66,7 @@ $lang['topicpath_service'] = '提供サービス';
 $lang['topicpath_works'] = '事例紹介';
 $lang['topicpath_contact'] = 'お問い合わせ';
 
+$lang['common_title_404'] = 'Not Found';
 
 /* End of file setting_lang.php */
 /* Location: ./system/language/japanese/setting_lang.php */
