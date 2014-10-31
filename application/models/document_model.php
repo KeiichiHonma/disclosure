@@ -273,13 +273,20 @@ class Document_model extends CI_Model
     }
     
     //tools only
-    function getAllDocuments($offset,$perPageCount)
+    //function getAllDocuments($offset,$perPageCount)
+    function getAllDocuments()
     {
         $result = array();
+/*
         $query = $this->db->query("SELECT SQL_CALC_FOUND_ROWS *
                                     FROM {$this->table_name}
                                     WHERE {$this->table_name}.document_name = '有価証券報告書'
                                     LIMIT {$offset},{$perPageCount}"
+        );
+*/
+        $query = $this->db->query("SELECT *
+                                    FROM {$this->table_name}
+                                    WHERE {$this->table_name}.document_name = '有価証券報告書'"
         );
         if ($query->num_rows() != 0) return $query->result();
         return array();

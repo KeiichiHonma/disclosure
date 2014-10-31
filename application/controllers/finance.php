@@ -34,7 +34,6 @@ class Finance extends MY_Controller
         $data['type'] = $type;
         $now_year = date("Y",time());
         $data['year'] = $now_year;
-        $data['year'] = 2009;
         $data['finance_tab_current'] = $type;
         $data['finance_index'] = TRUE;
         $financesResult = $this->Finance_model->getFinancesOrder($data['year'], "date DESC", 1);
@@ -79,7 +78,6 @@ class Finance extends MY_Controller
         $data['type'] = $type;
         $now_year = date("Y",time());
         $data['year'] = is_null($year) ? $now_year : intval($year);
-        $data['year'] = 2009;
         if($category_id == 1){
             $financesResult = $this->Finance_model->getFinancesOrder($data['year'], $orderExpression, $page);
         }else{
@@ -136,7 +134,6 @@ class Finance extends MY_Controller
         $data['type'] = $type;
         $now_year = date("Y",time());
         $data['year'] = is_null($year) ? $now_year : intval($year);
-        $data['year'] = 2009;
         $financesResult = $this->Finance_model->getFinancesOrderByMarketId($market_id,$data['year'], $orderExpression, $page);
 
         $data['finances'] = $financesResult['data'];
@@ -177,7 +174,8 @@ class Finance extends MY_Controller
         $desc_asc = 'ASC';
         $data['from_year'] = date("Y",time()) - 5;//5年分
         $data['finances'] = $this->Finance_model->getFinancesByEdinetId($data['edinet']->id,$data['from_year'],'date '.$desc_asc);
-
+        //financeの年度調査
+        
         //その他の文書
         $orderExpression = "created DESC";//作成新しい
         $etc_documents = $this->Document_model->getDocumentsByEdinetIdOrder($data['edinet']->id,$orderExpression,1);

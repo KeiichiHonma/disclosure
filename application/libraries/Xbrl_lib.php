@@ -164,6 +164,7 @@ class Xbrl_lib
             if(preg_match('/^<\/body/', $html_data)) $html_go = FALSE;
         }
 */
+        $simple_html_dom->clear();
         return $html;
     }
     public function _makeCsvSqlData($xbrl_datas,$file,&$insert_document_data,$edinet_code,&$tenmono_datas) {
@@ -343,21 +344,6 @@ class Xbrl_lib
                                 }else{
                                     $duration_instant = '';
                                 }
-                                $csv_datas[$line][] = $xbrl_data['tag'];
-                                //$csv_datas[$line][] = !empty($element) ? $element[0]->style_tree != '' ? $element[0]->style_tree : $element[0]->detail_tree : $index;
-                                if(!empty($element)){
-                                    if($element[0]->redundant_label_ja != ''){
-                                        $csv_datas[$line][] = $element[0]->redundant_label_ja;
-                                    }else{
-                                        $csv_datas[$line][] = $element[0]->style_tree != '' ? $element[0]->style_tree : $element[0]->detail_tree;
-                                    }
-                                }else{
-                                    $csv_datas[$line][] = $index;
-                                }
-                                $csv_datas[$line][] = $context;//コンテキストID
-                                $csv_datas[$line][] = $Consolidated_NonConsolidated_etc;//連結・個別
-                                $csv_datas[$line][] = $duration_instant;//期間・時点
-                                $csv_datas[$line][] = isset($xbrl_data['attributes']['unitRef']) ? $xbrl_data['attributes']['unitRef'] : '';
                                 
                                 $insert_document_data[$line]['item_id'] = !empty($element) ? $element[0]->id : 0;
                                 $insert_document_data[$line]['prefix'] = $namespace;
@@ -377,13 +363,6 @@ class Xbrl_lib
                                     //$insert_document_data[$line]['mediumtext_data'] = $text;
                                     $insert_document_data[$line]['mediumtext_data'] = 'over';
 
-                                    //csvには入れない
-/*
-                                    $ret = $this->_mb_str_split($text, $this->ci->config->item('string_max_length') * 2);//16,384
-                                    foreach ($ret as $split_text){
-                                        $csv_datas[$line][] = $split_text;
-                                    }
-*/
                                 }else{
                                     if(is_numeric($text)){
                                         $insert_document_data[$line]['int_data'] = $text;
@@ -394,8 +373,6 @@ class Xbrl_lib
                                         $insert_document_data[$line]['text_data'] = $text;
                                         $insert_document_data[$line]['mediumtext_data'] = '';
                                     }
-                                    //csv
-                                    $csv_datas[$line][] = $text;
                                 }
 /*
 長文廃止
@@ -438,7 +415,6 @@ class Xbrl_lib
                 }
             }
         }
-        return $csv_datas;
     }
     
     public function _makeTenmonoData($xbrl_data_value,&$tenmono_datas,$edinet_code) {

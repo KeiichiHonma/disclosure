@@ -9,6 +9,7 @@ class Tools extends CI_Controller {
     var $is_parse = TRUE;
     var $is_tenmono = FALSE;
     var $is_tenmono_cdata_all = FALSE;
+    var $is_memory_dump = FALSE;
     var $xbrls_informations;
     var $xbrl_files;
     var $htmls_informations;
@@ -154,7 +155,8 @@ class Tools extends CI_Controller {
     全ての有価証券報告書ドキュメントを取得して、
     IDごとに項目があるかどうか確認しながら挿入していく必要がある
     */
-    public function finance($start = 0,$limit = 50)
+    //public function finance($start = 0,$limit = 50)
+    public function finance()
     {
         $finances = array
         (
@@ -183,7 +185,8 @@ class Tools extends CI_Controller {
             array('net_cash_provided_by_used_in_financing_activities',5105,'当期'),//財務活動によるキャッシュ・フロー
             array('net_increase_decrease_in_cash_and_cash_equivalents',5107,'当期'),//キャッシュ・フロー → 現金及び現金同等物の増減額（△は減少）
         );
-        $documents =$this->Document_model->getAllDocuments($start,$limit);
+        //$documents =$this->Document_model->getAllDocuments($start,$limit);
+        $documents =$this->Document_model->getAllDocuments();
         $batch_data = array();
         $i = 0;
         foreach ($documents as $index => $document){
@@ -219,10 +222,11 @@ class Tools extends CI_Controller {
                             $batch_data[$i][$finance[0]] = floor($finance_data[0]->int_data / 1000000);
                         }
                     }else{
+                        //当期に対象のデータがない場合等
                         $batch_data[$i][$finance[0]] = 0;
                     }
                 }
-                
+                if(!isset($batch_data[$i]['extraordinary_total'])) $batch_data[$i]['extraordinary_total'] = 0;//無い可能性あり
             }
             $i++;
         }
@@ -292,7 +296,7 @@ class Tools extends CI_Controller {
     
     public function analyze()
     {
-        //echo date('Ymd H:i',time())."\n";
+        $start_date =  date('Ymd H:i',time())."\n";
         $time = time();
         $today = date('Y',$time).'/'.date('m',$time).'/'.date('d',$time);
         list($year,$month,$day) = explode('/',$today);
@@ -371,6 +375,7 @@ class Tools extends CI_Controller {
                 }
             }
         }
+        if($this->is_memory_dump) echo '1 : '.memory_get_usage() . "\n";
         if(!$is_analyze){
             $this->_remove_directory($tmp_path.$year);
             die();
@@ -444,14 +449,16 @@ class Tools extends CI_Controller {
         //実際にファイル解析
         $xbrl_count = 0;
         $created = date("Y-m-d H:i:s", time());
+        if($this->is_memory_dump) echo '2 : '.memory_get_usage() . "\n";
+        $analyze_zip_number = 0;
         foreach ($this->xbrl_files as $unzip_dir_name =>  $xbrls){
+            $analyze_file_number = 0;
             foreach ($xbrls as $xbrl_dir_id =>  $xbrl_paths){
-            //start transaction manually
-            $this->db->trans_begin();
+                //start transaction manually
+                $this->db->trans_begin();
                 if(!in_array($xbrl_dir_id,$analyze_list[$unzip_dir_name]) ) continue;
                 $xbrl_paths_count = count($xbrl_paths);
                 $xbrl_path_loop_number = 0;
-                //$excel_map = array();
                 $xbrl_path_arr = array();
                 foreach ($xbrl_paths as $xbrl_number => $xbrl_path){//xbrlが複数ある場合があります
                     //文書提出日時
@@ -498,7 +505,7 @@ class Tools extends CI_Controller {
                     }
                     */
                     $format_path_ex = explode('/', $xbrl_path);
-                    $count = count($format_path_ex);
+                    //$count = count($format_path_ex);
                     $edinet_code = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['edinet_code'];
                     $edinet = $this->Edinet_model->getEdinetByEdinetCode($edinet_code);
                     
@@ -506,6 +513,7 @@ class Tools extends CI_Controller {
                     $new_format_arr = array_slice($format_path_ex,6,5);
                     $new_format_arr[] = $date.'_'.$edinet_code;//日付+edinetcode
                     $format_path = implode('/',$new_format_arr);//xbrlsからランダム文字列ディレクトリ20140806123925fb71まで
+                    if($this->is_memory_dump) echo '3 : '.memory_get_usage() . "\n";
                     //最初の1ファイル分だけDBデータ生成
                     if($xbrl_number == 0){
                         $insert_data['document'][$xbrl_dir_id]['edinet_id'] = $edinet->id;
@@ -529,21 +537,19 @@ class Tools extends CI_Controller {
                         $insert_data['document'][$xbrl_dir_id]['code'] = $code;
                         //codeチェック
                         $check_xbrl = $this->Document_model->getDocumentByCode($code);
-
-                        //excelは複数ファイルではなくセルで分けるため
-                        $excel_path = $format_path.'.xlsx';
                     }
                     
                     $xbrl_path_arr[] = $xbrl_path;//複数の可能性あり
                     
                     //excel csvを都度書き出しに変更したため、必要なくなった
-
                     if($this->is_parse){
+                        if($this->is_memory_dump) echo '3.5 : '.memory_get_usage() . "\n";
                         $xbrl_datas = $this->xbrl_lib->_parseXml($xbrl_path);
-                        $csv_datas[$xbrl_count] = $this->xbrl_lib->_makeCsvSqlData($xbrl_datas,$xbrl_path,$insert_data['document_data'][$xbrl_dir_id][$xbrl_number],$edinet_code,$tenmono_datas);
-                        //$csv_paths[$xbrl_count] = $xbrl_number > 0 ? $format_path.'_'.$xbrl_number.'.csv' : $format_path.'.csv';
-                        //$excel_map[$xbrl_count]  = $xbrl_path_loop_number;
-                        //$excel_sheet_name[$xbrl_dir_id][$xbrl_path_loop_number] = end($new_format_arr).'_'.$xbrl_path_loop_number;
+                        if($this->is_memory_dump) echo '4 : '.memory_get_usage() . "\n";
+                        //$csv_datas[$xbrl_count] = $this->xbrl_lib->_makeCsvSqlData($xbrl_datas,$xbrl_path,$insert_data['document_data'][$xbrl_dir_id][$xbrl_number],$edinet_code,$tenmono_datas);
+                        $this->xbrl_lib->_makeCsvSqlData($xbrl_datas,$xbrl_path,$insert_data['document_data'][$xbrl_dir_id][$xbrl_number],$edinet_code,$tenmono_datas);
+                        unset($xbrl_datas);
+                        if($this->is_memory_dump) echo '5 : '.memory_get_usage() . "\n";
                         $xbrl_count++;
                     }
 
@@ -588,6 +594,7 @@ class Tools extends CI_Controller {
                     $this->db->where('code', $code);
                     $this->db->update('documents', $insert_data['document'][$xbrl_dir_id]);
                 }else{
+                    if($this->is_memory_dump) echo '6 : '.memory_get_usage() . "\n";
                     //DB追加
                     $insert_data['document'][$xbrl_dir_id]['xbrl_path'] = serialize($xbrl_path_arr);//複数の可能性あり
                     //空の場合は空フラグを立てる
@@ -608,14 +615,16 @@ class Tools extends CI_Controller {
                         }
                         $this->db->insert_batch('document_datas', $batch_data);
                     }
-
+                    if($this->is_memory_dump) echo '7 : '.memory_get_usage() . "\n";
                     if(!empty($this->htmls_informations[$xbrl_dir_id])){
                         $html_index = array();
                         foreach ($this->htmls_informations[$xbrl_dir_id] as $file_number => $html_file){
                             $last_val = end(explode('/',$html_file));
                             $insert_html_data['document_id'] = $document_id;
                             $insert_html_data['filename'] = $last_val;
+                            if($this->is_memory_dump) echo '7.4 : '.memory_get_usage() . "\n";
                             $insert_html_data['html_data'] = $this->xbrl_lib->_makeHtmlData($insert_html_data['document_id'],$html_file,$html_index,$file_number,$move_ymd_path);
+                            if($this->is_memory_dump) echo '7.5 : '.memory_get_usage() . "\n";
                             $this->db->insert('document_htmls', $insert_html_data);
                         }
                         if(!empty($html_index)){
@@ -625,10 +634,8 @@ class Tools extends CI_Controller {
                     }
 
                 }
-                echo $excel_path.' - '.$xbrl_dir_id."\n";
-                //ここでexcel
-                //echo $excel_path."\n";
-                //$this->xbrl_lib->put_excel($excel_path,$csv_datas,$excel_sheet_name[$xbrl_dir_id],$excel_map);
+                if($this->is_memory_dump) echo '8 : '.memory_get_usage() . "\n";
+                echo $format_path.' - '.$xbrl_dir_id."\n";
                 //1documentごとにコミット
                 if ($this->db->trans_status() === FALSE) {
                     $this->db->trans_rollback();
@@ -637,8 +644,15 @@ class Tools extends CI_Controller {
                     $this->db->trans_commit();
                     //return $coupon_id;
                 }
+                //unset($xbrls[$xbrl_dir_id]);//memory unset
+                if($this->is_memory_dump) echo '9 : '.memory_get_usage() . "\n";
+                echo 'zip_number:'.$analyze_zip_number.' - '.'file_number:'.$analyze_file_number."\n";
+                echo 'memory : '.memory_get_usage() . "\n";
+                $analyze_file_number++;
             }
-            unset($this->xbrls_informations[$unzip_dir_name]);//memory unset
+            //unset($this->xbrls_informations[$unzip_dir_name]);//memory unset
+            if($this->is_memory_dump) echo '10 : '.memory_get_usage() . "\n";
+            $analyze_zip_number++;
         }
         if($this->is_parse){
             //csv書き出し
@@ -851,7 +865,8 @@ class Tools extends CI_Controller {
         }
         //最後にディレクトリを削除
         $this->_remove_directory($rename_path['move_path'],TRUE,array($rename_path['move_path']));
-        echo date('Ymd H:i',time())."\n";
+        echo 'start'.$start_date."\n";
+        echo 'ebd'.date('Ymd H:i',time())."\n";
     }
 
     private $per0 = 0.39;

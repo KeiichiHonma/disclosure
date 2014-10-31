@@ -32,8 +32,7 @@ var $values = array();
     {
         $data['bodyId'] = 'ind';
         $data['new_categories'] = $this->Document_model->getDocumentsCategoryByDateGroupByCategory(date("Y-m-d H:i:s",strtotime("-7 day")));
-        //$year = date("Y",time());
-        $year = 2009;
+        $year = date("Y",time());
         $order = "date";
         $orderExpression = "date DESC";//作成新しい
         $xbrls =$this->Document_model->getDocumentsOrder($year,$orderExpression,1);
@@ -70,7 +69,6 @@ var $values = array();
         if(!isset($this->data['categories'][$category_id])) show_404();
         
         $data['year'] = is_null($year) ? date("Y",time()) : intval($year);
-        //$data['year'] = 2009;
         if($category_id == 1){
             $documents =$this->Document_model->getDocumentsOrder($data['year'], $orderExpression,$page);
         }else{
@@ -113,8 +111,6 @@ var $values = array();
         $market_id = intval($market_id);
         $data['market_id'] = $market_id;
         if(!isset($this->data['markets'][$market_id])) show_404();
-        
-        $data['year'] = 2009;
         $documents =$this->Document_model->getDocumentsByMarketIdOrder($market_id,$data['year'],$orderExpression,$page);
         
         $data['documents'] = $documents['data'];
@@ -255,15 +251,14 @@ var $values = array();
         $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
         $data['topicpaths'][] = array('/document/category/'.$data['edinet']->category_id,$this->data['categories'][$data['edinet']->category_id]->name.'の'.$this->lang->line('common_title_documents'));
         $data['topicpaths'][] = array('/document/company/'.$data['edinet']->presenter_name_key,$data['edinet']->presenter_name.'の'.$this->lang->line('common_title_documents'));
-        $data['topicpaths'][] = array('/document/show/'.$data['document']->id,$data['edinet']->presenter_name.'の'.$this->lang->line('common_title_document'));
+        $data['topicpaths'][] = array('/document/show/'.$data['document']->id,strftime($this->lang->line('setting_date_format'), strtotime($data['document']->date)).'提出-' .$this->lang->line('common_title_document'));
 
         //set header title
-        $data['page_title'] = strftime($this->lang->line('setting_date_format'), strtotime($data['document']->date)).'提出 ' .$data['edinet']->presenter_name.'の'.$this->lang->line('common_title_document');
+        $data['page_title'] = strftime($this->lang->line('setting_date_format'), strtotime($data['document']->date)).'提出-' .$data['edinet']->presenter_name.'の'.$this->lang->line('common_title_document');
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
-        
-        //$this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/jquery.sticky.js')));
+
         $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('css/tab.css')));
         $this->load->view('document/show', array_merge($this->data,$data));
     }
@@ -294,18 +289,14 @@ var $values = array();
         $data['topicpaths'][] = array('/document/category/'.$data['edinet']->category_id,$this->data['categories'][$data['edinet']->category_id]->name.'の'.$this->lang->line('common_title_documents'));
         $data['topicpaths'][] = array('/document/company/'.$data['edinet']->presenter_name_key,$data['edinet']->presenter_name.'の'.$this->lang->line('common_title_documents'));
         if($data['document']->is_html == 0){
-            $data['page_title'] = strftime($this->lang->line('setting_date_format'), strtotime($data['document']->date)).'提出-' .$data['edinet']->presenter_name.'の数値データ';
-            
-            $data['topicpaths'][] = array('/document/show/'.$data['document']->id,$data['edinet']->presenter_name.'の'.$this->lang->line('common_title_document'));
-            $data['topicpaths'][] = array('/document/data/'.$data['document']->id,$data['page_title']);
+            $data['page_title'] = strftime($this->lang->line('setting_date_format'), strtotime($data['document']->date)).'提出-'.$data['edinet']->presenter_name.'の'.$this->lang->line('common_title_document').'数値データ';
+            $data['topicpaths'][] = array('/document/show/'.$data['document']->id,strftime($this->lang->line('setting_date_format'), strtotime($data['document']->date)).'提出-'.$this->lang->line('common_title_document'));
+            $data['topicpaths'][] = array('/document/data/'.$data['document']->id,'数値データ');
         }else{
-            $data['page_title'] = strftime($this->lang->line('setting_date_format'), strtotime($data['document']->date)).'提出の'.$this->lang->line('common_title_document');
-            
+            $data['page_title'] = $data['edinet']->presenter_name.'の'.$this->lang->line('common_title_document');
             $data['topicpaths'][] = array('/document/data/'.$data['document']->id,$data['page_title']);
         }
-        
         //set header title
-        
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
@@ -344,17 +335,18 @@ var $values = array();
         }
 
         $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
-        $data['topicpaths'][] = array('/document/category/'.$data['edinet']->category_id,$this->data['categories'][$data['edinet']->category_id]->name);
+        $data['topicpaths'][] = array('/document/category/'.$data['edinet']->category_id,$this->data['categories'][$data['edinet']->category_id]->name.'の'.$this->lang->line('common_title_documents'));
         $data['topicpaths'][] = array('/document/company/'.$data['edinet']->presenter_name_key,$data['edinet']->presenter_name.'の'.$this->lang->line('common_title_documents'));
+
         if($data['document']->is_html == 0){
-            $data['topicpaths'][] = array('/document/show/'.$data['document']->id,$data['edinet']->presenter_name.'の'.$this->lang->line('common_title_document'));
+            $data['topicpaths'][] = array('/document/show/'.$data['document']->id,strftime($this->lang->line('setting_date_format'), strtotime($data['document']->date)).'提出-'.$this->lang->line('common_title_document'));
             $data['topicpaths'][] = array('/document/data/'.$data['document']->id,'数値データ');
         }else{
-            $data['topicpaths'][] = array('/document/data/'.$data['document']->id,$data['edinet']->presenter_name.'の'.$this->lang->line('common_title_document'));
+            $data['topicpaths'][] = array('/document/data/'.$data['document']->id,$data['page_title']);
         }
         $data['topicpaths'][] = array('/document/download/'.$data['document']->id.'/'.$download_string,$download_name.'ダウンロード');
 
-        $data['page_title'] = strftime($this->lang->line('setting_date_format'), strtotime($data['document']->date)).'提出 ' .$data['edinet']->presenter_name.'の'.$data['document']->document_name.$download_name.'をダウンロード';
+        $data['page_title'] = strftime($this->lang->line('setting_date_format'), strtotime($data['document']->date)).'提出-' .$data['edinet']->presenter_name.'の'.$data['document']->document_name.$download_name.'をダウンロード';
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
