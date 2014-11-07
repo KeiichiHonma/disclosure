@@ -15,13 +15,14 @@ contents
                 <canvas id="daytimes" height="200" width="200"></canvas>
                 <div class="count">
                     <?php $recent_cdata = reset($cdatas); ?>
-                    <?php echo $recent_cdata->col_income; ?>万円<br />業界順位<?php echo $recent_cdata->col_v_rank; ?>位
+                    <?php echo $recent_cdata->col_income; ?>万円<br />業界順位<?php //echo $recent_cdata->col_v_rank; ?><?php echo $v_rank->count; ?>位
                 </div>
             </div>
 
 
             <script>
-                var doughnutData = [{value: <?php echo $income_categories[$company->col_vid]->col_company_count - $recent_cdata->col_v_rank; ?>,color:"#F38630"},{value: <?php echo $recent_cdata->col_v_rank; ?>,color:"#69D2E7"}];
+                //var doughnutData = [{value: <?php echo $income_categories[$company->col_vid]->col_company_count - $recent_cdata->col_v_rank; ?>,color:"#F38630"},{value: <?php echo $recent_cdata->col_v_rank; ?>,color:"#69D2E7"}];
+                var doughnutData = [{value: <?php echo $company_count->count - $v_rank->count; ?>,color:"#F38630"},{value: <?php echo $v_rank->count; ?>,color:"#69D2E7"}];
 
             //var myDoughnut = new Chart(document.getElementById("canvas").getContext("2d")).Doughnut(doughnutData);
             //var ctx = new Chart(document.getElementById("canvas").getContext("2d");

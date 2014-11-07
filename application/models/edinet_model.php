@@ -40,6 +40,18 @@ class Edinet_model extends CI_Model
         return array();
     }
 
+    function getEdinetBySecurityCode($security_code)
+    {
+        $query = $this->db->query("SELECT *
+                                    FROM {$this->table_name}
+                                    WHERE {$this->table_name}.security_code = ?"
+        , array($security_code)
+        );
+
+        if ($query->num_rows() == 1) return $query->row();
+        return array();
+    }
+
     function getEdinetByPresenterNameKey($presenter_name_key)
     {
         $query = $this->db->query("SELECT *
@@ -179,7 +191,7 @@ class Edinet_model extends CI_Model
         $query = $this->db->query("SELECT *
                                     FROM markets"
         );
-        if ($query->num_rows() != 0) return $query->result('flip','market_name');
+        if ($query->num_rows() != 0) return $query->result('flip','name');
         return array();
     }
 }

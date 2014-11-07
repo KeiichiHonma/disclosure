@@ -163,7 +163,10 @@ var $values = array();
         
         $data['cdatas'] = $this->Tenmono_model->getCdatasByCompanyId($data['company']->_id);
         $first_cdata = reset($data['cdatas']);
-
+        
+        //rank
+        $data['company_count'] = $this->Tenmono_model->getCompanyCountByVarietyid($data['company']->col_vid);
+        $data['v_rank'] = $this->Tenmono_model->getCdatasRankByVariety_id($data['company']->col_vid,$first_cdata->col_income);
         //Higher
         $higher_cdatas = $this->Tenmono_model->getCdatasNotInCompanyIdHighAndLowIncomeByVarietyid($data['company']->_id,$first_cdata->col_income,$data['company']->col_vid,'>=','ASC');
 

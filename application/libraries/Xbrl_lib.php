@@ -425,12 +425,11 @@ class Xbrl_lib
             if ( preg_match("/^平均年間給与/", $innertext) ) {
                 $pos = mb_strpos($html, '>平均年間給与');//>はあえてつけてる
                 $rest = mb_substr($html, $pos, 2500, 'UTF-8');
-
                 $implode_html = str_get_html($rest);
                 foreach($implode_html->find('p') as $key2 => $element2){
                     $text = trim($element2->innertext);
                     if($text != ' '){
-                        //$text = strip_tags($text);
+                        $text = strip_tags($text);//pタグの中に<span style="font-size: 12px">とかあったりする
                         $text = mb_convert_kana($text, "a", "UTF-8");
                         $text = str_replace(array(',','、',' ','　','名','人',' '),array('','','','','','',''),$text);//不思議な空白 「 」 がある。。
                         //カッコ対策　16〔10〕等
@@ -519,7 +518,6 @@ class Xbrl_lib
                             $string = explode('か月',$text);
                             (int)$text = $string[0];
                         }
-                        
                         if( is_numeric($text) ){
                             $result[] = $text;
                         }

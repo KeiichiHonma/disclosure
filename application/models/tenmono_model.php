@@ -40,6 +40,16 @@ class Tenmono_model extends CI_Model
         return array();
     }
 
+    function getAllCompany()
+    {
+        $query = $this->db->query("SELECT *
+                                    FROM tab_job_company"
+        );
+
+        if ($query->num_rows() != 0) return $query->result();
+        return array();
+    }
+
     function getCompanyByCompanyId($company_id)
     {
         $query = $this->db->query("SELECT *
@@ -58,6 +68,18 @@ class Tenmono_model extends CI_Model
                                     FROM tab_job_company
                                     WHERE tab_job_company.col_code = ?"
         , array($security_code)
+        );
+
+        if ($query->num_rows() == 1) return $query->row();
+        return array();
+    }
+
+    function getCompanyByEdinetCode($edinet_code)
+    {
+        $query = $this->db->query("SELECT *
+                                    FROM tab_job_company
+                                    WHERE tab_job_company.col_edinet_code = ?"
+        , array($edinet_code)
         );
 
         if ($query->num_rows() == 1) return $query->row();
@@ -100,7 +122,7 @@ class Tenmono_model extends CI_Model
         $query = $this->db->query("SELECT SQL_CALC_FOUND_ROWS *
                                     FROM tab_job_cdata
                                     INNER JOIN tab_job_company ON tab_job_company._id = tab_job_cdata.col_cid
-                                    INNER JOIN edinets ON edinets.security_code = tab_job_company.col_code
+                                    INNER JOIN edinets ON edinets.edinet_code = tab_job_company.col_edinet_code
                                     WHERE tab_job_cdata.col_disclosure >= ? AND tab_job_cdata.col_disclosure <= ?
                                     ORDER BY {$orderExpression}
                                     LIMIT {$offset},{$perPageCount}"
@@ -132,13 +154,12 @@ class Tenmono_model extends CI_Model
         $query = $this->db->query("SELECT SQL_CALC_FOUND_ROWS *
                                     FROM tab_job_cdata
                                     INNER JOIN tab_job_company ON tab_job_company._id = tab_job_cdata.col_cid
-                                    INNER JOIN edinets ON edinets.security_code = tab_job_company.col_code
+                                    INNER JOIN edinets ON edinets.edinet_code = tab_job_company.col_edinet_code
                                     WHERE edinets.category_id = ? AND tab_job_cdata.col_disclosure >= ? AND tab_job_cdata.col_disclosure <= ?
                                     ORDER BY {$orderExpression}
                                     LIMIT {$offset},{$perPageCount}"
         , array(intval($category_id),intval($from_time),intval($to_time))
         );
-
         if ($query->num_rows() != 0) {
             $result['data'] = $query->result();
             $query = $this->db->query("SELECT FOUND_ROWS() as count");
@@ -164,7 +185,7 @@ class Tenmono_model extends CI_Model
         $query = $this->db->query("SELECT SQL_CALC_FOUND_ROWS *
                                     FROM tab_job_cdata
                                     INNER JOIN tab_job_company ON tab_job_company._id = tab_job_cdata.col_cid
-                                    INNER JOIN edinets ON edinets.security_code = tab_job_company.col_code
+                                    INNER JOIN edinets ON edinets.edinet_code = tab_job_company.col_edinet_code
                                     WHERE edinets.market_id = ? AND tab_job_cdata.col_disclosure >= ? AND tab_job_cdata.col_disclosure <= ?
                                     ORDER BY {$orderExpression}
                                     LIMIT {$offset},{$perPageCount}"
@@ -191,7 +212,7 @@ class Tenmono_model extends CI_Model
         $query = $this->db->query("SELECT *
                                     FROM tab_job_cdata
                                     INNER JOIN tab_job_company ON tab_job_company._id = tab_job_cdata.col_cid
-                                    INNER JOIN edinets ON edinets.security_code = tab_job_company.col_code
+                                    INNER JOIN edinets ON edinets.edinet_code = tab_job_company.col_edinet_code
                                     WHERE tab_job_company._id != ? AND tab_job_cdata.col_income {$sign} ? AND tab_job_company.col_vid = ? AND tab_job_cdata.col_edition = 1
                                     ORDER BY tab_job_cdata.col_income {$order}
                                     LIMIT 0,5"
@@ -202,6 +223,29 @@ class Tenmono_model extends CI_Model
         return array();
     }
 
+    function getCompanyCountByVarietyid($vid)
+    {
+        $query = $this->db->query("SELECT COUNT(tab_job_cdata.col_cid) as count
+                                    FROM tab_job_cdata
+                                    INNER JOIN tab_job_company ON tab_job_company._id = tab_job_cdata.col_cid
+                                    WHERE tab_job_company.col_vid = ? AND tab_job_cdata.col_edition = 1 AND tab_job_company.col_validate = 0"
+        , array(intval($vid))
+        );
+        if ($query->num_rows() == 1) return $query->row();
+        return array();
+    }
+
+    function getCdatasRankByVariety_id($vid,$col_income)
+    {
+        $query = $this->db->query("SELECT COUNT(tab_job_cdata.col_cid) as count
+                                    FROM tab_job_cdata
+                                    INNER JOIN tab_job_company ON tab_job_company._id = tab_job_cdata.col_cid
+                                    WHERE tab_job_cdata.col_vid = ? AND tab_job_cdata.col_income > ? AND tab_job_cdata.col_edition = 1 AND tab_job_company.col_validate = 0"
+        , array(intval($vid),$col_income)
+        );
+        if ($query->num_rows() == 1) return $query->row();
+        return array();
+    }
 }
 
 /* End of file document_model.php */
