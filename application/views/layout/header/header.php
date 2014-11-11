@@ -15,10 +15,8 @@
 <title><?php echo isset($header_title) ? $header_title : $this->lang->line('header_title'); ?></title>
 <meta name="keywords" content="<?php echo isset($header_keywords) ? $header_keywords : $this->lang->line('header_keywords'); ?>" />
 <meta name="description" content="<?php echo isset($header_description) ? $header_description : $this->lang->line('header_description'); ?>" />
-<link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
-<link rel="icon" type="image/png" href="/images/favicon.png" />
 <link rel="apple-touch-icon-precomposed" href="/images/apple-touch-icon-precomposed.png" />
-
+<link href="/favicon.ico" rel="shortcut icon" />
 <?php foreach($this->config->item('stylesheets') as $css) : ?>
 <?php echo link_tag($css) . "\n"; ?>
 <?php endforeach; ?>
