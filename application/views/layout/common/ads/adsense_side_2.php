@@ -13,7 +13,5 @@
                     <?php else: ?>
                     <img src="/images/ad_example1.gif" alt="" />
                     <?php endif; ?>
-
-
                 </div>
             </div>

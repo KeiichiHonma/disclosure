@@ -71,10 +71,10 @@ switch (ENVIRONMENT)
     break;
 
     case 'production':
-        $db['default']['hostname'] = 'mysql489.db.sakura.ne.jp';
-        $db['default']['username'] = 'mark1125';
-        $db['default']['password'] = 'kyeoisihcihoi_83yy3e8sv9';
-        $db['default']['database'] = 'mark1125_gramer';
+        $db['default']['hostname'] = 'localhost';
+        $db['default']['username'] = 'db_mirai_tenki';
+        $db['default']['password'] = 'kyeoisihcihoi';
+        $db['default']['database'] = 'disclosure';
     break;
 
     default:
