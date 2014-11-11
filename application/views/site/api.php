@@ -13,10 +13,8 @@ contents
             APIに関するお問い合わせは <img src="/images/ad_mail.gif" alt="" style="vertical-align: middle;" /> までお気軽にお問い合わせください。 
             <h4 class="l2"><span>APIコンテンツ一覧</span></h4>
             <h5 class="l3">有価証券報告書API</h5>
-            
-            <h5 class="l3">年収データAPI</h5>
-            
             <h5 class="l3">財務データAPI</h5>
+            <h5 class="l3">年収データAPI</h5>
             <h4 class="l2"><span>初期費用</span></h4>
             <p class="firstprice">50,000円(税抜)</p>
             <p>※初期費用は1企業様あたりとなります。</p>
@@ -33,12 +31,16 @@ contents
                 </tr>
               </thead>
               <tr>
-                <td class="category" height="18" rowspan="2">天気情報API</td>
-                <td>今日明日・週間の天気予報</td>
+                <td class="category" height="18" rowspan="3">企業データ情報API</td>
+                <td>有価証券報告書データ</td>
                 <td>30,000円</td>
               </tr>
               <tr>
-                <td>紫外線予報</td>
+                <td>財務データ</td>
+                <td>30,000円</td>
+              </tr>
+              <tr>
+                <td>年収データ</td>
                 <td>20,000円</td>
               </tr>
             </table>
@@ -73,8 +75,7 @@ contents
                 <td>要見積</td>
               </tr>
             </table>
-            <p class="caution">※リクエスト数に応じて表の基本利用料が上表の月額利用料となります。<br />
-※紫外線予報・指数APIは上表の月額利用料－10,000円となります。          </p>
+            <p class="caution">※リクエスト数に応じて表の基本利用料が上表の月額利用料となります。</p>
 
             <h4 class="l2"><span>セット割引料金</span></h4>
             <table class="api" cellspacing="1" cellpadding="3">
@@ -92,24 +93,7 @@ contents
                 <td>3種類</td>
                 <td>-20,000円</td>
               </tr>
-              <tr>
-                <td>4種類</td>
-                <td>-25,000円</td>
-              </tr>
-              <tr>
-                <td>5種類</td>
-                <td>-30,000円</td>
-              </tr>
-              <tr>
-                <td>6種類</td>
-                <td>-35,000円</td>
-              </tr>
-              <tr>
-                <td>7種類</td>
-                <td>-40,000円</td>
-              </tr>
             </table>
-<p class="caution">※以降、1種類追加ごとに全体の月額利用料から-5,000円割引となります。</p>
 
         </div>
         <div id="sidebar">
