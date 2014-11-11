@@ -57,7 +57,7 @@ contents
             <div id="side_cat">
                 <?php $this->load->view('layout/common/categories'); ?>
             </div><!-- /side_cat -->
-            <?php $this->load->view('layout/common/ads/adsense_side'); ?>
+            <?php $this->load->view('layout/common/ads/adsense_side_2'); ?>
         </div>
         <span class="cf" />
         <?php $this->load->view('layout/common/ads/adsense_bottom'); ?>

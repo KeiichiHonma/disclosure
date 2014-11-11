@@ -172,7 +172,7 @@ class Finance extends MY_Controller
         if(empty($data['edinet']))  show_404();
         
         $desc_asc = 'ASC';
-        $data['from_year'] = date("Y",time()) - 5;//5年分
+        $data['from_year'] = date("Y",time()) - 4;//5年分
         $data['finances'] = $this->Finance_model->getFinancesByEdinetId($data['edinet']->id,$data['from_year'],'date '.$desc_asc);
         //financeの年度調査
         

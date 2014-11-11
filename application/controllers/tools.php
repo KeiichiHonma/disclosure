@@ -466,11 +466,11 @@ class Tools extends CI_Controller {
                         if($value['document_name'] == '有価証券報告書'){
                             if(!empty($edinet)){
                                 //業界名がない場合は上場義務がないやつ
-                                if($edinet->category_id > 0){
+                                //if($edinet->category_id > 0){
                                     $tenmono_datas['companies'][$edinet_code]['col_code'] = $edinet->security_code;
                                     $tenmono_datas['companies'][$edinet_code]['col_vid'] = $edinet->category_id;
                                     $tenmono_datas['companies'][$edinet_code]['col_name'] = $this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name'];
-                                }
+                                //}
                             }
                         }
                     }
@@ -485,6 +485,11 @@ class Tools extends CI_Controller {
             rename($rename_path['zip_path'],$rename_path['move_path'].'/'.$zip_name);
         }
         $this->_remove_directory($tmp_path.$year);
+        if(empty($analyze_list)){
+            echo 'analyze_list empty  !!';
+            die();
+        }
+        
         //実際にファイル解析
         $xbrl_count = 0;
         $created = date("Y-m-d H:i:s", time());

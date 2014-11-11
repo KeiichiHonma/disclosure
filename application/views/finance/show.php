@@ -15,7 +15,6 @@ contents
             <?php $this->load->view('layout/common/document_sns'); ?>
             <?php
                 $count=count($finances);
-                //$end_year = $from_year+$count;
             ?>
             <table class="finance">
                 <tr>
@@ -130,7 +129,7 @@ contents
                 <?php $this->load->view('layout/common/finance_categories'); ?>
                 <?php $this->load->view('layout/common/finance_markets'); ?>
             </div>
-            <?php $this->load->view('layout/common/ads/adsense_side'); ?>
+            <?php $this->load->view('layout/common/ads/adsense_side_2'); ?>
         </div>
         <span class="cf" />
         <?php $this->load->view('layout/common/ads/adsense_bottom'); ?>

@@ -72,7 +72,7 @@ contents
                 <?php $this->load->view('layout/common/document_categories'); ?>
                 <?php $this->load->view('layout/common/document_markets'); ?>
             </div>
-            <?php $this->load->view('layout/common/ads/adsense_side'); ?>
+            <?php $this->load->view('layout/common/ads/adsense_side_2'); ?>
         </div>
         <span class="cf" />
         <?php $this->load->view('layout/common/ads/adsense_bottom'); ?>
