@@ -40,7 +40,14 @@ class Tools extends CI_Controller {
         $this->archiver = new ZipArchive();
         $this->extractFiles = array();
     }
-
+    //自動ポスト 年収が高いものを紹介
+    public function auto_twitter_income()
+    {
+        $incomes =$this->Tenmono_model->getCdatasByRecent();
+var_dump($incomes);
+die();
+    }
+    
     public function sitemap($target_year = null)
     {
         
@@ -62,25 +69,6 @@ class Tools extends CI_Controller {
                 $this->_get_sitemap_data($target_app,$target_year);
                 $this->_make_file($file,$this->sitemap_line);
             }
-            
-
-/*
-            $file= '/usr/local/apache2/htdocs/disclosure/sitemap_area_date.xml';
-            $this->_get_sitemap_data('area_date');
-            $this->_make_file($file,$this->sitemap_line);
-
-            $file= '/usr/local/apache2/htdocs/disclosure/sitemap_spring_date.xml';
-            $this->_get_sitemap_data('spring_date');
-            $this->_make_file($file,$this->sitemap_line);
-
-            $file= '/usr/local/apache2/htdocs/disclosure/sitemap_airport_date.xml';
-            $this->_get_sitemap_data('airport_date');
-            $this->_make_file($file,$this->sitemap_line);
-
-            $file= '/usr/local/apache2/htdocs/disclosure/sitemap_leisure_date.xml';
-            $this->_get_sitemap_data('leisure_date');
-            $this->_make_file($file,$this->sitemap_line);
-*/
             print 'Sitemap: update success';
         } catch (Exception $e) { 
             print 'Error: ' . $e->getMessage();

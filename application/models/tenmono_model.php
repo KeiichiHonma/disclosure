@@ -68,6 +68,23 @@ class Tenmono_model extends CI_Model
         return array();
     }
 
+    //tools only
+    function getCdatasByRecent()
+    {
+        $result = array();
+        $resent_date = date("Y-m-d H:i:s", time() - 86400);//1日前
+        $orderExpression = "col_income DESC";
+        $query = $this->db->query("SELECT *
+                                    FROM tab_job_cdata
+                                    INNER JOIN tab_job_company ON tab_job_company._id = tab_job_cdata.col_cid
+                                    INNER JOIN edinets ON edinets.edinet_code = tab_job_company.col_edinet_code
+                                    WHERE tab_job_cdata.created >= '{$resent_date}'
+                                    ORDER BY {$orderExpression}"
+        );
+        if ($query->num_rows() != 0) return $query->result();
+        return array();
+    }
+
     function getCompanyByCompanyId($company_id)
     {
         $query = $this->db->query("SELECT *
