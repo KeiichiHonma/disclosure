@@ -54,9 +54,9 @@ class Tools extends CI_Controller {
             $target_year = is_null($target_year) ? $now_year : $target_year;
             foreach ($apps as $target_app){
                 if($now_year == $target_year){
-                    $file= '/usr/local/apache2/htdocs/disclosure/'.$target_app.'_sitemap.xml';
+                    $file= '/usr/local/apache2/htdocs/disclosure/xml/'.$target_app.'_sitemap.xml';
                 }else{
-                    $file= '/usr/local/apache2/htdocs/disclosure/'.$target_app.'_'.$target_year.'_sitemap.xml';
+                    $file= '/usr/local/apache2/htdocs/disclosure/xml/'.$target_app.'_'.$target_year.'_sitemap.xml';
                 }
                 
                 $this->_get_sitemap_data($target_app,$target_year);
