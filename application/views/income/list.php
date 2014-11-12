@@ -44,9 +44,9 @@ contents
                     <?php foreach ($cdatas as $cdata) : ?>
                     <tr<?php if($count == $i) echo ' class="last"'; ?>>
                         <td class="txt"><?php echo strftime("%y/%m/%d", $cdata->col_disclosure); ?></td>
-                        <td class="txt"><?php echo anchor('income/show/'.$cdata->presenter_name_key, $cdata->col_code); ?></td>
+                        <td class="txt"><?php echo anchor('income/show/'.$cdata->presenter_name_key.$year_url, $cdata->col_code); ?></td>
                         <td class="txt">
-                        <?php echo anchor('income/show/'.$cdata->presenter_name_key, $cdata->col_name); ?><br />
+                        <?php echo anchor('income/show/'.$cdata->presenter_name_key.$year_url, $cdata->col_name); ?><br />
                         <?php echo anchor('finance/show/'.$cdata->presenter_name_key.'/pl','P/L'); ?>&nbsp;&nbsp;<?php echo anchor('finance/show/'.$cdata->presenter_name_key.'/bs','BS'); ?>&nbsp;&nbsp;<?php echo anchor('finance/show/'.$cdata->presenter_name_key.'/cf','CF'); ?>
                         </td>
                         <td class="data"><?php echo $cdata->col_income; ?>万円</td>
@@ -63,8 +63,8 @@ contents
                         ?>
                         <td class="txt"><img src="/images/income/<?php echo $trend_image; ?>" /></td>
                         <td class="txt">
-                        <?php echo anchor('income/category/'.$cdata->category_id,$cdata->category_name); ?>
-                        <?php if(isset($markets[$cdata->market_id])): ?><br /><?php echo anchor('income/market/'.$cdata->market_id,$markets[$cdata->market_id]->name); ?><?php endif; ?>
+                        <?php echo anchor('income/category/'.$cdata->category_id.$year_url,$cdata->category_name); ?>
+                        <?php if(isset($markets[$cdata->market_id])): ?><br /><?php echo anchor('income/market/'.$cdata->market_id.$year_url,$markets[$cdata->market_id]->name); ?><?php endif; ?>
                         </td>
                     </tr>
                     <?php $i++; ?>

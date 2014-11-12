@@ -138,6 +138,24 @@ class Finance_model extends CI_Model
 
         return $result;
     }
+
+    //tools only
+    function getAllFinancesByYear($year)
+    {
+        $from_date = $year.'-01-01 00:00:00';
+        $to_date = $year.'-12-31 23:59:59';
+        $orderExpression = "date DESC";//作成新しい
+        $query = $this->db->query("SELECT *
+                                    FROM {$this->table_name}
+                                    INNER JOIN documents ON documents.id = document_finances.document_id
+                                    INNER JOIN edinets ON edinets.id = documents.edinet_id
+                                    WHERE documents.date >= ? AND documents.date <= ?
+                                    ORDER BY {$orderExpression}"
+        , array($from_date,$to_date)
+        );
+        if ($query->num_rows() != 0) return $query->result();
+        return array();
+    }
 }
 
 /* End of file document_model.php */

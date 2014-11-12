@@ -62,8 +62,9 @@ class Finance extends MY_Controller
         if(!in_array($type,$this->types)) show_404();
         $data['bodyId'] = 'ind';
         $data['category_id'] = $category_id;
-        $data['class_name'] = 'document';
+        $data['class_name'] = 'finance';
         $data['function_name'] = 'category';
+        $data['type_name'] = $type;
         $data['object_id'] = $category_id;
         
         $page = intval($page);
@@ -89,7 +90,7 @@ class Finance extends MY_Controller
 
         $data['page'] = $page;
         $data['order'] = $order;
-        $data['pageFormat'] = "finance/category/{$category_id}/{$type}/{$year}/{$order}/%d";
+        $data['pageFormat'] = "finance/category/{$category_id}/{$type}/{$data['year']}/{$order}/%d";
         $data['rowCount'] = intval($this->config->item('paging_row_count'));
         $data['columnCount'] = intval($this->config->item('paging_column_count'));
         $data['pageLinkNumber'] = intval($this->config->item('page_link_number'));//表示するリンクの数 < 2,3,4,5,6 >

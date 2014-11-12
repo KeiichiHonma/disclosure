@@ -1648,7 +1648,7 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
 #document th.income{ width:60px; }
 #document th.trend{ width:40px; }
 
-#document td.new{ background:#FF904B;color:#fff; }
+#document tr.new td{ background:#FF904B;color:#fff; }
 
 #document table.finance th{
     font-size:90%;

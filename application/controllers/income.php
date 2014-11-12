@@ -70,7 +70,7 @@ var $values = array();
             list($order,$orderExpression) = $this->_set_order($order);
         }
         $data['year'] = is_null($year) ? date("Y",time()) : intval($year);
-        
+        $data['year_url'] = is_null($year) ? '' : '/'.$year;
         if($category_id == 1){//全体
             $cdatas =$this->Tenmono_model->getCdataOrder($data['year'],$orderExpression,$page);
             $data['page_title'] = $data['year'].'年-'.$this->lang->line('common_title_income_list');
@@ -122,6 +122,7 @@ var $values = array();
             list($order,$orderExpression) = $this->_set_order($order);
         }
         $data['year'] = is_null($year) ? date("Y",time()) : intval($year);
+        $data['year_url'] = is_null($year) ? '' : '/'.$year;
         $cdatas =$this->Tenmono_model->getCdataByMarketIdOrderDisclosure($market_id,$data['year'],$orderExpression,$page);
         
         $data['cdatas'] = $cdatas['data'];
@@ -148,8 +149,10 @@ var $values = array();
         $this->load->view('income/list', array_merge($this->data,$data));
     }
 
-    function show($presenter_name_key = '')
+    function show($presenter_name_key = '',$target_year = null)
     {
+        $data['target_year'] = is_null($target_year) ? date("Y",time()) : $target_year;
+
         $data['bodyId'] = 'ind';
         $data['switch_side_current'] = 'income_show';
         if(empty($presenter_name_key))  show_404();
@@ -160,18 +163,20 @@ var $values = array();
         if(empty($data['company']))  show_404();
         
         $data['switch_side_current'] = 'income_show';
-        
+        //対象年のデータ
+        $data['target_cdata'] = $this->Tenmono_model->getCdataByYear($data['company']->_id,$data['target_year']);
+        if(empty($data['target_cdata'])) show_404();
         $data['cdatas'] = $this->Tenmono_model->getCdatasByCompanyId($data['company']->_id);
-        $first_cdata = reset($data['cdatas']);
+        //$first_cdata = reset($data['cdatas']);
         
         //rank
         $data['company_count'] = $this->Tenmono_model->getCompanyCountByVarietyid($data['company']->col_vid);
-        $data['v_rank'] = $this->Tenmono_model->getCdatasRankByVariety_id($data['company']->col_vid,$first_cdata->col_income);
-        //Higher
-        $higher_cdatas = $this->Tenmono_model->getCdatasNotInCompanyIdHighAndLowIncomeByVarietyid($data['company']->_id,$first_cdata->col_income,$data['company']->col_vid,'>=','ASC');
+        $data['v_rank'] = $this->Tenmono_model->getCdatasRankByVariety_id($data['company']->col_vid,$data['target_cdata'][0]->col_income,$data['target_year']);
 
+        //Higher
+        $higher_cdatas = $this->Tenmono_model->getCdatasNotInCompanyIdHighAndLowIncomeByVarietyid($data['company']->_id,$data['target_cdata'][0]->col_income,$data['company']->col_vid,'>=','ASC',$data['target_year']);
         //Lower
-        $lower_cdatas = $this->Tenmono_model->getCdatasNotInCompanyIdHighAndLowIncomeByVarietyid($data['company']->_id,$first_cdata->col_income,$data['company']->col_vid,'<=','DESC');
+        $lower_cdatas = $this->Tenmono_model->getCdatasNotInCompanyIdHighAndLowIncomeByVarietyid($data['company']->_id,$data['target_cdata'][0]->col_income,$data['company']->col_vid,'<=','DESC',$data['target_year']);
         if(!empty($higher_cdatas) || !empty($lower_cdatas)){
             $data['high_and_low_cdatas'] = array_merge(array_reverse($higher_cdatas),$lower_cdatas);
         }
@@ -183,8 +188,8 @@ var $values = array();
         $data['sns_url'] = '/income/show/'.$presenter_name_key;
         $data['cdata_download'] = TRUE;
         
-        $data['page_title'] = strftime($this->lang->line('setting_date_format'), $first_cdata->col_disclosure).'提出の ' .$data['edinet']->presenter_name.'の年収情報';
-        $year = date("Y",$first_cdata->col_disclosure);
+        $data['page_title'] = strftime($this->lang->line('setting_date_format'), $data['target_cdata'][0]->col_disclosure).'提出の ' .$data['edinet']->presenter_name.'の年収情報';
+        $year = date("Y",$data['target_cdata'][0]->col_disclosure);
         $now_year = date("Y",time());
         
         $data['topicpaths'][] = array('/',$this->lang->line('common_topicpath_home'));
@@ -306,7 +311,7 @@ var $values = array();
         } else if ($order == "disclosureRev") {
             $orderExpression = "col_disclosure ASC";
         } else if ($order == "income") {//年収
-            $orderExpression = "col_income ASC";
+            $orderExpression = "col_income DESC";
         } else if ($order == "incomeRev") {//年収
             $orderExpression = "col_income ASC";
         }else{

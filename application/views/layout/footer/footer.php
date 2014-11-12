@@ -13,8 +13,7 @@ footer
                         <h4><?php echo $this->lang->line('footer_info_check'); ?></h4>
                         <div class="sc_nav clearfix">
                             <ul>
-                                <li><a href="<?php  echo $this->config->item('language_min') == 'th' ? 'https://www.facebook.com/balloooooonth': 'https://www.facebook.com/ballooooooncom'; ?>" target="_blank"><img src="/images/ico_fb_off.png" width="35" height="34" alt="facebook"></a></li>
-                                <li><a href="<?php  echo $this->config->item('language_min') == 'th' ? 'https://twitter.com/balloooooonth': 'https://twitter.com/ballooooooncom'; ?>" target="_blank"><img src="/images/ico_tt_off.png" width="35" height="34" alt="twitter"></a></li>
+                                <li><a href="https://twitter.com/opendatacompany" target="_blank"><img src="/images/ico_tt_off.png" width="35" height="34" alt="twitter"></a></li>
                             </ul>
                         </div>
                     </div>

@@ -32,12 +32,226 @@ class Tools extends CI_Controller {
         $this->load->model('Edinet_model');
         $this->load->model('Document_model');
         $this->load->model('Tenmono_model');
+        $this->load->model('Finance_model');
         $this->load->library('upload_folder');
         $this->load->library('Xbrl_lib');
         //$this->categories = $this->Category_model->getAllcategories();
         
         $this->archiver = new ZipArchive();
         $this->extractFiles = array();
+    }
+
+    public function sitemap($target_year = null)
+    {
+        
+        try {
+            $apps = array(
+                'document',
+                'income',
+                'finance'
+            );
+            $now_year = date("Y",time());
+            $target_year = is_null($target_year) ? $now_year : $target_year;
+            foreach ($apps as $target_app){
+                if($now_year == $target_year){
+                    $file= '/usr/local/apache2/htdocs/disclosure/'.$target_app.'_sitemap.xml';
+                }else{
+                    $file= '/usr/local/apache2/htdocs/disclosure/'.$target_app.'_'.$target_year.'_sitemap.xml';
+                }
+                
+                $this->_get_sitemap_data($target_app,$target_year);
+                $this->_make_file($file,$this->sitemap_line);
+            }
+            
+
+/*
+            $file= '/usr/local/apache2/htdocs/disclosure/sitemap_area_date.xml';
+            $this->_get_sitemap_data('area_date');
+            $this->_make_file($file,$this->sitemap_line);
+
+            $file= '/usr/local/apache2/htdocs/disclosure/sitemap_spring_date.xml';
+            $this->_get_sitemap_data('spring_date');
+            $this->_make_file($file,$this->sitemap_line);
+
+            $file= '/usr/local/apache2/htdocs/disclosure/sitemap_airport_date.xml';
+            $this->_get_sitemap_data('airport_date');
+            $this->_make_file($file,$this->sitemap_line);
+
+            $file= '/usr/local/apache2/htdocs/disclosure/sitemap_leisure_date.xml';
+            $this->_get_sitemap_data('leisure_date');
+            $this->_make_file($file,$this->sitemap_line);
+*/
+            print 'Sitemap: update success';
+        } catch (Exception $e) { 
+            print 'Error: ' . $e->getMessage();
+        }
+    }
+    /*
+    sitemapは年度ごとに書き出していく。古い年度はコンテンツが変わることがないため
+    
+    */
+    function _get_sitemap_data($target_app,$target_year){
+        $domain = 'open-data.company';
+        $today_year = date("Y",time());
+        $start_year = $target_year;
+        $end_year = $target_year;
+        
+        $this->load->helper('url');
+        $this->load->model('Category_model');
+        $categories = $this->Category_model->getAllCategories();
+        $this->load->model('Market_model');
+        $markets = $this->Market_model->getAllMarkets();
+        
+        $this->sitemap_line = null;
+        $this->sitemap_line .= '<?xml version="1.0" encoding="UTF-8" ?>'."\n";
+        $this->sitemap_line .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
+        
+        if($target_year == $today_year) $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/');
+        
+        //base
+        if($target_app == 'document' && $target_year == $today_year){
+            $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/site/ad');
+            $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/site/api');
+            $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/site/issues');
+        }
+        
+        //document
+        if($target_app == 'document'){
+            for ($year=$start_year;$year>=$end_year;$year--){
+                $documents =$this->Document_model->getAllDocumentsByYear($year);
+                foreach ($documents as $document) {
+                    if($document->is_html ==0 ) $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/document/show/'.$document->id);
+                    $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/document/data/'.$document->id);
+                    $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/document/download/'.$document->id.'/csv');
+                    $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/document/download/'.$document->id.'/xlsx');
+                }
+            }
+        }
+
+        //income
+        if($target_app == 'income'){
+            for ($year=$start_year;$year>=$end_year;$year--){
+                $incomes =$this->Tenmono_model->getAllCdataByYear($year);
+                $year_string = '';
+                if($target_year != $today_year) $year_string = '/'.$year;
+                foreach ($incomes as $income) {
+                    $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/income/show/'.$income->presenter_name_key.$year_string);
+                }
+            }
+        }
+
+        //finance 年度ごとにページは異ならない
+        if($target_year == $today_year && $target_app == 'finance'){
+            for ($year=$start_year;$year>=$end_year;$year--){
+                $finances =$this->Finance_model->getAllFinancesByYear($year);
+                foreach ($finances as $finance) {
+                    $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/finance/show/'.$finance->presenter_name_key);
+                    $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/finance/show/'.$finance->presenter_name_key.'/pl');
+                    $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/finance/show/'.$finance->presenter_name_key.'/bs');
+                    $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/finance/show/'.$finance->presenter_name_key.'/cf');
+                }
+            }
+        }
+
+        
+        //ist
+        foreach ($categories as $category){
+            //document
+            if($target_app == 'document'){
+                $orderExpression = "date DESC";//作成新しい
+                if($category->id == 1){
+                    $documents =$this->Document_model->getDocumentsOrder($start_year, $orderExpression,1);
+                }else{
+                    $documents =$this->Document_model->getDocumentsByCategoryIdOrder($category->id,$start_year,$orderExpression,1);
+                }
+                $maxPageCount = (int) ceil(intval($documents['count']) / intval($this->config->item('paging_count_per_page')));
+                for ($i=1;$i<=$maxPageCount;$i++){
+                    $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/document/category/'.$category->id.'/'.$start_year.'/'.$i);
+                }
+            }
+
+            //income
+            if($target_app == 'income'){
+                $orderExpression = "col_disclosure DESC";//公開日
+                foreach ($categories as $category){
+                    if($category->id == 1){//全体
+                        $cdatas =$this->Tenmono_model->getCdataOrder($start_year,$orderExpression,1);
+                    }else{
+                        $cdatas =$this->Tenmono_model->getCdataByCategoryIdOrderDisclosure($category->id,$start_year,$orderExpression,1);
+                    }
+                    $maxPageCount = (int) ceil(intval($cdatas['count']) / intval($this->config->item('paging_count_per_page')));
+                    for ($i=1;$i<=$maxPageCount;$i++){
+                        $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/income/category/'.$category->id.'/'.$start_year.'/disclosure/'.$i);
+                    }
+                }
+            }
+
+            //finance
+            if($target_app == 'finance'){
+                $orderExpression = "date DESC";//作成新しい
+                foreach ($categories as $category){
+                    if($category->id == 1){
+                        $financesResult = $this->Finance_model->getFinancesOrder($start_year, $orderExpression, 1);
+                    }else{
+                        $financesResult = $this->Finance_model->getFinancesOrderByCategoryId($category->id,$start_year, $orderExpression, 1);
+                    }
+                    $maxPageCount = (int) ceil(intval($financesResult['count']) / intval($this->config->item('paging_count_per_page')));
+                    for ($i=1;$i<=$maxPageCount;$i++){
+                        $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/finance/category/'.$category->id.'/pl/'.$start_year.'/net-sales/'.$i);
+                        $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/finance/category/'.$category->id.'/bs/'.$start_year.'/assets/'.$i);
+                        $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/finance/category/'.$category->id.'/cf/'.$start_year.'/net-income/'.$i);
+                    }
+                }
+            }
+        }
+        foreach ($markets as $market){
+            //document
+            if($target_app == 'document'){
+                $orderExpression = "date DESC";//作成新しい
+                $documents =$this->Document_model->getDocumentsByMarketIdOrder($market->id,$start_year,$orderExpression,1);
+                $maxPageCount = (int) ceil(intval($documents['count']) / intval($this->config->item('paging_count_per_page')));
+                for ($i=1;$i<=$maxPageCount;$i++){
+                    $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/document/market/'.$market->id.'/'.$start_year.'/'.$i);
+                }
+            }
+
+            //income
+            if($target_app == 'income'){
+                $orderExpression = "col_disclosure DESC";//公開日
+                foreach ($categories as $market){
+                    $cdatas =$this->Tenmono_model->getCdataByMarketIdOrderDisclosure($market->id,$start_year,$orderExpression,1);
+                    $maxPageCount = (int) ceil(intval($cdatas['count']) / intval($this->config->item('paging_count_per_page')));
+                    for ($i=1;$i<=$maxPageCount;$i++){
+                        $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/income/market/'.$market->id.'/'.$start_year.'/disclosure/'.$i);
+                    }
+                }
+            }
+
+            //finance
+            if($target_app == 'finance'){
+                $orderExpression = "date DESC";//作成新しい
+                foreach ($categories as $market){
+                    $financesResult = $this->Finance_model->getFinancesOrderByMarketId($market->id,$start_year, $orderExpression, 1);
+                    $maxPageCount = (int) ceil(intval($financesResult['count']) / intval($this->config->item('paging_count_per_page')));
+                    for ($i=1;$i<=$maxPageCount;$i++){
+                        $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/finance/market/'.$market->id.'/pl/'.$start_year.'/net-sales/'.$i);
+                        $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/finance/market/'.$market->id.'/bs/'.$start_year.'/assets/'.$i);
+                        $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/finance/market/'.$market->id.'/cf/'.$start_year.'/net-income/'.$i);
+                    }
+                }
+            }
+        }
+        $this->sitemap_line .= '</urlset>';
+    }
+
+    function _make_sitemap_url($url,$lastmod = null,$changefreq = 'weekly'){
+        $string = '';
+        $string .= '    <url>'."\n";
+        $string .= '        <loc>'.$url.'</loc>'."\n";
+        if($lastmod != null) $string .= '        <lastmod>'.$lastmod.'</lastmod>'."\n";
+        if($changefreq != null) $string .= '        <changefreq>'.$changefreq.'</changefreq>'."\n";
+        $string .= '    </url>'."\n";
+        return $string;
     }
 
     public function update_edinet_csv()
@@ -1084,47 +1298,6 @@ class Tools extends CI_Controller {
         fwrite($fp, "\r\n");
     }
 
-
-
-    public function sitemap()
-    {
-
-        try {
-            $file= '/usr/local/apache2/htdocs/hareco/sitemap.xml';
-            $this->_get_sitemap_data('main');
-            $this->_make_file($file,$this->sitemap_line);
-
-            $file= '/usr/local/apache2/htdocs/hareco/sitemap_area_date.xml';
-            $this->_get_sitemap_data('area_date');
-            $this->_make_file($file,$this->sitemap_line);
-
-            $file= '/usr/local/apache2/htdocs/hareco/sitemap_spring_date.xml';
-            $this->_get_sitemap_data('spring_date');
-            $this->_make_file($file,$this->sitemap_line);
-
-            $file= '/usr/local/apache2/htdocs/hareco/sitemap_airport_date.xml';
-            $this->_get_sitemap_data('airport_date');
-            $this->_make_file($file,$this->sitemap_line);
-
-            $file= '/usr/local/apache2/htdocs/hareco/sitemap_leisure_date.xml';
-            $this->_get_sitemap_data('leisure_date');
-            $this->_make_file($file,$this->sitemap_line);
-
-            print 'Sitemap: update success';
-        } catch (Exception $e) { 
-            print 'Error: ' . $e->getMessage();
-        }
-    }
-
-    function _make_sitemap_url($url,$lastmod = null,$changefreq = 'weekly'){
-        $string = '';
-        $string .= '    <url>'."\n";
-        $string .= '        <loc>'.$url.'</loc>'."\n";
-        if($lastmod != null) $string .= '        <lastmod>'.$lastmod.'</lastmod>'."\n";
-        if($changefreq != null) $string .= '        <changefreq>'.$changefreq.'</changefreq>'."\n";
-        $string .= '    </url>'."\n";
-        return $string;
-    }
     function _make_file($file,$data){
         umask(0);
         $file=trim($file);

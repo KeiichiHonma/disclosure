@@ -14,14 +14,12 @@ contents
             <div class="chart"  id="chart_daytimes">
                 <canvas id="daytimes" height="200" width="200"></canvas>
                 <div class="count">
-                    <?php $recent_cdata = reset($cdatas); ?>
-                    <?php echo $recent_cdata->col_income; ?>万円<br />業界順位<?php //echo $recent_cdata->col_v_rank; ?><?php echo $v_rank->count; ?>位
+                    <?php echo $target_cdata[0]->col_income; ?>万円<br />業界順位<?php echo $v_rank->count; ?>位
                 </div>
             </div>
 
 
             <script>
-                //var doughnutData = [{value: <?php echo $income_categories[$company->col_vid]->col_company_count - $recent_cdata->col_v_rank; ?>,color:"#F38630"},{value: <?php echo $recent_cdata->col_v_rank; ?>,color:"#69D2E7"}];
                 var doughnutData = [{value: <?php echo $company_count->count - $v_rank->count; ?>,color:"#F38630"},{value: <?php echo $v_rank->count; ?>,color:"#69D2E7"}];
 
             //var myDoughnut = new Chart(document.getElementById("canvas").getContext("2d")).Doughnut(doughnutData);
@@ -63,7 +61,7 @@ contents
                 </div>
             </div>
             <?php
-                $scaleSteps = ceil($recent_cdata->col_income / 100) + 2;
+                $scaleSteps = ceil($target_cdata[0]->col_income / 100) + 2;
             ?>
             <script>
                 var linedata = {
@@ -118,16 +116,15 @@ contents
                     <th class="undisp">平均年齢</th>
                     <th class="undisp">平均勤続年数</th>
                 </tr>
-                <?php $count = count($cdatas);$i = 1; ?>
+                <?php
+                    $count = count($cdatas);$i = 1;
+                    $from_time = mktime(0,0,0,1,1,$target_year);
+                    $to_time = mktime(23,59,59,12,31,$target_year);
+                ?>
                 <?php foreach ($cdatas as $cdata) : ?>
-                <tr<?php if($count == $i) echo ' class="last"'; ?>>
-                    <td class="date<?php if($i == 1) echo ' new'; ?>"><?php echo strftime($this->lang->line('setting_date_format'), $cdata->col_disclosure); ?></td>
-                    <?php if($i == 1):  ?>
-                    <td class="new"><strong><?php echo $cdata->col_income; ?>万円</strong></td>
-                    <?php else: ?>
+                <tr<?php if($count == $i) echo ' class="last"'; ?> class="<?php if($cdata->col_disclosure >= $from_time && $cdata->col_disclosure <= $to_time) echo ' new'; ?> <?php if($count == $i) echo ' last'; ?>"  >
+                    <td class="date"><?php echo strftime($this->lang->line('setting_date_format'), $cdata->col_disclosure); ?></td>
                     <td><?php echo $cdata->col_income; ?>万円</td>
-                    <?php endif ?>
-                    
                     <td class="undisp<?php if($i == 1) echo ' new';  ?>"><?php echo $cdata->col_person; ?>人</td>
                     <td class="undisp<?php if($i == 1) echo ' new';  ?>"><?php echo $cdata->col_age; ?>歳</td>
                     <td class="undisp<?php if($i == 1) echo ' new';  ?>"><?php echo $cdata->col_employ; ?>年</td>

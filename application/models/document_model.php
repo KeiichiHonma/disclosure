@@ -292,6 +292,21 @@ class Document_model extends CI_Model
         return array();
     }
 
+    //tools only
+    function getAllDocumentsByYear($year)
+    {
+        $from_date = $year.'-01-01 00:00:00';
+        $to_date = $year.'-12-31 23:59:59';
+        $result = array();
+        $query = $this->db->query("SELECT *
+                                    FROM {$this->table_name}
+                                    WHERE {$this->table_name}.document_name = '有価証券報告書' AND documents.date >= ? AND documents.date <= ?"
+        , array($from_date,$to_date)
+        );
+        if ($query->num_rows() != 0) return $query->result();
+        return array();
+    }
+
     function getAllDocumentDataByItemId($item_id,$offset,$perPageCount,$context_period = '当期末')
     {
         $query = $this->db->query("SELECT *
