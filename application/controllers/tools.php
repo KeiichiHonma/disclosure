@@ -409,7 +409,7 @@ class Tools extends CI_Controller {
     IDごとに項目があるかどうか確認しながら挿入していく必要がある
     */
     //public function finance($start = 0,$limit = 50)
-    public function finance()
+    public function finance($document_id = null)
     {
         $finances = array
         (
@@ -438,30 +438,16 @@ class Tools extends CI_Controller {
             array('net_cash_provided_by_used_in_financing_activities',5105,'当期'),//財務活動によるキャッシュ・フロー
             array('net_increase_decrease_in_cash_and_cash_equivalents',5107,'当期'),//キャッシュ・フロー → 現金及び現金同等物の増減額（△は減少）
         );
-        //$documents =$this->Document_model->getAllDocuments($start,$limit);
-        $documents =$this->Document_model->getAllDocuments();
-        $batch_data = array();
-        $i = 0;
-        foreach ($documents as $index => $document){
-            $batch_data[$i]['document_id'] = $document->id;
-            $batch_data[$i]['created'] = date("Y-m-d H:i:s", time());
-            foreach ($finances as $finance){
-                $finance_data = $this->Document_model->getDocumentDataByDocumentIdByTarget($document->id,$finance[1],$finance[2]);
-                if(!empty($finance_data)){
-                    if($finance[0] == 'extraordinary_income'){
-                        $extraordinary_income = $finance_data[0]->int_data;
-                        $batch_data[$i][$finance[0]] = floor($finance_data[0]->int_data / 1000000);
-                    }elseif($finance[0] == 'extraordinary_losses'){
-                        $extraordinary_losses = $finance_data[0]->int_data;
-                        $extraordinary_total = $extraordinary_income - $extraordinary_losses;
-                        $batch_data[$i]['extraordinary_losses'] = floor($finance_data[0]->int_data / 1000000);
-                        $batch_data[$i]['extraordinary_total'] = floor($extraordinary_total / 1000000);
-                    }else{
-                        $batch_data[$i][$finance[0]] = floor($finance_data[0]->int_data / 1000000);
-                    }
-                }else{
-                    //個別を確認
-                    $finance_data = $this->Document_model->getDocumentDataByDocumentIdByTarget($document->id,$finance[1],$finance[2],'個別');
+        if(is_null($document_id)){
+            //$documents =$this->Document_model->getAllDocuments($start,$limit);
+            $documents =$this->Document_model->getAllDocuments();
+            $batch_data = array();
+            $i = 0;
+            foreach ($documents as $index => $document){
+                $batch_data[$i]['document_id'] = $document->id;
+                $batch_data[$i]['created'] = date("Y-m-d H:i:s", time());
+                foreach ($finances as $finance){
+                    $finance_data = $this->Document_model->getDocumentDataByDocumentIdByTarget($document->id,$finance[1],$finance[2]);
                     if(!empty($finance_data)){
                         if($finance[0] == 'extraordinary_income'){
                             $extraordinary_income = $finance_data[0]->int_data;
@@ -475,15 +461,70 @@ class Tools extends CI_Controller {
                             $batch_data[$i][$finance[0]] = floor($finance_data[0]->int_data / 1000000);
                         }
                     }else{
+                        //個別を確認
+                        $finance_data = $this->Document_model->getDocumentDataByDocumentIdByTarget($document->id,$finance[1],$finance[2],'個別');
+                        if(!empty($finance_data)){
+                            if($finance[0] == 'extraordinary_income'){
+                                $extraordinary_income = $finance_data[0]->int_data;
+                                $batch_data[$i][$finance[0]] = floor($finance_data[0]->int_data / 1000000);
+                            }elseif($finance[0] == 'extraordinary_losses'){
+                                $extraordinary_losses = $finance_data[0]->int_data;
+                                $extraordinary_total = $extraordinary_income - $extraordinary_losses;
+                                $batch_data[$i]['extraordinary_losses'] = floor($finance_data[0]->int_data / 1000000);
+                                $batch_data[$i]['extraordinary_total'] = floor($extraordinary_total / 1000000);
+                            }else{
+                                $batch_data[$i][$finance[0]] = floor($finance_data[0]->int_data / 1000000);
+                            }
+                        }else{
+                            //当期に対象のデータがない場合等
+                            $batch_data[$i][$finance[0]] = 0;
+                        }
+                    }
+                    if(!isset($batch_data[$i]['extraordinary_total'])) $batch_data[$i]['extraordinary_total'] = 0;//無い可能性あり
+                }
+                $i++;
+            }
+            $this->db->insert_batch('document_finances', $batch_data);
+        }else{
+            foreach ($finances as $finance){
+                $finance_data = $this->Document_model->getDocumentDataByDocumentIdByTarget($document_id,$finance[1],$finance[2]);
+                if(!empty($finance_data)){
+                    if($finance[0] == 'extraordinary_income'){
+                        $extraordinary_income = $finance_data[0]->int_data;
+                        $insert_data[$finance[0]] = floor($finance_data[0]->int_data / 1000000);
+                    }elseif($finance[0] == 'extraordinary_losses'){
+                        $extraordinary_losses = $finance_data[0]->int_data;
+                        $extraordinary_total = $extraordinary_income - $extraordinary_losses;
+                        $insert_data['extraordinary_losses'] = floor($finance_data[0]->int_data / 1000000);
+                        $insert_data['extraordinary_total'] = floor($extraordinary_total / 1000000);
+                    }else{
+                        $insert_data[$finance[0]] = floor($finance_data[0]->int_data / 1000000);
+                    }
+                }else{
+                    //個別を確認
+                    $finance_data = $this->Document_model->getDocumentDataByDocumentIdByTarget($document->id,$finance[1],$finance[2],'個別');
+                    if(!empty($finance_data)){
+                        if($finance[0] == 'extraordinary_income'){
+                            $extraordinary_income = $finance_data[0]->int_data;
+                            $insert_data[$finance[0]] = floor($finance_data[0]->int_data / 1000000);
+                        }elseif($finance[0] == 'extraordinary_losses'){
+                            $extraordinary_losses = $finance_data[0]->int_data;
+                            $extraordinary_total = $extraordinary_income - $extraordinary_losses;
+                            $insert_data['extraordinary_losses'] = floor($finance_data[0]->int_data / 1000000);
+                            $insert_data['extraordinary_total'] = floor($extraordinary_total / 1000000);
+                        }else{
+                            $insert_data[$finance[0]] = floor($finance_data[0]->int_data / 1000000);
+                        }
+                    }else{
                         //当期に対象のデータがない場合等
-                        $batch_data[$i][$finance[0]] = 0;
+                        $insert_data[$finance[0]] = 0;
                     }
                 }
-                if(!isset($batch_data[$i]['extraordinary_total'])) $batch_data[$i]['extraordinary_total'] = 0;//無い可能性あり
+                if(!isset($insert_data['extraordinary_total'])) $insert_data['extraordinary_total'] = 0;//無い可能性あり
             }
-            $i++;
+            $insert_data['document_id'] = $document_id;
+            $this->db->insert('document_finances', $insert_data);
         }
-        $this->db->insert_batch('document_finances', $batch_data);
     }
     
     //csv書き出し
@@ -890,6 +931,8 @@ class Tools extends CI_Controller {
                             $this->db->update('documents', array('html_index_serialize'=>serialize($html_index)));
                         }
                     }
+                    //finance
+                    $this->finance($document_id);
 
                 }
                 if($this->is_memory_dump) echo '8 : '.memory_get_usage() . "\n";
