@@ -24,7 +24,7 @@ contents
                     <td class="txt"><?php echo $edinet->security_code; ?></td>
                     <td class="txt">
                     <?php echo $edinet->presenter_name; ?><br />
-                    <?php echo anchor('document/show/'.$edinet->presenter_name_key, '有報'); ?>&nbsp;&nbsp;<?php echo anchor('income/show/'.$edinet->presenter_name_key, '年収'); ?>&nbsp;&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/pl','P/L'); ?>&nbsp;&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/bs','BS'); ?>&nbsp;&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/cf','CF'); ?>
+                    <?php echo anchor('document/company/'.$edinet->presenter_name_key, '有報'); ?>&nbsp;&nbsp;<?php echo anchor('income/show/'.$edinet->presenter_name_key, '年収'); ?>&nbsp;&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/pl','P/L'); ?>&nbsp;&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/bs','BS'); ?>&nbsp;&nbsp;<?php echo anchor('finance/show/'.$edinet->presenter_name_key.'/cf','CF'); ?>
                     </td>
                     <td class="txt">
                     <?php if(isset($markets[$edinet->market_id])): ?>

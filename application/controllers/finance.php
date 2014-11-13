@@ -44,7 +44,7 @@ class Finance extends MY_Controller
         $data['topicpaths'][] = array('/finance/',$this->lang->line('common_title_finance'));
 
         //set header title
-        $data['page_title'] = $this->lang->line('common_title_finance').' - '.$this->lang->line('common_title_'.$type);
+        $data['page_title'] = $this->lang->line('common_title_finance');
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
@@ -102,7 +102,7 @@ class Finance extends MY_Controller
         $data['topicpaths'][] = array('/finance/category/'.$category_id,$this->data['categories'][$category_id]->name.'の'.$this->lang->line('common_title_finance_top'));
 
         //set header title
-        $data['page_title'] = ( $category_id == 1 ? '' : $this->data['categories'][$category_id]->name.' - ' ).$data['year'].'年'.$this->lang->line('common_title_'.$type);
+        $data['page_title'] = ( $category_id == 1 ? '' : $this->data['categories'][$category_id]->name.' - ' ).$data['year'].'年'.$this->lang->line('common_title_finance_'.$type);
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
@@ -152,7 +152,7 @@ class Finance extends MY_Controller
         $data['topicpaths'][] = array('/finance/market/'.$market_id,$this->data['markets'][$market_id]->name.'の'.$this->lang->line('common_title_finance_top'));
 
         //set header title
-        $data['page_title'] = $this->data['markets'][$market_id]->name.' - '.$data['year'].'年'.$this->lang->line('common_title_'.$type);
+        $data['page_title'] = $this->data['markets'][$market_id]->name.' - '.$data['year'].'年'.$this->lang->line('common_title_finance_'.$type);
         $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
         $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
         $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
@@ -213,10 +213,10 @@ class Finance extends MY_Controller
         $data['topicpaths'][] = array('/finance/show/'.$presenter_name_key,$data['edinet']->presenter_name.'の'.$this->lang->line('common_title_finance_'.$type));
 
         //set header title
-        $header_string = $data['edinet']->presenter_name.'のファイナンス情報';
-        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $header_string);
-        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $header_string);
-        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $header_string);
+        $data['page_title'] = $data['edinet']->presenter_name.'の'.$this->lang->line('common_title_finance_'.$type);
+        $data['header_title'] = sprintf($this->lang->line('common_header_title'), $data['page_title']);
+        $data['header_keywords'] = sprintf($this->lang->line('common_header_keywords'), $data['page_title']);
+        $data['header_description'] = sprintf($this->lang->line('common_header_description'), $data['page_title']);
         
         $this->config->set_item('javascripts', array_merge($this->config->item('javascripts'), array('js/Chart.js')));
         $this->config->set_item('stylesheets', array_merge($this->config->item('stylesheets'), array('/css/tab.css')));

@@ -8,7 +8,7 @@ contents
 -->
 <div id="contents">
     <div id ="contentsInner"><?php $this->load->view('layout/common/topicpath'); ?>
-        <h3 class="l1"><?php echo $edinet->presenter_name; ?>の<?php echo $this->lang->line('common_title_finance_'.$type); ?></h3>
+        <h3 class="l1"><?php echo $page_title; ?></h3>
         <?php $this->load->view('layout/common/finance_tab'); ?>
         <div id="document">
             <?php if(!empty($finances)): ?>
@@ -119,7 +119,7 @@ contents
                 <?php endforeach; ?>
             <?php endif; ?>
             <?php else: ?>
-                <div class="blank">指定のファイナンス情報がありません。</div>
+                <div class="blank">指定の財務情報がありません。</div>
             <?php endif; ?>
         </div>
         <div id="sidebar">

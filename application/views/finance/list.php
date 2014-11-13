@@ -58,7 +58,7 @@ contents
                 <?php $i++; ?>
                 <?php endforeach; ?>
             </table>
-            <?php $this->load->view('layout/common/pager'); ?>
+            <div class="mt10"><?php $this->load->view('layout/common/pager'); ?></div>
         </div>
         <div id="sidebar">
             <?php $this->load->view('layout/common/ads/adsense_side'); ?>

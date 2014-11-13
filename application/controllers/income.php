@@ -33,6 +33,7 @@ var $values = array();
         $order = "disclosure";
         $orderExpression = "col_disclosure DESC";//公開日
         $data['year'] = date("Y",time());
+        $data['year_url'] = '';
         $cdatas = $this->Tenmono_model->getCdataOrder($data['year'],$orderExpression,$page);
         $data['cdatas'] = $cdatas['data'];
         $data['is_index'] = TRUE;

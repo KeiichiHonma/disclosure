@@ -41,11 +41,33 @@ class Tools extends CI_Controller {
         $this->extractFiles = array();
     }
     //自動ポスト 年収が高いものを紹介
-    public function auto_twitter_income()
+    public function _auto_twitter_income()
     {
+        //ssl必須っぽい
+        
+        // access token 取得
+        $twitterInfo['consumer_key'] = $this->config->item ('twitter_consumer_key');
+        $twitterInfo['consumer_secret'] = $this->config->item ('twitter_consumer_secret');
+        $twitterInfo['oauth_token'] = $this->config->item ('access_token');
+        $twitterInfo['oauth_token_secret'] = $this->config->item ('access_token_secret');
+        $this->load->library('twitteroauth',$twitterInfo);
+
+        //リクエストを投げる先（固定値）
+        $url = "http://api.twitter.com/1/statuses/update.xml";
+        $method = "POST";
+
+        //投稿する文言
+        $postMsg = "投稿メッセージだよー";
+        //投稿
+        $res = $this->twitteroauth->OAuthRequest($url,$method,array("status"=>"$postMsg"));
+
+        // レスポンス表示
+        header("Content-Type: application/xml");
+        echo $res;
+die();
         $incomes =$this->Tenmono_model->getCdatasByRecent();
 var_dump($incomes);
-die();
+
     }
     
     public function sitemap($target_year = null)
@@ -94,7 +116,7 @@ die();
         $this->sitemap_line .= '<?xml version="1.0" encoding="UTF-8" ?>'."\n";
         $this->sitemap_line .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
         
-        if($target_year == $today_year) $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/');
+        if($target_app == 'document' && $target_year == $today_year) $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/');
         
         //base
         if($target_app == 'document' && $target_year == $today_year){
@@ -133,7 +155,7 @@ die();
             for ($year=$start_year;$year>=$end_year;$year--){
                 $finances =$this->Finance_model->getAllFinancesByYear($year);
                 foreach ($finances as $finance) {
-                    $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/finance/show/'.$finance->presenter_name_key);
+                    //$this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/finance/show/'.$finance->presenter_name_key);
                     $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/finance/show/'.$finance->presenter_name_key.'/pl');
                     $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/finance/show/'.$finance->presenter_name_key.'/bs');
                     $this->sitemap_line .= $this->_make_sitemap_url('http://'.$domain.'/finance/show/'.$finance->presenter_name_key.'/cf');
@@ -1016,7 +1038,7 @@ die();
                 $tenmono_datas['cdatas'][$edinet_code]['col_pace'] = round($tenmono_datas['cdatas'][$edinet_code]['col_income'] / $tenmono_datas['cdatas'][$edinet_code]['col_age'],1);
                 $tenmono_datas['cdatas'][$edinet_code]['col_income_trend'] = $trend;
                 $tenmono_datas['cdatas'][$edinet_code]['col_income_lifetime'] = $this->_getIncomeLifetime($tenmono_datas['cdatas'][$edinet_code]['col_income'],$tenmono_datas['cdatas'][$edinet_code]['col_age']);
-
+                $tenmono_datas['cdatas'][$edinet_code]['created'] = date("Y-m-d H:i:s", time());
                 if(!empty($cdata)){
                     $this->db->where('col_code', $code);
                     $this->db->update('tab_job_cdata', $tenmono_datas['cdatas'][$edinet_code]);

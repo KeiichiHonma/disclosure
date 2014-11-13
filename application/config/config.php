@@ -525,5 +525,16 @@ $config['string_max_length'] = 1000;
 */
 $config['allowed_download_file_type'] = array('csv','xlsx');
 
+/*
+|--------------------------------------------------------------------------
+| twitter  Consumer Key (API Key)  
+|--------------------------------------------------------------------------
+|
+*/
+$config['twitter_consumer_key'] = 'td9AZVkbzcinOz1XHSgX4frC3';
+$config['twitter_consumer_secret'] = '9P0NMOudfYEp93H0jxqmERyTPxf52Ip2dQ9Ul3xrY8qtAOBzlg ';
+$config['access_token'] = '2741324815-LF4qHMR2Gaw0s56qaEGnhIaEYg8zfinOH3O3Zyl';
+$config['access_token_secret'] = 'HUFRPIGILYyk1RTyPsbirTmu0Q3K3jg4iN8AyJgsspBtu';
+
 /* End of file config.php */
 /* Location: ./application/config/config.php */

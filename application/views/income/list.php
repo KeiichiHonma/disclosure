@@ -44,7 +44,7 @@ contents
                     <?php foreach ($cdatas as $cdata) : ?>
                     <tr<?php if($count == $i) echo ' class="last"'; ?>>
                         <td class="txt"><?php echo strftime("%y/%m/%d", $cdata->col_disclosure); ?></td>
-                        <td class="txt"><?php echo anchor('income/show/'.$cdata->presenter_name_key.$year_url, $cdata->col_code); ?></td>
+                        <td class="txt"><?php echo $cdata->col_code != 0 ? anchor('income/show/'.$cdata->presenter_name_key.$year_url, $cdata->col_code) : '-'; ?></td>
                         <td class="txt">
                         <?php echo anchor('income/show/'.$cdata->presenter_name_key.$year_url, $cdata->col_name); ?><br />
                         <?php echo anchor('finance/show/'.$cdata->presenter_name_key.'/pl','P/L'); ?>&nbsp;&nbsp;<?php echo anchor('finance/show/'.$cdata->presenter_name_key.'/bs','BS'); ?>&nbsp;&nbsp;<?php echo anchor('finance/show/'.$cdata->presenter_name_key.'/cf','CF'); ?>
