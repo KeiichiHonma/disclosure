@@ -7,7 +7,7 @@
     display:none!important;
 }
 body {
-    background:#ccc;
+    background:#fff;
 }
 
 .l1 {
@@ -1853,41 +1853,5 @@ div.side_list{ font-family: "メイリオ", "Meiryo", "ヒラギノ角ゴ Pro W3
   display: block;
   vertical-align: bottom;
   padding: 5px 0 5px;
-}
-
-/* iPad用
-------------------------------------------------------------------*/
-@media only screen and (min-device-width : 641px) and (max-device-width : 1024px) {
-
-#header{width:100% !important;}    
-#headerInner{width:100%;}
-#contentsInner { width:95%; }
-#gnavicrumbInner { width:100%; }
-#contentsInner:not([width]) { zoom: 0.74; }
-#gnavicrumb { width:100%; }
-#gnavicrumbInner { width:95%; margin-left:5px;}
-#contentsInner:not([width]) { zoom: 0.75; }
-#cloud {right:10px; }
-#header h1{ left:8px; }
-#header .navPc {right:8px;}
-#ind #mainImage .searchBox:not([width]) { zoom: 0.9; }
-#ui-datepicker-div:not([width]) { zoom: 0.9; }
-#contentsInner div.box .date {margin-bottom:0px;}
-#footerInner { width:auto; padding:0 30px; }
-#ind #mainImage .boxInner{width:100%;}
-#ind #mainImage .minWeather{ right:20px; }
-#ind #mainImage .gradationLeft {display:none;}
-#ind #mainImage .gradationRight {display:none;}
-#mainImage.sub {height:225px;}    
-#mainImage.sub #innerBox {width:100%;}
-#mainImage.sub img.photo{ width:100%; height:auto; }
-#mainImage.sub { background-size:auto 100%; }
-
-#mainImage.sub h2 { margin-top:106px; padding:0 20px;}
-#mainImage.sub h3 { padding:0 20px;}
-#btnPc {width:920px; }
-
-
-
 }
 

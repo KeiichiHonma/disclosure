@@ -11,7 +11,7 @@
 <meta property="og:url" content="<?php echo site_url($this->uri->uri_string()); ?>" />
 <meta property="og:description" content="<?php echo isset($header_description) ? $header_description : $this->lang->line('header_description'); ?>" />
 
-<meta name="viewport" content="width=device-width,user-scalable=0" />
+<meta name="viewport" content="user-scalable=yes" />
 <title><?php echo isset($header_title) ? $header_title : $this->lang->line('header_title'); ?></title>
 <meta name="keywords" content="<?php echo isset($header_keywords) ? $header_keywords : $this->lang->line('header_keywords'); ?>" />
 <meta name="description" content="<?php echo isset($header_description) ? $header_description : $this->lang->line('header_description'); ?>" />
