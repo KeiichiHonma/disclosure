@@ -475,11 +475,15 @@ var_dump($incomes);
                         $finance_data = $this->Document_model->getDocumentDataByDocumentIdByTarget($document->id,$finance[1],$finance[2],'個別');
                         if(!empty($finance_data)){
                             if($finance[0] == 'extraordinary_income'){
-                                $extraordinary_income = $finance_data[0]->int_data;
+                                $extraordinary_income = $finance_data[0]->int_data;//無いこともあります
                                 $batch_data[$i][$finance[0]] = floor($finance_data[0]->int_data / 1000000);
                             }elseif($finance[0] == 'extraordinary_losses'){
                                 $extraordinary_losses = $finance_data[0]->int_data;
-                                $extraordinary_total = $extraordinary_income - $extraordinary_losses;
+                                if(!isset($extraordinary_income)){
+                                    $extraordinary_total = 0 - $extraordinary_losses;
+                                }else{
+                                    $extraordinary_total = $extraordinary_income - $extraordinary_losses;
+                                }
                                 $batch_data[$i]['extraordinary_losses'] = floor($finance_data[0]->int_data / 1000000);
                                 $batch_data[$i]['extraordinary_total'] = floor($extraordinary_total / 1000000);
                             }else{
@@ -512,14 +516,18 @@ var_dump($incomes);
                     }
                 }else{
                     //個別を確認
-                    $finance_data = $this->Document_model->getDocumentDataByDocumentIdByTarget($document->id,$finance[1],$finance[2],'個別');
+                    $finance_data = $this->Document_model->getDocumentDataByDocumentIdByTarget($document_id,$finance[1],$finance[2],'個別');
                     if(!empty($finance_data)){
                         if($finance[0] == 'extraordinary_income'){
-                            $extraordinary_income = $finance_data[0]->int_data;
+                            $extraordinary_income = $finance_data[0]->int_data;//無いこともあります
                             $insert_data[$finance[0]] = floor($finance_data[0]->int_data / 1000000);
                         }elseif($finance[0] == 'extraordinary_losses'){
                             $extraordinary_losses = $finance_data[0]->int_data;
-                            $extraordinary_total = $extraordinary_income - $extraordinary_losses;
+                            if(!isset($extraordinary_income)){
+                                $extraordinary_total = 0 - $extraordinary_losses;
+                            }else{
+                                $extraordinary_total = $extraordinary_income - $extraordinary_losses;
+                            }
                             $insert_data['extraordinary_losses'] = floor($finance_data[0]->int_data / 1000000);
                             $insert_data['extraordinary_total'] = floor($extraordinary_total / 1000000);
                         }else{
