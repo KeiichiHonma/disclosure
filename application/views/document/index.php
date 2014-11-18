@@ -29,7 +29,7 @@ contents
                         <div class="top-news1-photo"><a href="/document/category/1"><img src="/images/yuuka.jpg" /></a></div>
                         <div class="top-news1-photo"><a href="/income/"><img src="/images/logos.jpg" /></a></div>
                         <div class="top-news1-photo"><a href="/finance/"><img src="/images/zaimu.jpg" /></a></div>
-                        <div class="top-news1-photo"><a href="/articles/-/44494"><img src="/images/screening.jpg" /></a></div>
+                        <div class="top-news1-photo"><a href="javascript:void;"><img src="/images/screening.jpg" /></a></div>
                     </div><!-- /photo-wrapper -->
 
                     <div class="top-news1-list">
