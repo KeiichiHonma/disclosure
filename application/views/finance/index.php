@@ -28,27 +28,27 @@ contents
                     <td class="txt"><?php echo $finance->security_code > 0 ? anchor('finance/show/'.$finance->presenter_name_key,$finance->security_code) : '-'; ?></td>
                     <td class="txt"><?php echo anchor('finance/show/'.$finance->presenter_name_key,$finance->presenter_name); ?></td>
                     <?php if($type == "pl"): ?>
-                    <td><?php echo number_format($finance->net_sales); ?></td>
-                    <td><?php echo number_format($finance->cost_of_sales); ?></td>
-                    <td><?php echo number_format($finance->gross_profit); ?></td>
-                    <td><?php echo number_format($finance->operating_income); ?></td>
-                    <td><?php echo number_format($finance->ordinary_income); ?></td>
-                    <td><?php echo number_format($finance->extraordinary_total); ?></td>
-                    <td><?php echo number_format($finance->net_income); ?></td>
+                    <td><?php echo new_number_format($finance->net_sales); ?></td>
+                    <td><?php echo new_number_format($finance->cost_of_sales); ?></td>
+                    <td><?php echo new_number_format($finance->gross_profit); ?></td>
+                    <td><?php echo new_number_format($finance->operating_income); ?></td>
+                    <td><?php echo new_number_format($finance->ordinary_income); ?></td>
+                    <td><?php echo new_number_format($finance->extraordinary_total); ?></td>
+                    <td><?php echo new_number_format($finance->net_income); ?></td>
                     <?php endif; ?>
                     <?php if($type == "bs"): ?>
-                    <td><?php echo number_format($finance->assets); ?></td>
-                    <td><?php echo number_format($finance->liabilities); ?></td>
-                    <td><?php echo number_format($finance->capital_stock); ?></td>
-                    <td><?php echo number_format($finance->shareholders_equity); ?></td>
+                    <td><?php echo new_number_format($finance->assets); ?></td>
+                    <td><?php echo new_number_format($finance->liabilities); ?></td>
+                    <td><?php echo new_number_format($finance->capital_stock); ?></td>
+                    <td><?php echo new_number_format($finance->shareholders_equity); ?></td>
                     <?php endif; ?>
                     <?php if($type == "cf"): ?>
-                    <td><?php echo number_format($finance->net_income); ?></td>
-                    <td><?php echo number_format($finance->depreciation_and_amortization); ?></td>
-                    <td><?php echo number_format($finance->net_cash_provided_by_used_in_operating_activities); ?></td>
-                    <td><?php echo number_format($finance->net_cash_provided_by_used_in_investing_activities); ?></td>
-                    <td><?php echo number_format($finance->net_cash_provided_by_used_in_financing_activities); ?></td>
-                    <td><?php echo number_format($finance->net_increase_decrease_in_cash_and_cash_equivalents); ?></td>
+                    <td><?php echo new_number_format($finance->net_income); ?></td>
+                    <td><?php echo new_number_format($finance->depreciation_and_amortization); ?></td>
+                    <td><?php echo new_number_format($finance->net_cash_provided_by_used_in_operating_activities); ?></td>
+                    <td><?php echo new_number_format($finance->net_cash_provided_by_used_in_investing_activities); ?></td>
+                    <td><?php echo new_number_format($finance->net_cash_provided_by_used_in_financing_activities); ?></td>
+                    <td><?php echo new_number_format($finance->net_increase_decrease_in_cash_and_cash_equivalents); ?></td>
                     <?php endif; ?>
 
                     <td class="txt">

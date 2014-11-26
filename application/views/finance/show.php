@@ -27,33 +27,33 @@ contents
                     <?php if(isset($finances[$i])): ?>
                         <?php if($type == "top" || $type == "bs"): ?>
                         <tr><th class="tree1">貸借対照表</th><?php for ($i=0;$i<$count;$i++): ?><td>&nbsp;</td><?php endfor; ?></tr>
-                        <tr><th class="tree2">流動資産</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->current_assets); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">固定資産</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->noncurrent_assets); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">資産合計</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->assets); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">流動負債</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->current_liabilities); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">固定負債</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->noncurrent_liabilities); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">負債合計</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->liabilities); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">資本金</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->capital_stock); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">株主資本</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->shareholders_equity); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">流動資産</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->current_assets); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">固定資産</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->noncurrent_assets); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">資産合計</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->assets); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">流動負債</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->current_liabilities); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">固定負債</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->noncurrent_liabilities); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">負債合計</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->liabilities); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">資本金</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->capital_stock); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">株主資本</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->shareholders_equity); ?></td><?php endfor; ?></tr>
                         <?php endif; ?>
                         <?php if($type == "top" || $type == "pl"): ?>
                         <tr><th class="tree1">損益計算書</th><?php for ($i=0;$i<$count;$i++): ?><td>&nbsp;</td><?php endfor; ?></tr>
-                        <tr><th class="tree2">売上高</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->net_sales); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">売上原価</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->cost_of_sales); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">売上総利益</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->gross_profit); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">営業利益</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->operating_income); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">経常利益</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->ordinary_income); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">特別利益</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->extraordinary_income); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">特別損失</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->extraordinary_losses); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">当期純利益</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->net_income); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">売上高</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->net_sales); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">売上原価</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->cost_of_sales); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">売上総利益</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->gross_profit); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">営業利益</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->operating_income); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">経常利益</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->ordinary_income); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">特別利益</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->extraordinary_income); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">特別損失</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->extraordinary_losses); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">当期純利益</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->net_income); ?></td><?php endfor; ?></tr>
                         <?php endif; ?>
                         <?php if($type == "top" || $type == "cf"): ?>
                         <tr><th class="tree1">キャッシュフロー計算書</th><?php for ($i=0;$i<$count;$i++): ?><td>&nbsp;</td><?php endfor; ?></tr>
-                        <tr><th class="tree2">減価償却</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->depreciation_and_amortization); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">営業CF</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->net_cash_provided_by_used_in_operating_activities); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">投資CF</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->net_cash_provided_by_used_in_investing_activities); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">財務CF</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->net_cash_provided_by_used_in_financing_activities); ?></td><?php endfor; ?></tr>
-                        <tr><th class="tree2">キャッシュフロー</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo number_format($finances[$i]->net_increase_decrease_in_cash_and_cash_equivalents); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">減価償却</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->depreciation_and_amortization); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">営業CF</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->net_cash_provided_by_used_in_operating_activities); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">投資CF</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->net_cash_provided_by_used_in_investing_activities); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">財務CF</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->net_cash_provided_by_used_in_financing_activities); ?></td><?php endfor; ?></tr>
+                        <tr><th class="tree2">キャッシュフロー</th><?php for ($i=0;$i<$count;$i++): ?><td><?php echo new_number_format($finances[$i]->net_increase_decrease_in_cash_and_cash_equivalents); ?></td><?php endfor; ?></tr>
                         <?php endif; ?>
                     <?php endif; ?>
                 <?php endfor; ?>

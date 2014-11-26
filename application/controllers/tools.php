@@ -41,35 +41,33 @@ class Tools extends CI_Controller {
         $this->extractFiles = array();
     }
     //自動ポスト 年収が高いものを紹介
-    public function _auto_twitter_income()
+    public function auto_twitter_income()
     {
-        //ssl必須っぽい
-        
-        // access token 取得
-        $twitterInfo['consumer_key'] = $this->config->item ('twitter_consumer_key');
-        $twitterInfo['consumer_secret'] = $this->config->item ('twitter_consumer_secret');
-        $twitterInfo['oauth_token'] = $this->config->item ('access_token');
-        $twitterInfo['oauth_token_secret'] = $this->config->item ('access_token_secret');
-        $this->load->library('twitteroauth',$twitterInfo);
-
-        //リクエストを投げる先（固定値）
-        $url = "http://api.twitter.com/1/statuses/update.xml";
-        $method = "POST";
-
-        //投稿する文言
-        $postMsg = "投稿メッセージだよー";
-        //投稿
-        $res = $this->twitteroauth->OAuthRequest($url,$method,array("status"=>"$postMsg"));
-
-        // レスポンス表示
-        header("Content-Type: application/xml");
-        echo $res;
-die();
-        $incomes =$this->Tenmono_model->getCdatasByRecent();
-var_dump($incomes);
-
+        $this->load->helper(array('url'));
+        require_once("application/libraries/twitteroauth.php");
+        $oAuth = new TwitterOAuth($this->config->item ('twitter_consumer_key'),$this->config->item ('twitter_consumer_secret'),$this->config->item ('access_token'),$this->config->item ('access_token_secret'));
+        //$req = $oAuth->OAuthRequest("https://api.twitter.com/1.1/statuses/update.json","POST",array("status"=>"OAuth経由のツイートテスト"));
+        //$incomes =$this->Tenmono_model->getCdatasByRecent();
+        $incomes =$this->Finance_model->getFinancesAndCdatasByRecent();
+        $message = $incomes[0]->presenter_name."の財務、年収速報\n売上高:".$incomes[0]->net_sales.'(百万円)'.$this->_get_tiny_url(site_url('finance/show/'.$incomes[0]->presenter_name_key))."\n年収:".$incomes[0]->col_income.'万円'.$this->_get_tiny_url(site_url('income/show/'.$incomes[0]->presenter_name_key));
+        $req = $oAuth->OAuthRequest("https://api.twitter.com/1.1/statuses/update.json","POST",array("status"=>$message));
     }
-    
+
+    function _get_tiny_url($long_url=''){
+        $api_url = 'https://www.googleapis.com/urlshortener/v1/url';
+        $api_key = 'AIzaSyATnGAnh9L58ST8BZ965sXWJYEhrvCV0Kk';
+        $curl = curl_init("$api_url?key=$api_key");
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, '{"longUrl":"' . $long_url . '"}');
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        $res = curl_exec($curl);
+        curl_close($curl);
+        $json = json_decode($res);
+        $tiny_url = $json->id;
+        return $tiny_url;
+    }
+
     public function sitemap($target_year = null)
     {
         
@@ -424,7 +422,7 @@ var_dump($incomes);
         $finances = array
         (
             //損益計算書
-            array('net_sales',789,'当期'),//売上高
+            array('net_sales',789,'当期'),//売上高 array('net_sales',150,'当期'),//NetSalesSummaryOfBusinessResults
             array('cost_of_sales',3432,'当期'),//売上原価
             array('gross_profit',3638,'当期'),//売上総利益
             array('operating_income',796,'当期'),//営業利益

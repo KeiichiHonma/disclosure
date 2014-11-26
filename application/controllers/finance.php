@@ -8,7 +8,7 @@ class Finance extends MY_Controller
         $this->load->helper('html');
         $this->load->helper(array('form', 'url'));
         $this->load->helper('image');
-        $this->load->helper('chart');
+        $this->load->helper('disclosure');
         $this->lang->load('setting');
         $this->load->database();
         $this->load->model('Edinet_model');

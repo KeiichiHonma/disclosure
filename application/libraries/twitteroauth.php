@@ -24,7 +24,7 @@ class TwitterOAuth {
   /* Set connect timeout. */
   public $connecttimeout = 30; 
   /* Verify SSL Cert. */
-  public $ssl_verifypeer = FALSE;
+  public $ssl_verifypeer = TRUE;
   /* Respons format. */
   public $format = 'json';
   /* Decode returned json data. */
@@ -56,12 +56,11 @@ class TwitterOAuth {
   /**
    * construct TwitterOAuth object
    */
-  //function __construct($consumer_key, $consumer_secret, $oauth_token = NULL, $oauth_token_secret = NULL) {
-  function __construct($twitterInfo) {
+  function __construct($consumer_key, $consumer_secret, $oauth_token = NULL, $oauth_token_secret = NULL) {
     $this->sha1_method = new OAuthSignatureMethod_HMAC_SHA1();
-    $this->consumer = new OAuthConsumer($twitterInfo['consumer_key'], $twitterInfo['consumer_secret']);
-    if (!empty($twitterInfo['oauth_token']) && !empty($twitterInfo['oauth_token_secret'])) {
-      $this->token = new OAuthConsumer($twitterInfo['oauth_token'], $twitterInfo['oauth_token_secret']);
+    $this->consumer = new OAuthConsumer($consumer_key, $consumer_secret);
+    if (!empty($oauth_token) && !empty($oauth_token_secret)) {
+      $this->token = new OAuthConsumer($oauth_token, $oauth_token_secret);
     } else {
       $this->token = NULL;
     }

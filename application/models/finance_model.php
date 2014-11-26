@@ -156,6 +156,23 @@ class Finance_model extends CI_Model
         if ($query->num_rows() != 0) return $query->result();
         return array();
     }
+    //tools only
+    function getFinancesAndCdatasByRecent()
+    {
+        $resent_date = date("Y-m-d H:i:s", time() - 86400);//1日前
+        $orderExpression = "net_sales DESC,col_income DESC";
+        $query = $this->db->query("SELECT *
+                                    FROM {$this->table_name}
+                                    INNER JOIN documents ON documents.id = document_finances.document_id
+                                    INNER JOIN edinets ON edinets.id = documents.edinet_id
+                                    INNER JOIN tab_job_company ON tab_job_company.col_edinet_code = edinets.edinet_code
+                                    INNER JOIN tab_job_cdata ON tab_job_company._id = tab_job_cdata.col_cid
+                                    WHERE documents.created >= '{$resent_date}' AND tab_job_cdata.created >= '{$resent_date}'
+                                    ORDER BY {$orderExpression}"
+        );
+        if ($query->num_rows() != 0) return $query->result();
+        return array();
+    }
 }
 
 /* End of file document_model.php */
