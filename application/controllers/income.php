@@ -70,8 +70,8 @@ var $values = array();
         }else{
             list($order,$orderExpression) = $this->_set_order($order);
         }
-        //$data['year'] = is_null($year) ? date("Y",time()) : intval($year);
-        $data['year'] = is_null($year) ? date("Y",time()) -1 : intval($year);
+        $data['year'] = is_null($year) ? date("Y",time()) : intval($year);
+        //$data['year'] = is_null($year) ? date("Y",time()) -1 : intval($year);
         $data['year_url'] = is_null($year) ? '' : '/'.$year;
         if($category_id == 1){//全体
             $cdatas =$this->Tenmono_model->getCdataOrder($data['year'],$orderExpression,$page);
