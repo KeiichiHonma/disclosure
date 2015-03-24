@@ -39,13 +39,6 @@ footer
                     <li><a href="/site/issues"><?php echo $this->lang->line('common_title_issues'); ?></a></li>
                   </ul>
             </div>
-            <div class="sec ft_contact">
-                <?php echo form_open('site/contact'); ?>
-                    <textarea class="textarea" name="contact" id="contact"></textarea>
-                    <p><input name="ft_send" id="ft_send" type="submit" value="意見を送る" /></p>
-                <?php echo form_close(); ?>
-            </div>
-
             <div class="boxRight"><span class="copy">copyrights &#169 Gramer</span></div>
         </div>
     </div>
