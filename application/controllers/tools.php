@@ -604,7 +604,7 @@ class Tools extends CI_Controller {
         }
     }
     
-    public function analyze()
+    public function analyze($file)
     {
         $start_date =  date('Ymd H:i',time())."\n";
         $time = time();
@@ -640,9 +640,9 @@ class Tools extends CI_Controller {
             die();
         }
 
-        $list = scandir($zip_path);
+        //$list = scandir($zip_path);
         $is_analyze = FALSE;
-        foreach($list as $file){
+        //foreach($list as $file){
             $zip_file_path = $zip_path . $file;
             if($file == '.' || $file == '..'){
                 continue;
@@ -684,7 +684,7 @@ class Tools extends CI_Controller {
                     }
                 }
             }
-        }
+        //}
         if($this->is_memory_dump) echo '1 : '.memory_get_usage() . "\n";
         if(!$is_analyze){
             $this->_remove_directory($tmp_path.$year);

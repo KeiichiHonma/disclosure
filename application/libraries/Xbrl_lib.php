@@ -551,7 +551,7 @@ class Xbrl_lib
         //=IF(LEN(H840)=7,ROUND(H840/1000,0)/10,IF(LEN(H840)=4,H840/10,IF(LEN(H840)=8,ROUND(H840/1000,0)/10,IF(LEN(H840)=5,H840/10))))
         $len = strlen($income);
         if($len == 8){
-            return (round($income / 10000)) / 10;//年収一千万超え
+            return (round($income / 10000));//年収一千万超え
         }elseif($len == 7){
             return (round($income / 1000)) / 10;//7654321 単位が円
         }elseif($len == 5){
