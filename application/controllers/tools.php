@@ -942,6 +942,8 @@ class Tools extends CI_Controller {
         $created = date("Y-m-d H:i:s", time());
         if($this->is_memory_dump) echo '2 : '.memory_get_usage() . "\n";
         $analyze_zip_number = 0;
+        //pubsubhubbub
+        $this->load->library('Publisher',array('hub_url'=>'http://pubsubhubbub.appspot.com/'));
         foreach ($this->xbrl_files as $unzip_dir_name =>  $xbrls){
             $analyze_file_number = 0;
             foreach ($xbrls as $xbrl_dir_id =>  $xbrl_paths){
@@ -1125,10 +1127,11 @@ class Tools extends CI_Controller {
                     }
                     //finance
                     $this->finance($document_id);
-                    $this->load->library('Publisher',array('hub_url'=>'http://pubsubhubbub.appspot.com/'));
-                    $this->publisher->publish_update('http://open-data.company/finance/show/'.$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name_key'].'/pl');
-                    $this->publisher->publish_update('http://open-data.company/finance/show/'.$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name_key'].'/bs');
-                    $this->publisher->publish_update('http://open-data.company/finance/show/'.$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name_key'].'/cf');
+                    //echo "\n".'http://open-data.company/document/show/'.$document_id;
+                    $this->publisher->publish_update('http://open-data.company/document/show/'.$document_id);
+                    $this->publisher->publish_update('http://open-data.company/document/data/'.$document_id);
+                    $this->publisher->publish_update('http://open-data.company/document/download/'.$document_id.'/csv');
+                    $this->publisher->publish_update('http://open-data.company/document/download/'.$document_id.'/xlsx');
                 }
                 if($this->is_memory_dump) echo '8 : '.memory_get_usage() . "\n";
                 echo $format_path.' - '.$xbrl_dir_id."\n";
@@ -1149,12 +1152,6 @@ class Tools extends CI_Controller {
                 if($this->is_tenmono){
                     $this->_do_tenmono($tenmono_datas,$edinet_code);
                 }
-                //pubsubhubbub
-                $this->load->library('Publisher',array('hub_url'=>'http://pubsubhubbub.appspot.com/'));
-                $this->publisher->publish_update('http://open-data.company/document/show/'.$document_id);
-                $this->publisher->publish_update('http://open-data.company/document/data/'.$document_id);
-                $this->publisher->publish_update('http://open-data.company/document/download/'.$document_id.'/csv');
-                $this->publisher->publish_update('http://open-data.company/document/download/'.$document_id.'/xlsx');
             }
             if($this->is_memory_dump) echo '10 : '.memory_get_usage() . "\n";
             $analyze_zip_number++;
@@ -1163,7 +1160,7 @@ class Tools extends CI_Controller {
         //最後にディレクトリを削除
         $this->_remove_directory($rename_path['move_path'],TRUE,array($rename_path['move_path']));
         echo 'start'.$start_date."\n";
-        echo 'ebd'.date('Ymd H:i',time())."\n";
+        echo 'end'.date('Ymd H:i',time())."\n";
     }
 
     function _do_tenmono($tenmono_datas,$edinet_code){
@@ -1190,6 +1187,7 @@ class Tools extends CI_Controller {
                 $tenmono_datas['companies'][$edinet_code]['col_mtime'] = $time;
                 $this->db->insert('tab_job_company', $tenmono_datas['companies'][$edinet_code]);
                 $company_id = $this->db->insert_id();
+                $company = $this->Tenmono_model->getCompanyByEdinetCode($edinet_code);
             }else{
                 echo $edinet_code."\n";
             }
@@ -1265,7 +1263,12 @@ class Tools extends CI_Controller {
                 }
                 //pubsubhubbub
                 $this->load->library('Publisher',array('hub_url'=>'http://pubsubhubbub.appspot.com/'));
+                //echo "\n".'http://open-data.company/income/show/'.$company->presenter_name_key;
+                //echo "\n".'http://open-data.company/finance/show/'.$company->presenter_name_key.'/pl';
                 $this->publisher->publish_update('http://open-data.company/income/show/'.$company->presenter_name_key);
+                $this->publisher->publish_update('http://open-data.company/finance/show/'.$company->presenter_name_key.'/pl');
+                $this->publisher->publish_update('http://open-data.company/finance/show/'.$company->presenter_name_key.'/bs');
+                $this->publisher->publish_update('http://open-data.company/finance/show/'.$company->presenter_name_key.'/cf');
             }
         //}
     }
