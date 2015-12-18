@@ -68,6 +68,182 @@ class Tools extends CI_Controller {
         return $tiny_url;
     }
 
+    public function pubsubhubbub($target_year = null)
+    {
+        
+        try {
+            $apps = array(
+                'document',
+                'income',
+                'finance'
+            );
+            $now_year = date("Y",time());
+            $target_year = is_null($target_year) ? $now_year : $target_year;
+            foreach ($apps as $target_app){
+                if($now_year == $target_year){
+                    $file= '/usr/local/apache2/htdocs/disclosure/xml/'.$target_app.'_sitemap.xml';
+                }else{
+                    $file= '/usr/local/apache2/htdocs/disclosure/xml/'.$target_app.'_'.$target_year.'_sitemap.xml';
+                }
+                
+                $this->_do_pubsubhubbub($target_app,$target_year);
+            }
+            print 'Sitemap: update success';
+        } catch (Exception $e) { 
+            print 'Error: ' . $e->getMessage();
+        }
+    }
+
+    function _do_pubsubhubbub($target_app,$target_year){
+        $this->load->library('Publisher',array('hub_url'=>'http://pubsubhubbub.appspot.com/'));
+        $domain = 'open-data.company';
+        $today_year = date("Y",time());
+        $start_year = $target_year;
+        $end_year = $target_year;
+        
+        $this->load->helper('url');
+        $this->load->model('Category_model');
+        $categories = $this->Category_model->getAllCategories();
+        $this->load->model('Market_model');
+        $markets = $this->Market_model->getAllMarkets();
+        
+        if($target_app == 'document' && $target_year == $today_year) $this->publisher->publish_update('http://'.$domain.'/');
+        
+        //base
+        if($target_app == 'document' && $target_year == $today_year){
+            $this->publisher->publish_update('http://'.$domain.'/site/ad');
+            $this->publisher->publish_update('http://'.$domain.'/site/api');
+            $this->publisher->publish_update('http://'.$domain.'/site/issues');
+        }
+        
+        //document
+        if($target_app == 'document'){
+            for ($year=$start_year;$year>=$end_year;$year--){
+                $documents =$this->Document_model->getAllDocumentsByYear($year);
+                foreach ($documents as $document) {
+                    if($document->is_html ==0 ) $this->publisher->publish_update('http://'.$domain.'/document/show/'.$document->id);
+                    $this->publisher->publish_update('http://'.$domain.'/document/data/'.$document->id);
+                    $this->publisher->publish_update('http://'.$domain.'/document/download/'.$document->id.'/csv');
+                    $this->publisher->publish_update('http://'.$domain.'/document/download/'.$document->id.'/xlsx');
+                }
+            }
+        }
+
+        //income
+        if($target_app == 'income'){
+            for ($year=$start_year;$year>=$end_year;$year--){
+                $incomes =$this->Tenmono_model->getAllCdataByYear($year);
+                $year_string = '';
+                if($target_year != $today_year) $year_string = '/'.$year;
+                foreach ($incomes as $income) {
+                    $this->publisher->publish_update('http://'.$domain.'/income/show/'.$income->presenter_name_key.$year_string);
+                }
+            }
+        }
+
+        //finance 年度ごとにページは異ならない
+        if($target_year == $today_year && $target_app == 'finance'){
+            for ($year=$start_year;$year>=$end_year;$year--){
+                $finances =$this->Finance_model->getAllFinancesByYear($year);
+                foreach ($finances as $finance) {
+                    //$this->publisher->publish_update('http://'.$domain.'/finance/show/'.$finance->presenter_name_key);
+                    $this->publisher->publish_update('http://'.$domain.'/finance/show/'.$finance->presenter_name_key.'/pl');
+                    $this->publisher->publish_update('http://'.$domain.'/finance/show/'.$finance->presenter_name_key.'/bs');
+                    $this->publisher->publish_update('http://'.$domain.'/finance/show/'.$finance->presenter_name_key.'/cf');
+                }
+            }
+        }
+
+        
+        //ist
+        foreach ($categories as $category){
+            //document
+            if($target_app == 'document'){
+                $orderExpression = "date DESC";//作成新しい
+                if($category->id == 1){
+                    $documents =$this->Document_model->getDocumentsOrder($start_year, $orderExpression,1);
+                }else{
+                    $documents =$this->Document_model->getDocumentsByCategoryIdOrder($category->id,$start_year,$orderExpression,1);
+                }
+                $maxPageCount = (int) ceil(intval($documents['count']) / intval($this->config->item('paging_count_per_page')));
+                for ($i=1;$i<=$maxPageCount;$i++){
+                    $this->publisher->publish_update('http://'.$domain.'/document/category/'.$category->id.'/'.$start_year.'/'.$i);
+                }
+            }
+
+            //income
+            if($target_app == 'income'){
+                $orderExpression = "col_disclosure DESC";//公開日
+                foreach ($categories as $category){
+                    if($category->id == 1){//全体
+                        $cdatas =$this->Tenmono_model->getCdataOrder($start_year,$orderExpression,1);
+                    }else{
+                        $cdatas =$this->Tenmono_model->getCdataByCategoryIdOrderDisclosure($category->id,$start_year,$orderExpression,1);
+                    }
+                    $maxPageCount = (int) ceil(intval($cdatas['count']) / intval($this->config->item('paging_count_per_page')));
+                    for ($i=1;$i<=$maxPageCount;$i++){
+                        $this->publisher->publish_update('http://'.$domain.'/income/category/'.$category->id.'/'.$start_year.'/disclosure/'.$i);
+                    }
+                }
+            }
+
+            //finance
+            if($target_app == 'finance'){
+                $orderExpression = "date DESC";//作成新しい
+                foreach ($categories as $category){
+                    if($category->id == 1){
+                        $financesResult = $this->Finance_model->getFinancesOrder($start_year, $orderExpression, 1);
+                    }else{
+                        $financesResult = $this->Finance_model->getFinancesOrderByCategoryId($category->id,$start_year, $orderExpression, 1);
+                    }
+                    $maxPageCount = (int) ceil(intval($financesResult['count']) / intval($this->config->item('paging_count_per_page')));
+                    for ($i=1;$i<=$maxPageCount;$i++){
+                        $this->publisher->publish_update('http://'.$domain.'/finance/category/'.$category->id.'/pl/'.$start_year.'/net-sales/'.$i);
+                        $this->publisher->publish_update('http://'.$domain.'/finance/category/'.$category->id.'/bs/'.$start_year.'/assets/'.$i);
+                        $this->publisher->publish_update('http://'.$domain.'/finance/category/'.$category->id.'/cf/'.$start_year.'/net-income/'.$i);
+                    }
+                }
+            }
+        }
+        foreach ($markets as $market){
+            //document
+            if($target_app == 'document'){
+                $orderExpression = "date DESC";//作成新しい
+                $documents =$this->Document_model->getDocumentsByMarketIdOrder($market->id,$start_year,$orderExpression,1);
+                $maxPageCount = (int) ceil(intval($documents['count']) / intval($this->config->item('paging_count_per_page')));
+                for ($i=1;$i<=$maxPageCount;$i++){
+                    $this->publisher->publish_update('http://'.$domain.'/document/market/'.$market->id.'/'.$start_year.'/'.$i);
+                }
+            }
+
+            //income
+            if($target_app == 'income'){
+                $orderExpression = "col_disclosure DESC";//公開日
+                foreach ($categories as $market){
+                    $cdatas =$this->Tenmono_model->getCdataByMarketIdOrderDisclosure($market->id,$start_year,$orderExpression,1);
+                    $maxPageCount = (int) ceil(intval($cdatas['count']) / intval($this->config->item('paging_count_per_page')));
+                    for ($i=1;$i<=$maxPageCount;$i++){
+                        $this->publisher->publish_update('http://'.$domain.'/income/market/'.$market->id.'/'.$start_year.'/disclosure/'.$i);
+                    }
+                }
+            }
+
+            //finance
+            if($target_app == 'finance'){
+                $orderExpression = "date DESC";//作成新しい
+                foreach ($categories as $market){
+                    $financesResult = $this->Finance_model->getFinancesOrderByMarketId($market->id,$start_year, $orderExpression, 1);
+                    $maxPageCount = (int) ceil(intval($financesResult['count']) / intval($this->config->item('paging_count_per_page')));
+                    for ($i=1;$i<=$maxPageCount;$i++){
+                        $this->publisher->publish_update('http://'.$domain.'/finance/market/'.$market->id.'/pl/'.$start_year.'/net-sales/'.$i);
+                        $this->publisher->publish_update('http://'.$domain.'/finance/market/'.$market->id.'/bs/'.$start_year.'/assets/'.$i);
+                        $this->publisher->publish_update('http://'.$domain.'/finance/market/'.$market->id.'/cf/'.$start_year.'/net-income/'.$i);
+                    }
+                }
+            }
+        }
+    }
+
     public function sitemap($target_year = null)
     {
         
@@ -949,7 +1125,10 @@ class Tools extends CI_Controller {
                     }
                     //finance
                     $this->finance($document_id);
-
+                    $this->load->library('Publisher',array('hub_url'=>'http://pubsubhubbub.appspot.com/'));
+                    $this->publisher->publish_update('http://open-data.company/finance/show/'.$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name_key'].'/pl');
+                    $this->publisher->publish_update('http://open-data.company/finance/show/'.$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name_key'].'/bs');
+                    $this->publisher->publish_update('http://open-data.company/finance/show/'.$this->xbrls_informations[$unzip_dir_name][$xbrl_dir_id]['presenter_name_key'].'/cf');
                 }
                 if($this->is_memory_dump) echo '8 : '.memory_get_usage() . "\n";
                 echo $format_path.' - '.$xbrl_dir_id."\n";
@@ -970,6 +1149,12 @@ class Tools extends CI_Controller {
                 if($this->is_tenmono){
                     $this->_do_tenmono($tenmono_datas,$edinet_code);
                 }
+                //pubsubhubbub
+                $this->load->library('Publisher',array('hub_url'=>'http://pubsubhubbub.appspot.com/'));
+                $this->publisher->publish_update('http://open-data.company/document/show/'.$document_id);
+                $this->publisher->publish_update('http://open-data.company/document/data/'.$document_id);
+                $this->publisher->publish_update('http://open-data.company/document/download/'.$document_id.'/csv');
+                $this->publisher->publish_update('http://open-data.company/document/download/'.$document_id.'/xlsx');
             }
             if($this->is_memory_dump) echo '10 : '.memory_get_usage() . "\n";
             $analyze_zip_number++;
@@ -1078,6 +1263,9 @@ class Tools extends CI_Controller {
                         $max_edition--;
                     }
                 }
+                //pubsubhubbub
+                $this->load->library('Publisher',array('hub_url'=>'http://pubsubhubbub.appspot.com/'));
+                $this->publisher->publish_update('http://open-data.company/income/show/'.$company->presenter_name_key);
             }
         //}
     }

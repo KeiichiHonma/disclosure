@@ -113,6 +113,7 @@ class Tenmono_model extends CI_Model
     {
         $query = $this->db->query("SELECT *
                                     FROM tab_job_company
+                                    INNER JOIN edinets ON edinets.edinet_code = tab_job_company.col_edinet_code
                                     WHERE tab_job_company.col_edinet_code = ?"
         , array($edinet_code)
         );
