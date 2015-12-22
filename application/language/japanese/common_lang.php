@@ -1,12 +1,12 @@
 <?php
-$lang['header_website_name'] = 'グラマー [Gramer]';
+$lang['header_website_name'] = '年収データ.company';
 
-$lang['header_title'] = '有価証券報告書、年収情報のオープンデータ活用サービス | オープンデータ.company';
-$lang['header_keywords'] = 'オープンデータ,opendata,有価証券報告書,開示情報,有報';
-$lang['header_description'] = '有価証券報告書や企業年収等のオープンデータをエクセルやCSVファイルでダウンロードできるサイトです。';
+$lang['header_title'] = '年収データ、有価証券報告書のオープンデータ活用サービス | 年収データ.company';
+$lang['header_keywords'] = '年収、オープンデータ,opendata,有価証券報告書,開示情報,有報';
+$lang['header_description'] = '年収データや有価証券報告書のオープンデータをエクセルやCSVファイルでダウンロードできるサイトです。';
 
-$lang['common_header_title'] = '%s｜有価証券報告書・年収情報ならオープンデータ.company';
-$lang['common_header_keywords'] = '%s,オープンデータ,opendata,有価証券報告書,開示情報,有報';
+$lang['common_header_title'] = '%s｜年収情報 - 有価証券報告書ならオープンデータ.company';
+$lang['common_header_keywords'] = '%s,オープンデータ,opendata,年収,有価証券報告書,開示情報,有報';
 $lang['common_header_description'] = '%sのオープンデータ。有価証券報告書や企業年収等のオープンデータをエクセルやCSVファイルでダウンロードできるサイトです';
 
 $lang['search_box_default'] = '企業検索';

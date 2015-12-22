@@ -198,9 +198,15 @@ div#header h2{
     width:400px !important;
     height:11px !important;
     position:absolute !important;
-    top:18px !important;
+    top:0px !important;
     left:250px !important;
 }
+
+div#header h2 span{
+    color:#fd6405;
+    font-weight:bold;
+}
+
 div#header .navSp {
     display:none !important;
 }
@@ -339,7 +345,7 @@ div#gnavicrumb .searchBox {
     padding-top:7px !important;
 }
 div#gnavicrumb .searchBox .focus{
-    width:220px !important;
+    width:140px !important;
     height:16px !important;
     padding:2px !important;
     margin-right:8px !important;

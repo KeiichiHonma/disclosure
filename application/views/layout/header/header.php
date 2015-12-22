@@ -4,13 +4,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
 <meta http-equiv="Content-Script-Type" content="text/javascript" />
-<meta name="copyright" content="&copy;hareco" />
+<meta name="copyright" content="&copy;open-data.company" />
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@opendatacompany">
+<meta name="twitter:title" content="<?php echo isset($header_title) ? $header_title : $this->lang->line('header_title'); ?>">
+<meta name="twitter:description" content="<?php echo isset($header_description) ? $header_description : $this->lang->line('header_description'); ?>">
+<meta name="twitter:image:src" content="http://open-data.company/images/logos">
 <meta property="og:title" content="<?php echo isset($header_title) ? $header_title : $this->lang->line('header_title'); ?>" />
 <meta property="og:type" content="<?php echo isset($isHome) ? 'website' : 'article' ?>" />
-<meta property="og:image" content="<?php echo isset($og_image) ? $og_image : 'http://hareco.jp/images/apple-touch-icon-precomposed.png' ?>" />
+<meta property="og:image" content="http://open-data.company/images/logos" />
 <meta property="og:url" content="<?php echo site_url($this->uri->uri_string()); ?>" />
 <meta property="og:description" content="<?php echo isset($header_description) ? $header_description : $this->lang->line('header_description'); ?>" />
-
 <meta name="viewport" content="user-scalable=yes" />
 <title><?php echo isset($header_title) ? $header_title : $this->lang->line('header_title'); ?></title>
 <meta name="keywords" content="<?php echo isset($header_keywords) ? $header_keywords : $this->lang->line('header_keywords'); ?>" />

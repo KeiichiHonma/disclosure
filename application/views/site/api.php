@@ -9,11 +9,9 @@ contents
     <div id ="contentsInner"><?php $this->load->view('layout/common/topicpath'); ?>
         <h3 class="l1"><?php echo $this->lang->line('common_title_api'); ?></h3>
         <div id="site">
-            オープンデータ.companyではwebサイトやアプリ制作などに利用できる、有価証券報告書データ、年収データ、財務データといった企業データコンテンツをAPIで提供しています。<br />
+            オープンデータ.companyではwebサイトやアプリ制作などに利用できる、年収データコンテンツをAPIで提供しています。<br />
             APIに関するお問い合わせは <img src="/images/ad_mail.gif" alt="" style="vertical-align: middle;" /> までお気軽にお問い合わせください。 
             <h4 class="l2"><span>APIコンテンツ一覧</span></h4>
-            <h5 class="l3">有価証券報告書API</h5>
-            <h5 class="l3">財務データAPI</h5>
             <h5 class="l3">年収データAPI</h5>
             <h4 class="l2"><span>初期費用</span></h4>
             <p class="firstprice">50,000円(税抜)</p>
@@ -32,14 +30,6 @@ contents
               </thead>
               <tr>
                 <td class="category" height="18" rowspan="3">企業データ情報API</td>
-                <td>有価証券報告書データ</td>
-                <td>30,000円</td>
-              </tr>
-              <tr>
-                <td>財務データ</td>
-                <td>30,000円</td>
-              </tr>
-              <tr>
                 <td>年収データ</td>
                 <td>20,000円</td>
               </tr>
@@ -76,24 +66,6 @@ contents
               </tr>
             </table>
             <p class="caution">※リクエスト数に応じて表の基本利用料が上表の月額利用料となります。</p>
-
-            <h4 class="l2"><span>セット割引料金</span></h4>
-            <table class="api" cellspacing="1" cellpadding="3">
-              <thead>
-                <tr>
-                  <td width="266">購入API数</td>
-                  <td width="145">月額割引料金</td>
-                </tr>
-              </thead>
-              <tr>
-                <td>2種類</td>
-                <td>-10,000円</td>
-              </tr>
-              <tr>
-                <td>3種類</td>
-                <td>-20,000円</td>
-              </tr>
-            </table>
 
         </div>
         <div id="sidebar">

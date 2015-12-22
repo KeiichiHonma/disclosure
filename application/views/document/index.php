@@ -22,58 +22,7 @@ contents
 <div id="contents">
     <div id ="contentsInner">
         <div id="document_navi">
-
-            <div id="top-news1" class="cf">
-                <div id="top-news1-inner" class="cf">
-                    <div id="photo-wrapper">
-                        <div class="top-news1-photo"><a href="/document/category/1"><img src="/images/yuuka.jpg" /></a></div>
-                        <div class="top-news1-photo"><a href="/income/"><img src="/images/logos.jpg" /></a></div>
-                        <div class="top-news1-photo"><a href="/finance/"><img src="/images/zaimu.jpg" /></a></div>
-                        <div class="top-news1-photo"><a href="javascript:void;"><img src="/images/screening.jpg" /></a></div>
-                    </div><!-- /photo-wrapper -->
-
-                    <div class="top-news1-list">
-                    <ul>
-                        <li>
-                            <a href="/document/category/1" class="link-box">
-                                <span class="column-ttl">有価証券報告書を速報でお届け</span><br /><span class="column-main-ttl">エクセルフォーマットでダウンロード！</span><span class="more sprite">MORE</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/income/category/1" class="link-box">
-                                <span class="column-ttl">年収情報を速報でお届け</span><br /><span class="column-main-ttl">企業の年収情報をいち早く確認できる</span><span class="more sprite">MORE</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/finance/" class="link-box">
-                                <span class="column-ttl">各企業のP/L,BS,CFを速報でお届け</span><br /><span class="column-main-ttl">企業の財務状況を把握。財務ランキングも！</span><span class="more sprite">MORE</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void;" class="link-box">
-                                <span class="column-ttl">財務数値でのスクリーニングを提供</span><br /><span class="column-main-ttl">Coming Soon</span><span class="more sprite">MORE</span>
-                            </a>
-                        </li>
-                    </ul>
-                    </div><!-- /top-news1-list -->
-                </div><!-- /top-news1-inner -->
-            </div>
             <h3 class="center_dot"><span><?php echo $this->lang->line('common_title_home'); ?></span></h3>
-        </div>
-        <div id="document_navi_ad">
-            <?php if(ENVIRONMENT == 'production'): ?>
-                <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                <!-- opendata_300_250 -->
-                <ins class="adsbygoogle"
-                     style="display:inline-block;width:300px;height:250px"
-                     data-ad-client="ca-pub-0723627700180622"
-                     data-ad-slot="1852139908"></ins>
-                <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
-            <?php else: ?>
-                <img src="/images/ad_example1.gif" alt="" />
-            <?php endif; ?>
         </div>
         <div id="document">
             <table>
@@ -97,6 +46,7 @@ contents
             </table>
         </div>
         <div id="sidebar">
+            <?php $this->load->view('layout/common/ads/adsense_side'); ?>
             <div id="side_cat">
                 <?php $this->load->view('layout/common/categories'); ?>
             </div><!-- /side_cat -->

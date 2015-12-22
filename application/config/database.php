@@ -50,24 +50,27 @@ $active_record = TRUE;
 switch (ENVIRONMENT)
 {
     case 'development':
-        $db['default']['hostname'] = 'localhost';
-        $db['default']['username'] = 'db_mirai_tenki';
+        $db['default']['hostname'] = '182.48.20.241';
+        $db['default']['username'] = 'db_hipstores';
         $db['default']['password'] = 'kyeoisihcihoi';
         $db['default']['database'] = 'disclosure';
+        $db['default']['db_debug'] = TRUE;
     break;
 
     case 'localhost':
-        $db['default']['hostname'] = 'localhost';
-        $db['default']['username'] = 'db_balloooooon';
+        $db['default']['hostname'] = '182.48.20.241';
+        $db['default']['username'] = 'db_hipstores';
         $db['default']['password'] = 'kyeoisihcihoi';
         $db['default']['database'] = 'disclosure';
+        $db['default']['db_debug'] = TRUE;
     break;
 
     case 'testing':
-        $db['default']['hostname'] = 'mysql465.db.sakura.ne.jp';
-        $db['default']['username'] = 'db_mirai_tenki';
+        $db['default']['hostname'] = '182.48.20.241';
+        $db['default']['username'] = 'db_hipstores';
         $db['default']['password'] = 'kyeoisihcihoi';
         $db['default']['database'] = 'disclosure';
+        $db['default']['db_debug'] = TRUE;
     break;
 
     case 'production':

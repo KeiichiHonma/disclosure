@@ -37,7 +37,7 @@
 | in the URL cannot be matched to a valid route.
 |
 */
-$route['default_controller'] = "document/index";
+$route['default_controller'] = "income/index";
 
 $route['404_override'] = 'site/not_found';
 

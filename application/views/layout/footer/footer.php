@@ -24,7 +24,7 @@ footer
                 <ul>
                     <li><a href="http://gramer.co.jp/" target="_blank"><?php echo $this->lang->line('common_title_company'); ?></a></li>
                     <li><?php echo force_anchor('site/ad',  $this->lang->line('common_title_ad'),FALSE); ?></li>
-                    <li class="last"><?php echo force_anchor('site/api',  $this->lang->line('common_title_api'),FALSE); ?></li>
+                    <li class="last"><?php echo force_anchor('site/api',  '年収データAPI',FALSE); ?></li>
                 </ul>
             </div>
 
