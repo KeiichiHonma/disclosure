@@ -550,7 +550,9 @@ class Xbrl_lib
     public function _makeIncomeLength($income,$edinet_code){
         //=IF(LEN(H840)=7,ROUND(H840/1000,0)/10,IF(LEN(H840)=4,H840/10,IF(LEN(H840)=8,ROUND(H840/1000,0)/10,IF(LEN(H840)=5,H840/10))))
         $len = strlen($income);
-        if($len == 8){
+        if($income < 10){//5.36 平均年間給与(百万円)
+            return $income * 100;//単位が百万円
+        }elseif($len == 8){
             return (round($income / 10000));//年収一千万超え
         }elseif($len == 7){
             return (round($income / 1000)) / 10;//7654321 単位が円
